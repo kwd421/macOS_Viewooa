@@ -6,5 +6,7 @@ struct ViewooaApp: App {
         WindowGroup {
             ViewerWindowShell()
         }
+        .defaultSize(width: 900, height: 620)
+        .windowResizability(.contentMinSize)
     }
 }

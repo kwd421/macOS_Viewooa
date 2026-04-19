@@ -13,6 +13,5 @@ struct ViewerWindowShell: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .frame(minWidth: 900, minHeight: 620)
     }
 }
