@@ -6,32 +6,23 @@ struct ViewerWindowShell: View {
     var body: some View {
         ZStack {
             Color.black.opacity(0.96).ignoresSafeArea()
+            ImageViewerContainerView(viewerState: viewerState)
 
-            VStack(spacing: 12) {
-                Image(systemName: "photo")
-                    .font(.system(size: 40))
-                    .foregroundStyle(.secondary)
-                Text(statusText)
-                    .foregroundStyle(.secondary)
-
-                HStack(spacing: 12) {
-                    Button("Open File...", action: viewerState.presentOpenFilePanel)
-                    Button("Open Folder...", action: viewerState.presentOpenFolderPanel)
-                }
-
-                if let currentImageURL = viewerState.currentImageURL {
-                    Text(currentImageURL.lastPathComponent)
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
-
-                    HStack(spacing: 12) {
-                        Button("Previous", action: viewerState.showPreviousImage)
-                            .disabled(!canShowPreviousImage)
-                        Button("Next", action: viewerState.showNextImage)
-                            .disabled(!canShowNextImage)
-                    }
-                }
+            if viewerState.currentImageURL == nil {
+                placeholderView
             }
+        }
+        .toolbar {
+            Button("Open File...", action: viewerState.presentOpenFilePanel)
+            Button("Open Folder...", action: viewerState.presentOpenFolderPanel)
+            Button("Previous", action: viewerState.showPreviousImage)
+                .disabled(!canShowPreviousImage)
+            Button("Next", action: viewerState.showNextImage)
+                .disabled(!canShowNextImage)
+            Button("Fit") { viewerState.zoomMode = .fit }
+                .disabled(viewerState.currentImageURL == nil)
+            Button("100%") { viewerState.zoomMode = .actualSize }
+                .disabled(viewerState.currentImageURL == nil)
         }
         .alert("Unable to Open Selection", isPresented: errorIsPresented) {
             Button("OK", role: .cancel) {
@@ -48,6 +39,21 @@ struct ViewerWindowShell: View {
         }
 
         return "Open a file or folder to begin"
+    }
+
+    private var placeholderView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "photo")
+                .font(.system(size: 40))
+                .foregroundStyle(.secondary)
+            Text(statusText)
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 12) {
+                Button("Open File...", action: viewerState.presentOpenFilePanel)
+                Button("Open Folder...", action: viewerState.presentOpenFolderPanel)
+            }
+        }
     }
 
     private var canShowPreviousImage: Bool {
@@ -70,5 +76,4 @@ struct ViewerWindowShell: View {
             }
         )
     }
-
 }

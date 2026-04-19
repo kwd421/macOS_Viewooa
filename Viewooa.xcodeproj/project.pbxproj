@@ -14,6 +14,9 @@
 		A10000000000000000000012 /* FolderImageIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndex.swift; sourceTree = "<group>"; };
 		A10000000000000000000018 /* ViewerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerState.swift; sourceTree = "<group>"; };
 		A10000000000000000000019 /* ViewerCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerCommands.swift; sourceTree = "<group>"; };
+		A1000000000000000000001D /* ImageViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewportState.swift; sourceTree = "<group>"; };
+		A1000000000000000000001E /* ImageViewerNSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSView.swift; sourceTree = "<group>"; };
+		A1000000000000000000001F /* ImageViewerContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerContainerView.swift; sourceTree = "<group>"; };
 		A10000000000000000000001 /* FolderImageIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndexTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* ViewerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStateTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000008 /* ViewooaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ViewooaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,6 +54,7 @@
 			children = (
 				A10000000000000000000015 /* Core */,
 				A1000000000000000000001A /* Commands */,
+				A10000000000000000000020 /* Viewer */,
 				1D6058910D05DD3D006BFB54 /* ViewooaApp.swift */,
 				1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */,
 			);
@@ -73,6 +77,16 @@
 				A10000000000000000000019 /* ViewerCommands.swift */,
 			);
 			path = Commands;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000020 /* Viewer */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000000000000001D /* ImageViewportState.swift */,
+				A1000000000000000000001E /* ImageViewerNSView.swift */,
+				A1000000000000000000001F /* ImageViewerContainerView.swift */,
+			);
+			path = Viewer;
 			sourceTree = "<group>";
 		};
 		A10000000000000000000003 /* ViewooaTests */ = {
@@ -188,6 +202,9 @@
 				A10000000000000000000014 /* FolderImageIndex.swift in Sources */,
 				A1000000000000000000001B /* ViewerState.swift in Sources */,
 				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
+				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
+				A10000000000000000000022 /* ImageViewerNSView.swift in Sources */,
+				A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,6 +226,9 @@
 		A10000000000000000000014 /* FolderImageIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* FolderImageIndex.swift */; };
 		A1000000000000000000001B /* ViewerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* ViewerState.swift */; };
 		A1000000000000000000001C /* ViewerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* ViewerCommands.swift */; };
+		A10000000000000000000021 /* ImageViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D /* ImageViewportState.swift */; };
+		A10000000000000000000022 /* ImageViewerNSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* ImageViewerNSView.swift */; };
+		A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001F /* ImageViewerContainerView.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
 		A10000000000000000000017 /* ViewerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ViewerStateTests.swift */; };
 /* End PBXBuildFile section */
