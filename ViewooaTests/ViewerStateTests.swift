@@ -3,6 +3,41 @@ import XCTest
 
 final class ViewerStateTests: XCTestCase {
     @MainActor
+    func testNavigationPublishesPreloadedImageForDisplay() {
+        let urls = [
+            URL(fileURLWithPath: "/tmp/a.jpg"),
+            URL(fileURLWithPath: "/tmp/b.jpg")
+        ]
+        let preloadedImage = NSImage(size: NSSize(width: 40, height: 20))
+        let preloadQueue = ImagePreloadQueue()
+        preloadQueue.store(preloadedImage, for: urls[1])
+
+        let state = ViewerState(
+            index: FolderImageIndex(imageURLs: urls, currentIndex: 0),
+            preloadQueue: preloadQueue
+        )
+
+        state.showNextImage()
+
+        XCTAssertTrue(state.currentResolvedImage === preloadedImage)
+    }
+
+    @MainActor
+    func testImageViewerUsesResolvedImageBeforeLoadingFromURL() {
+        let viewer = ImageViewerNSView()
+        let resolvedImage = NSImage(size: NSSize(width: 80, height: 30))
+
+        viewer.apply(
+            resolvedImage: resolvedImage,
+            imageURL: URL(fileURLWithPath: "/tmp/does-not-exist.jpg"),
+            zoomMode: .fit,
+            rotationQuarterTurns: 0
+        )
+
+        XCTAssertTrue(viewer.displayedImage === resolvedImage)
+    }
+
+    @MainActor
     func testAppUsesSingleWindowScene() {
         let sceneType = String(
             reflecting: type(of: ViewooaApp.makeViewerScene(viewerState: ViewerState()))

@@ -19,6 +19,7 @@ struct ImageViewerContainerView: NSViewRepresentable {
         }
 
         nsView.apply(
+            resolvedImage: viewerState.currentResolvedImage,
             imageURL: viewerState.currentImageURL,
             zoomMode: viewerState.zoomMode,
             rotationQuarterTurns: viewerState.rotationQuarterTurns

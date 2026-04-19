@@ -7,6 +7,7 @@ final class ImageViewerNSView: NSView {
     private var isApplyingProgrammaticMagnification = false
 
     var onZoomModeChange: ((ZoomMode) -> Void)?
+    var displayedImage: NSImage? { imageView.image }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -49,7 +50,12 @@ final class ImageViewerNSView: NSView {
         }
     }
 
-    func apply(imageURL: URL?, zoomMode: ZoomMode, rotationQuarterTurns: Int) {
+    func apply(
+        resolvedImage: NSImage?,
+        imageURL: URL?,
+        zoomMode: ZoomMode,
+        rotationQuarterTurns: Int
+    ) {
         let newState = ImageViewportState(
             imageURL: imageURL,
             zoomMode: zoomMode,
@@ -58,7 +64,7 @@ final class ImageViewerNSView: NSView {
 
         if newState.imageURL != viewportState.imageURL
             || newState.rotationQuarterTurns != viewportState.rotationQuarterTurns {
-            loadImage(at: imageURL, rotationQuarterTurns: rotationQuarterTurns)
+            loadImage(resolvedImage: resolvedImage, at: imageURL, rotationQuarterTurns: rotationQuarterTurns)
         }
 
         if newState.zoomMode != viewportState.zoomMode
@@ -70,14 +76,16 @@ final class ImageViewerNSView: NSView {
         viewportState = newState
     }
 
-    private func loadImage(at imageURL: URL?, rotationQuarterTurns: Int) {
-        guard let imageURL, let image = NSImage(contentsOf: imageURL) else {
+    private func loadImage(resolvedImage: NSImage?, at imageURL: URL?, rotationQuarterTurns: Int) {
+        let sourceImage = resolvedImage ?? imageURL.flatMap(NSImage.init(contentsOf:))
+
+        guard let sourceImage else {
             imageView.image = nil
             imageView.frame = .zero
             return
         }
 
-        let displayImage = rotatedImage(image, quarterTurns: rotationQuarterTurns)
+        let displayImage = rotatedImage(sourceImage, quarterTurns: rotationQuarterTurns)
         imageView.image = displayImage
         imageView.frame = NSRect(origin: .zero, size: displayImage.size)
     }

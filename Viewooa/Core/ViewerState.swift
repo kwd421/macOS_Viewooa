@@ -12,17 +12,24 @@ enum ZoomMode: Equatable {
 final class ViewerState: ObservableObject {
     @Published var index: FolderImageIndex?
     @Published var currentImageURL: URL?
+    @Published private(set) var currentResolvedImage: NSImage?
     @Published var zoomMode: ZoomMode = .fit
     @Published var rotationQuarterTurns: Int = 0
     @Published var lastErrorMessage: String?
 
     private let fileManager: FileManager
-    private let preloadQueue = ImagePreloadQueue()
+    private let preloadQueue: ImagePreloadQueue
 
-    init(index: FolderImageIndex? = nil, fileManager: FileManager = .default) {
+    init(
+        index: FolderImageIndex? = nil,
+        fileManager: FileManager = .default,
+        preloadQueue: ImagePreloadQueue = ImagePreloadQueue()
+    ) {
         self.index = index
         self.currentImageURL = index.map { $0.imageURLs[$0.currentIndex] }
         self.fileManager = fileManager
+        self.preloadQueue = preloadQueue
+        self.currentResolvedImage = currentImageURL.flatMap { preloadQueue.image(for: $0) }
     }
 
     func openFile(at fileURL: URL) {
@@ -112,6 +119,7 @@ final class ViewerState: ObservableObject {
     private func apply(index: FolderImageIndex) {
         self.index = index
         currentImageURL = index.imageURLs[index.currentIndex]
+        currentResolvedImage = currentImageURL.flatMap { preloadQueue.image(for: $0) }
         zoomMode = .fit
         rotationQuarterTurns = 0
         lastErrorMessage = nil
@@ -126,10 +134,6 @@ final class ViewerState: ObservableObject {
         guard let index else { return }
 
         let targets = preloadQueue.targetURLs(for: index.imageURLs, currentIndex: index.currentIndex)
-
-        for url in targets where preloadQueue.image(for: url) == nil {
-            guard let image = NSImage(contentsOf: url) else { continue }
-            preloadQueue.store(image, for: url)
-        }
+        preloadQueue.preload(urls: targets)
     }
 }
