@@ -4,6 +4,9 @@ final class ImageViewerNSView: NSView {
     private let scrollView = NSScrollView()
     private let imageView = NSImageView()
     private var viewportState = ImageViewportState()
+    private var isApplyingProgrammaticMagnification = false
+
+    var onZoomModeChange: ((ZoomMode) -> Void)?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -20,10 +23,21 @@ final class ImageViewerNSView: NSView {
         scrollView.documentView = imageView
 
         addSubview(scrollView)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(scrollViewDidEndLiveMagnify),
+            name: NSScrollView.didEndLiveMagnifyNotification,
+            object: scrollView
+        )
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     override func layout() {
@@ -73,10 +87,9 @@ final class ImageViewerNSView: NSView {
         case .fit:
             applyFitMagnification()
         case .actualSize:
-            scrollView.setMagnification(1.0, centeredAt: imageCenterPoint)
+            handleMagnificationChange(1.0, isUserInitiated: false)
         case let .custom(scale):
-            let clampedScale = min(max(scale, scrollView.minMagnification), scrollView.maxMagnification)
-            scrollView.setMagnification(clampedScale, centeredAt: imageCenterPoint)
+            handleMagnificationChange(scale, isUserInitiated: false)
         }
     }
 
@@ -96,11 +109,37 @@ final class ImageViewerNSView: NSView {
         let fitScale = min(widthScale, heightScale, 1.0)
         let clampedScale = min(max(fitScale, scrollView.minMagnification), scrollView.maxMagnification)
 
+        isApplyingProgrammaticMagnification = true
         scrollView.setMagnification(clampedScale, centeredAt: imageCenterPoint)
+        isApplyingProgrammaticMagnification = false
     }
 
     private var imageCenterPoint: NSPoint {
         NSPoint(x: imageView.bounds.midX, y: imageView.bounds.midY)
+    }
+
+    func handleMagnificationChange(_ magnification: CGFloat, isUserInitiated: Bool) {
+        let clampedScale = min(max(magnification, scrollView.minMagnification), scrollView.maxMagnification)
+
+        if isUserInitiated {
+            guard !isApplyingProgrammaticMagnification else { return }
+
+            let zoomMode = ZoomMode.custom(clampedScale)
+            viewportState.zoomMode = zoomMode
+            onZoomModeChange?(zoomMode)
+            return
+        }
+
+        guard abs(scrollView.magnification - clampedScale) > 0.0001 else { return }
+
+        isApplyingProgrammaticMagnification = true
+        scrollView.setMagnification(clampedScale, centeredAt: imageCenterPoint)
+        isApplyingProgrammaticMagnification = false
+    }
+
+    @objc
+    private func scrollViewDidEndLiveMagnify(_ notification: Notification) {
+        handleMagnificationChange(scrollView.magnification, isUserInitiated: true)
     }
 
     private func rotatedImage(_ image: NSImage, quarterTurns: Int) -> NSImage {

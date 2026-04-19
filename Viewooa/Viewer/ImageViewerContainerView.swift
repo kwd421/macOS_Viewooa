@@ -4,10 +4,20 @@ struct ImageViewerContainerView: NSViewRepresentable {
     @ObservedObject var viewerState: ViewerState
 
     func makeNSView(context: Context) -> ImageViewerNSView {
-        ImageViewerNSView()
+        let nsView = ImageViewerNSView()
+        nsView.onZoomModeChange = { zoomMode in
+            guard viewerState.zoomMode != zoomMode else { return }
+            viewerState.zoomMode = zoomMode
+        }
+        return nsView
     }
 
     func updateNSView(_ nsView: ImageViewerNSView, context: Context) {
+        nsView.onZoomModeChange = { zoomMode in
+            guard viewerState.zoomMode != zoomMode else { return }
+            viewerState.zoomMode = zoomMode
+        }
+
         nsView.apply(
             imageURL: viewerState.currentImageURL,
             zoomMode: viewerState.zoomMode,

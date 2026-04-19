@@ -44,4 +44,32 @@ final class ViewerStateTests: XCTestCase {
 
         XCTAssertEqual(state.zoomMode, .fit)
     }
+
+    @MainActor
+    func testInteractiveMagnificationReportsCustomZoomMode() {
+        let viewer = ImageViewerNSView()
+        var reportedZoomMode: ZoomMode?
+
+        viewer.onZoomModeChange = { zoomMode in
+            reportedZoomMode = zoomMode
+        }
+
+        viewer.handleMagnificationChange(2.5, isUserInitiated: true)
+
+        XCTAssertEqual(reportedZoomMode, .custom(2.5))
+    }
+
+    @MainActor
+    func testProgrammaticMagnificationDoesNotReportCustomZoomMode() {
+        let viewer = ImageViewerNSView()
+        var didReportZoomMode = false
+
+        viewer.onZoomModeChange = { _ in
+            didReportZoomMode = true
+        }
+
+        viewer.handleMagnificationChange(1.0, isUserInitiated: false)
+
+        XCTAssertFalse(didReportZoomMode)
+    }
 }
