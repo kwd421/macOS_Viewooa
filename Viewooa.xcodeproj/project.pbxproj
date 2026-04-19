@@ -12,7 +12,10 @@
 		1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerWindowShell.swift; sourceTree = "<group>"; };
 		A10000000000000000000011 /* SupportedImageTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedImageTypes.swift; sourceTree = "<group>"; };
 		A10000000000000000000012 /* FolderImageIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndex.swift; sourceTree = "<group>"; };
+		A10000000000000000000018 /* ViewerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerState.swift; sourceTree = "<group>"; };
+		A10000000000000000000019 /* ViewerCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerCommands.swift; sourceTree = "<group>"; };
 		A10000000000000000000001 /* FolderImageIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndexTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000016 /* ViewerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStateTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000008 /* ViewooaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ViewooaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -47,6 +50,7 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000015 /* Core */,
+				A1000000000000000000001A /* Commands */,
 				1D6058910D05DD3D006BFB54 /* ViewooaApp.swift */,
 				1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */,
 			);
@@ -58,14 +62,24 @@
 			children = (
 				A10000000000000000000011 /* SupportedImageTypes.swift */,
 				A10000000000000000000012 /* FolderImageIndex.swift */,
+				A10000000000000000000018 /* ViewerState.swift */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		A1000000000000000000001A /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000019 /* ViewerCommands.swift */,
+			);
+			path = Commands;
 			sourceTree = "<group>";
 		};
 		A10000000000000000000003 /* ViewooaTests */ = {
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000001 /* FolderImageIndexTests.swift */,
+				A10000000000000000000016 /* ViewerStateTests.swift */,
 			);
 			path = ViewooaTests;
 			sourceTree = "<group>";
@@ -172,6 +186,8 @@
 				1D6058960D05DD3D006BFB54 /* ViewerWindowShell.swift in Sources */,
 				A10000000000000000000013 /* SupportedImageTypes.swift in Sources */,
 				A10000000000000000000014 /* FolderImageIndex.swift in Sources */,
+				A1000000000000000000001B /* ViewerState.swift in Sources */,
+				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +196,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */,
+				A10000000000000000000017 /* ViewerStateTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,7 +207,10 @@
 		1D6058960D05DD3D006BFB54 /* ViewerWindowShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */; };
 		A10000000000000000000013 /* SupportedImageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* SupportedImageTypes.swift */; };
 		A10000000000000000000014 /* FolderImageIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* FolderImageIndex.swift */; };
+		A1000000000000000000001B /* ViewerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* ViewerState.swift */; };
+		A1000000000000000000001C /* ViewerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* ViewerCommands.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
+		A10000000000000000000017 /* ViewerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ViewerStateTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
