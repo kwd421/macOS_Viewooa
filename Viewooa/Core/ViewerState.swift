@@ -8,6 +8,12 @@ enum ZoomMode: Equatable {
     case custom(CGFloat)
 }
 
+private enum ViewerZoom {
+    static let step: CGFloat = 1.25
+    static let minimumScale: CGFloat = 0.05
+    static let maximumScale: CGFloat = 8.0
+}
+
 @MainActor
 final class ViewerState: ObservableObject {
     @Published var index: FolderImageIndex?
@@ -102,6 +108,18 @@ final class ViewerState: ObservableObject {
         apply(index: FolderImageIndex(imageURLs: index.imageURLs, currentIndex: index.currentIndex - 1))
     }
 
+    func rotateClockwise() {
+        rotationQuarterTurns = (rotationQuarterTurns + 1) % 4
+    }
+
+    func zoomIn() {
+        zoomMode = .custom(clampedZoomScale(currentZoomScale * ViewerZoom.step))
+    }
+
+    func zoomOut() {
+        zoomMode = .custom(clampedZoomScale(currentZoomScale / ViewerZoom.step))
+    }
+
     func clearError() {
         lastErrorMessage = nil
     }
@@ -128,6 +146,21 @@ final class ViewerState: ObservableObject {
 
     private func setError(message: String) {
         lastErrorMessage = message
+    }
+
+    private var currentZoomScale: CGFloat {
+        switch zoomMode {
+        case .fit:
+            1.0
+        case .actualSize:
+            1.0
+        case let .custom(scale):
+            scale
+        }
+    }
+
+    private func clampedZoomScale(_ scale: CGFloat) -> CGFloat {
+        min(max(scale, ViewerZoom.minimumScale), ViewerZoom.maximumScale)
     }
 
     private func refreshPreloadTargets() {

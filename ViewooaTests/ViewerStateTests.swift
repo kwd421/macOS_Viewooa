@@ -81,6 +81,60 @@ final class ViewerStateTests: XCTestCase {
     }
 
     @MainActor
+    func testZoomInFromFitUsesDefaultIncrement() {
+        let state = ViewerState()
+
+        state.zoomIn()
+
+        XCTAssertEqual(state.zoomMode, .custom(1.25))
+    }
+
+    @MainActor
+    func testZoomOutFromFitUsesDefaultIncrement() {
+        let state = ViewerState()
+
+        state.zoomOut()
+
+        XCTAssertEqual(state.zoomMode, .custom(0.8))
+    }
+
+    @MainActor
+    func testZoomOutFromActualSizeUsesSmallerStep() {
+        let state = ViewerState()
+        state.zoomMode = .actualSize
+
+        state.zoomOut()
+
+        XCTAssertEqual(state.zoomMode, .custom(0.8))
+    }
+
+    @MainActor
+    func testRotateClockwiseWrapsAfterFullTurn() {
+        let state = ViewerState()
+
+        for _ in 0..<5 {
+            state.rotateClockwise()
+        }
+
+        XCTAssertEqual(state.rotationQuarterTurns, 1)
+    }
+
+    @MainActor
+    func testErrorDoesNotClearCurrentImageSelection() {
+        let urls = [
+            URL(fileURLWithPath: "/tmp/a.jpg"),
+            URL(fileURLWithPath: "/tmp/b.jpg")
+        ]
+        let state = ViewerState(index: FolderImageIndex(imageURLs: urls, currentIndex: 1))
+
+        state.openFile(at: URL(fileURLWithPath: "/tmp/not-an-image.txt"))
+
+        XCTAssertEqual(state.currentImageURL, urls[1])
+        XCTAssertEqual(state.index?.currentIndex, 1)
+        XCTAssertEqual(state.lastErrorMessage, "The selected file is not a supported image.")
+    }
+
+    @MainActor
     func testInteractiveMagnificationReportsCustomZoomMode() {
         let viewer = ImageViewerNSView()
         var reportedZoomMode: ZoomMode?

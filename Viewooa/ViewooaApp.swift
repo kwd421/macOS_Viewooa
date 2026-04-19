@@ -19,7 +19,12 @@ struct ViewooaApp: App {
                 openFile: viewerState.presentOpenFilePanel,
                 openFolder: viewerState.presentOpenFolderPanel,
                 showPreviousImage: viewerState.showPreviousImage,
-                showNextImage: viewerState.showNextImage
+                showNextImage: viewerState.showNextImage,
+                rotateClockwise: viewerState.rotateClockwise,
+                zoomIn: viewerState.zoomIn,
+                zoomOut: viewerState.zoomOut,
+                zoomToActualSize: { viewerState.zoomMode = .actualSize },
+                zoomToFit: { viewerState.zoomMode = .fit }
             )
         }
     }
