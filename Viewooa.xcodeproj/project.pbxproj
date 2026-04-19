@@ -17,8 +17,10 @@
 		A1000000000000000000001D /* ImageViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewportState.swift; sourceTree = "<group>"; };
 		A1000000000000000000001E /* ImageViewerNSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSView.swift; sourceTree = "<group>"; };
 		A1000000000000000000001F /* ImageViewerContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerContainerView.swift; sourceTree = "<group>"; };
+		A10000000000000000000024 /* ImagePreloadQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreloadQueue.swift; sourceTree = "<group>"; };
 		A10000000000000000000001 /* FolderImageIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndexTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* ViewerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStateTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000026 /* ImagePreloadQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreloadQueueTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000008 /* ViewooaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ViewooaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -67,6 +69,7 @@
 				A10000000000000000000011 /* SupportedImageTypes.swift */,
 				A10000000000000000000012 /* FolderImageIndex.swift */,
 				A10000000000000000000018 /* ViewerState.swift */,
+				A10000000000000000000024 /* ImagePreloadQueue.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -94,6 +97,7 @@
 			children = (
 				A10000000000000000000001 /* FolderImageIndexTests.swift */,
 				A10000000000000000000016 /* ViewerStateTests.swift */,
+				A10000000000000000000026 /* ImagePreloadQueueTests.swift */,
 			);
 			path = ViewooaTests;
 			sourceTree = "<group>";
@@ -205,6 +209,7 @@
 				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
 				A10000000000000000000022 /* ImageViewerNSView.swift in Sources */,
 				A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */,
+				A10000000000000000000025 /* ImagePreloadQueue.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,6 +219,7 @@
 			files = (
 				A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */,
 				A10000000000000000000017 /* ViewerStateTests.swift in Sources */,
+				A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,8 +235,10 @@
 		A10000000000000000000021 /* ImageViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D /* ImageViewportState.swift */; };
 		A10000000000000000000022 /* ImageViewerNSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* ImageViewerNSView.swift */; };
 		A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001F /* ImageViewerContainerView.swift */; };
+		A10000000000000000000025 /* ImagePreloadQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000024 /* ImagePreloadQueue.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
 		A10000000000000000000017 /* ViewerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ViewerStateTests.swift */; };
+		A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* ImagePreloadQueueTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */

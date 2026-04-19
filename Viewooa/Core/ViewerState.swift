@@ -17,6 +17,7 @@ final class ViewerState: ObservableObject {
     @Published var lastErrorMessage: String?
 
     private let fileManager: FileManager
+    private let preloadQueue = ImagePreloadQueue()
 
     init(index: FolderImageIndex? = nil, fileManager: FileManager = .default) {
         self.index = index
@@ -114,9 +115,21 @@ final class ViewerState: ObservableObject {
         zoomMode = .fit
         rotationQuarterTurns = 0
         lastErrorMessage = nil
+        refreshPreloadTargets()
     }
 
     private func setError(message: String) {
         lastErrorMessage = message
+    }
+
+    private func refreshPreloadTargets() {
+        guard let index else { return }
+
+        let targets = preloadQueue.targetURLs(for: index.imageURLs, currentIndex: index.currentIndex)
+
+        for url in targets where preloadQueue.image(for: url) == nil {
+            guard let image = NSImage(contentsOf: url) else { continue }
+            preloadQueue.store(image, for: url)
+        }
     }
 }
