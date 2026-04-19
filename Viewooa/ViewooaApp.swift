@@ -5,7 +5,11 @@ struct ViewooaApp: App {
     @StateObject private var viewerState = ViewerState()
 
     var body: some Scene {
-        WindowGroup {
+        Self.makeViewerScene(viewerState: viewerState)
+    }
+
+    static func makeViewerScene(viewerState: ViewerState) -> some Scene {
+        Window("Viewooa", id: "viewer") {
             ViewerWindowShell(viewerState: viewerState)
         }
         .defaultSize(width: 900, height: 620)

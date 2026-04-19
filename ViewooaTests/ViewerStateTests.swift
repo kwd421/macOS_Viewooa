@@ -3,6 +3,15 @@ import XCTest
 
 final class ViewerStateTests: XCTestCase {
     @MainActor
+    func testAppUsesSingleWindowScene() {
+        let sceneType = String(
+            reflecting: type(of: ViewooaApp.makeViewerScene(viewerState: ViewerState()))
+        )
+
+        XCTAssertTrue(sceneType.contains("Window<"))
+    }
+
+    @MainActor
     func testViewerWindowShellAcceptsInjectedViewerState() {
         let state = ViewerState()
 
