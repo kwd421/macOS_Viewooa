@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import SwiftUI
 
@@ -57,6 +58,29 @@ final class ViewerState: ObservableObject {
             apply(index: FolderImageIndex(imageURLs: imageURLs, currentIndex: 0))
         } catch {
             setError(message: error.localizedDescription)
+        }
+    }
+
+    func presentOpenFilePanel() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.allowedContentTypes = [.image]
+
+        if panel.runModal() == .OK, let url = panel.url {
+            openFile(at: url)
+        }
+    }
+
+    func presentOpenFolderPanel() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+
+        if panel.runModal() == .OK, let url = panel.url {
+            openFolder(at: url)
         }
     }
 

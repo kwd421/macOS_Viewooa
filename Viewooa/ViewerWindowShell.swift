@@ -1,8 +1,7 @@
-import AppKit
 import SwiftUI
 
 struct ViewerWindowShell: View {
-    @StateObject private var viewerState = ViewerState()
+    @ObservedObject var viewerState: ViewerState
 
     var body: some View {
         ZStack {
@@ -16,8 +15,8 @@ struct ViewerWindowShell: View {
                     .foregroundStyle(.secondary)
 
                 HStack(spacing: 12) {
-                    Button("Open File...", action: openFile)
-                    Button("Open Folder...", action: openFolder)
+                    Button("Open File...", action: viewerState.presentOpenFilePanel)
+                    Button("Open Folder...", action: viewerState.presentOpenFolderPanel)
                 }
 
                 if let currentImageURL = viewerState.currentImageURL {
@@ -72,26 +71,4 @@ struct ViewerWindowShell: View {
         )
     }
 
-    private func openFile() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = false
-        panel.allowedContentTypes = [.image]
-
-        if panel.runModal() == .OK, let url = panel.url {
-            viewerState.openFile(at: url)
-        }
-    }
-
-    private func openFolder() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = false
-        panel.canChooseDirectories = true
-        panel.allowsMultipleSelection = false
-
-        if panel.runModal() == .OK, let url = panel.url {
-            viewerState.openFolder(at: url)
-        }
-    }
 }

@@ -3,6 +3,13 @@ import XCTest
 
 final class ViewerStateTests: XCTestCase {
     @MainActor
+    func testViewerWindowShellAcceptsInjectedViewerState() {
+        let state = ViewerState()
+
+        _ = ViewerWindowShell(viewerState: state)
+    }
+
+    @MainActor
     func testNextAdvancesIndex() {
         let urls = [
             URL(fileURLWithPath: "/tmp/a.jpg"),
