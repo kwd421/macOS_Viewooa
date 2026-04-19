@@ -180,8 +180,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */,
-				A10000000000000000000016 /* SupportedImageTypes.swift in Sources */,
-				A10000000000000000000017 /* FolderImageIndex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,8 +191,6 @@
 		A10000000000000000000013 /* SupportedImageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* SupportedImageTypes.swift */; };
 		A10000000000000000000014 /* FolderImageIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* FolderImageIndex.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
-		A10000000000000000000016 /* SupportedImageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* SupportedImageTypes.swift */; };
-		A10000000000000000000017 /* FolderImageIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* FolderImageIndex.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -339,7 +335,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Viewooa.app/Contents/MacOS/Viewooa";
-				TEST_HOST = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Viewooa.app/Contents/MacOS/Viewooa";
 			};
 			name = Debug;
 		};
@@ -365,7 +361,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Viewooa.app/Contents/MacOS/Viewooa";
-				TEST_HOST = "";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Viewooa.app/Contents/MacOS/Viewooa";
 			};
 			name = Release;
 		};
