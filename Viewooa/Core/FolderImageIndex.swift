@@ -6,7 +6,7 @@ struct FolderImageIndex: Equatable {
 
     static func sortedImageURLs(from urls: [URL]) -> [URL] {
         urls
-            .filter(SupportedImageTypes.isSupported)
+            .filter(SupportedImageTypes.isBrowsableImage)
             .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
     }
 

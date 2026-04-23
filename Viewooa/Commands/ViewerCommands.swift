@@ -9,7 +9,9 @@ struct ViewerCommands: Commands {
     let zoomIn: () -> Void
     let zoomOut: () -> Void
     let zoomToActualSize: () -> Void
-    let zoomToFit: () -> Void
+    let zoomToFitHeight: () -> Void
+    let zoomToFitWidth: () -> Void
+    let zoomToFitAll: () -> Void
 
     var body: some Commands {
         CommandGroup(after: .newItem) {
@@ -40,7 +42,11 @@ struct ViewerCommands: Commands {
             Button("Actual Size", action: zoomToActualSize)
                 .keyboardShortcut("0", modifiers: [.command])
 
-            Button("Fit to Window", action: zoomToFit)
+            Button("Fit Height", action: zoomToFitHeight)
+
+            Button("Fit Width", action: zoomToFitWidth)
+
+            Button("Fit All", action: zoomToFitAll)
 
             Divider()
 

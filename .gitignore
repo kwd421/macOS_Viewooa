@@ -9,3 +9,5 @@ xcuserdata/
 .swiftpm/
 .build/
 Package.resolved
+.codex/
+.tmp-test-images/

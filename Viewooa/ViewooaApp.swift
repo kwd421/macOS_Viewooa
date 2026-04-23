@@ -18,13 +18,15 @@ struct ViewooaApp: App {
             ViewerCommands(
                 openFile: viewerState.presentOpenFilePanel,
                 openFolder: viewerState.presentOpenFolderPanel,
-                showPreviousImage: viewerState.showPreviousImage,
-                showNextImage: viewerState.showNextImage,
+                showPreviousImage: viewerState.showPreviousImageFromNavigationShortcut,
+                showNextImage: viewerState.showNextImageFromNavigationShortcut,
                 rotateClockwise: viewerState.rotateClockwise,
                 zoomIn: viewerState.zoomIn,
                 zoomOut: viewerState.zoomOut,
                 zoomToActualSize: { viewerState.zoomMode = .actualSize },
-                zoomToFit: { viewerState.zoomMode = .fit }
+                zoomToFitHeight: { viewerState.fitToWindow(.height) },
+                zoomToFitWidth: { viewerState.fitToWindow(.width) },
+                zoomToFitAll: { viewerState.fitToWindow(.all) }
             )
         }
     }

@@ -7,6 +7,7 @@ final class FolderImageIndexTests: XCTestCase {
             URL(fileURLWithPath: "/tmp/c.png"),
             URL(fileURLWithPath: "/tmp/a.jpg"),
             URL(fileURLWithPath: "/tmp/b.heic"),
+            URL(fileURLWithPath: "/tmp/document.pdf"),
             URL(fileURLWithPath: "/tmp/readme.md")
         ]
 
