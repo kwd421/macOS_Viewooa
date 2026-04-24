@@ -30,6 +30,15 @@ final class ImagePreloadQueueTests: XCTestCase {
         XCTAssertEqual(targets.map(\.lastPathComponent), ["1.jpg", "3.jpg", "4.jpg", "5.jpg"])
     }
 
+    func testTargetsOnlyAdjacentImagesWhenBrowsingRaw() {
+        let urls = (0..<6).map { URL(fileURLWithPath: "/tmp/\($0).NEF") }
+        let queue = ImagePreloadQueue()
+
+        let targets = queue.targetURLs(for: urls, currentIndex: 2)
+
+        XCTAssertEqual(targets.map(\.lastPathComponent), ["1.NEF", "3.NEF"])
+    }
+
     func testEvictsFarAwayImages() {
         let queue = ImagePreloadQueue(maxCachedImages: 3)
         queue.store(NSImage(size: NSSize(width: 10, height: 10)), for: URL(fileURLWithPath: "/tmp/a.jpg"))

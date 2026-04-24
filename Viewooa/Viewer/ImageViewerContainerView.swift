@@ -19,9 +19,9 @@ struct ImageViewerContainerView: NSViewRepresentable {
         nsView.onNavigateRequest = { direction in
             switch direction {
             case .previous:
-                viewerState.showPreviousImage()
+                viewerState.showPreviousImageFromNavigationShortcut()
             case .next:
-                viewerState.showNextImage()
+                viewerState.showNextImageFromNavigationShortcut()
             }
         }
         nsView.onToggleMetadataRequest = {
@@ -42,6 +42,11 @@ struct ImageViewerContainerView: NSViewRepresentable {
         }
         nsView.onVerticalSlideshowReachedEnd = {
             viewerState.stopSlideshow()
+        }
+        nsView.onFitZoomOutRequest = {
+            guard viewerState.canShowImageBrowser else { return false }
+            viewerState.showImageBrowser()
+            return true
         }
         return nsView
     }
@@ -61,9 +66,9 @@ struct ImageViewerContainerView: NSViewRepresentable {
         nsView.onNavigateRequest = { direction in
             switch direction {
             case .previous:
-                viewerState.showPreviousImage()
+                viewerState.showPreviousImageFromNavigationShortcut()
             case .next:
-                viewerState.showNextImage()
+                viewerState.showNextImageFromNavigationShortcut()
             }
         }
         nsView.onToggleMetadataRequest = {
@@ -84,6 +89,11 @@ struct ImageViewerContainerView: NSViewRepresentable {
         }
         nsView.onVerticalSlideshowReachedEnd = {
             viewerState.stopSlideshow()
+        }
+        nsView.onFitZoomOutRequest = {
+            guard viewerState.canShowImageBrowser else { return false }
+            viewerState.showImageBrowser()
+            return true
         }
 
         nsView.apply(

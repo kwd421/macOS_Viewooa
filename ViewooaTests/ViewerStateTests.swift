@@ -403,7 +403,7 @@ final class ViewerStateTests: XCTestCase {
     }
 
     @MainActor
-    func testZoomOutFromFitUsesDefaultIncrement() {
+    func testZoomOutFromFitWithoutImageBrowserUsesDefaultIncrement() {
         let state = ViewerState()
 
         state.zoomOut()
@@ -412,13 +412,55 @@ final class ViewerStateTests: XCTestCase {
     }
 
     @MainActor
-    func testZoomOutFromFitUsesDisplayedMagnificationAsBase() {
+    func testZoomOutFromFitWithoutImageBrowserUsesDisplayedMagnificationAsBase() {
         let state = ViewerState()
         state.updateViewportMetrics(displayedMagnification: 0.4, fitMagnification: 0.4, isEntireImageVisible: true)
 
         state.zoomOut()
 
         XCTAssertEqual(state.zoomMode, .custom(0.32))
+    }
+
+    @MainActor
+    func testZoomOutFromFitWithFolderImagesShowsImageBrowser() {
+        let urls = [
+            URL(fileURLWithPath: "/tmp/a.jpg"),
+            URL(fileURLWithPath: "/tmp/b.jpg")
+        ]
+        let state = ViewerState(index: FolderImageIndex(imageURLs: urls, currentIndex: 0))
+
+        state.zoomOut()
+
+        XCTAssertTrue(state.isImageBrowserVisible)
+        XCTAssertEqual(state.zoomMode, .fit(.all))
+    }
+
+    @MainActor
+    func testSelectingImageFromBrowserUpdatesCurrentImageAndHidesBrowser() {
+        let urls = [
+            URL(fileURLWithPath: "/tmp/a.jpg"),
+            URL(fileURLWithPath: "/tmp/b.jpg"),
+            URL(fileURLWithPath: "/tmp/c.jpg")
+        ]
+        let state = ViewerState(index: FolderImageIndex(imageURLs: urls, currentIndex: 0))
+        state.showImageBrowser()
+
+        state.selectImageFromBrowser(at: 2)
+
+        XCTAssertFalse(state.isImageBrowserVisible)
+        XCTAssertEqual(state.index?.currentIndex, 2)
+        XCTAssertEqual(state.currentImageURL, urls[2])
+    }
+
+    @MainActor
+    func testImageBrowserThumbnailSizeClampsToFinderLikeRange() {
+        let state = ViewerState()
+
+        state.setImageBrowserThumbnailSize(12)
+        XCTAssertEqual(state.imageBrowserThumbnailSize, 72)
+
+        state.setImageBrowserThumbnailSize(500)
+        XCTAssertEqual(state.imageBrowserThumbnailSize, 220)
     }
 
     @MainActor
@@ -597,6 +639,135 @@ final class ViewerStateTests: XCTestCase {
             return
         }
         XCTAssertGreaterThan(scale, 1.0)
+    }
+
+    @MainActor
+    func testCommandWheelZoomOutFromFitCanOpenImageBrowserInsteadOfZooming() {
+        let viewer = ImageViewerNSView()
+        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
+        let image = NSImage(size: NSSize(width: 200, height: 200))
+        var didRequestBrowser = false
+        var reportedZoomMode: ZoomMode?
+
+        viewer.onFitZoomOutRequest = {
+            didRequestBrowser = true
+            return true
+        }
+        viewer.onZoomModeChange = { zoomMode in
+            reportedZoomMode = zoomMode
+        }
+        viewer.apply(
+            resolvedImage: image,
+            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
+            zoomMode: .fit(.height),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: -12, horizontalDelta: 0))
+        XCTAssertTrue(didRequestBrowser)
+        XCTAssertNil(reportedZoomMode)
+    }
+
+    @MainActor
+    func testCommandWheelZoomOutStartedAboveFitSnapsBackWithoutOpeningBrowser() async {
+        let viewer = ImageViewerNSView()
+        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
+        let image = NSImage(size: NSSize(width: 200, height: 200))
+        var didRequestBrowser = false
+        var reportedZoomModes: [ZoomMode] = []
+
+        viewer.onFitZoomOutRequest = {
+            didRequestBrowser = true
+            return true
+        }
+        viewer.onZoomModeChange = { zoomMode in
+            reportedZoomModes.append(zoomMode)
+        }
+        viewer.apply(
+            resolvedImage: image,
+            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
+            zoomMode: .custom(3.0),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: -52, horizontalDelta: 0, phase: .began))
+        XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: 0, horizontalDelta: 0, phase: .ended))
+        try? await Task.sleep(for: .milliseconds(360))
+
+        XCTAssertFalse(didRequestBrowser)
+        XCTAssertEqual(reportedZoomModes.last, .fit(.all))
+    }
+
+    @MainActor
+    func testCommandWheelZoomGestureStartedByZoomInDoesNotOpenBrowserWhenReversedAtFit() {
+        let viewer = ImageViewerNSView()
+        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
+        let image = NSImage(size: NSSize(width: 200, height: 200))
+        var didRequestBrowser = false
+
+        viewer.onFitZoomOutRequest = {
+            didRequestBrowser = true
+            return true
+        }
+        viewer.apply(
+            resolvedImage: image,
+            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
+            zoomMode: .fit(.all),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: 12, horizontalDelta: 0, phase: .began))
+        XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: -32, horizontalDelta: 0, phase: .changed))
+        XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: 0, horizontalDelta: 0, phase: .ended))
+
+        XCTAssertFalse(didRequestBrowser)
+    }
+
+    @MainActor
+    func testPinchZoomOutBelowFitSnapsBackToFitWhenGestureEnds() {
+        let viewer = ImageViewerNSView()
+        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
+        let image = NSImage(size: NSSize(width: 200, height: 200))
+        var reportedZoomMode: ZoomMode?
+
+        viewer.onZoomModeChange = { zoomMode in
+            reportedZoomMode = zoomMode
+        }
+        viewer.apply(
+            resolvedImage: image,
+            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
+            zoomMode: .custom(0.5),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        XCTAssertTrue(viewer.snapBackToFitIfNeeded(animated: false))
+        XCTAssertEqual(reportedZoomMode, .fit(.all))
+    }
+
+    @MainActor
+    func testPinchZoomAboveFitDoesNotSnapBackWhenGestureEnds() {
+        let viewer = ImageViewerNSView()
+        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
+        let image = NSImage(size: NSSize(width: 200, height: 200))
+        var reportedZoomMode: ZoomMode?
+
+        viewer.onZoomModeChange = { zoomMode in
+            reportedZoomMode = zoomMode
+        }
+        viewer.apply(
+            resolvedImage: image,
+            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
+            zoomMode: .custom(3.0),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        XCTAssertFalse(viewer.snapBackToFitIfNeeded(animated: false))
+        XCTAssertNil(reportedZoomMode)
     }
 
     @MainActor
@@ -991,6 +1162,13 @@ final class ViewerStateTests: XCTestCase {
 
         XCTAssertEqual(zoomedIn, 8.0, accuracy: 0.001)
         XCTAssertEqual(zoomedOut, 0.05, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testEndedMagnifyPhaseIsRecognizedForSnapBack() {
+        XCTAssertTrue(ImageViewerNSView.isEndingMagnifyGesture(phase: .ended))
+        XCTAssertTrue(ImageViewerNSView.isEndingMagnifyGesture(phase: .cancelled))
+        XCTAssertFalse(ImageViewerNSView.isEndingMagnifyGesture(phase: .changed))
     }
 
     @MainActor

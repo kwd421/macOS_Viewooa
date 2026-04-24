@@ -173,6 +173,16 @@ private final class RotatingImageView: NSImageView {
     override func draw(_ dirtyRect: NSRect) {
         guard let image = processedImage() else { return }
 
+        let previousInterpolation = NSGraphicsContext.current?.imageInterpolation
+        if postProcessingOptions.contains(.actualSizeRepair) {
+            NSGraphicsContext.current?.imageInterpolation = .high
+        }
+        defer {
+            if let previousInterpolation {
+                NSGraphicsContext.current?.imageInterpolation = previousInterpolation
+            }
+        }
+
         let normalizedQuarterTurns = Self.normalizedQuarterTurnsValue(rotationQuarterTurns)
         guard normalizedQuarterTurns != 0 else {
             image.draw(
@@ -267,6 +277,8 @@ private final class RotatingImageView: NSImageView {
     private func processedImage() -> NSImage? {
         guard let image else { return nil }
         guard !postProcessingOptions.isEmpty else { return image }
+        let pixelProcessingOptions = postProcessingOptions.subtracting([.actualSizeRepair])
+        guard !pixelProcessingOptions.isEmpty else { return image }
 
         if cachedProcessedOptions == postProcessingOptions,
            let cachedProcessedImage {
@@ -280,7 +292,7 @@ private final class RotatingImageView: NSImageView {
         let colorSpace = preparedImage.colorSpace
         let originalExtent = outputImage.extent
 
-        if postProcessingOptions.contains(.denoise),
+        if pixelProcessingOptions.contains(.denoise),
            let filter = CIFilter(name: "CINoiseReduction") {
             filter.setValue(outputImage, forKey: kCIInputImageKey)
             filter.setValue(0.02, forKey: "inputNoiseLevel")
@@ -288,14 +300,14 @@ private final class RotatingImageView: NSImageView {
             outputImage = filter.outputImage ?? outputImage
         }
 
-        if postProcessingOptions.contains(.smooth),
+        if pixelProcessingOptions.contains(.smooth),
            let filter = CIFilter(name: "CIGaussianBlur") {
             filter.setValue(outputImage, forKey: kCIInputImageKey)
             filter.setValue(0.8, forKey: kCIInputRadiusKey)
             outputImage = (filter.outputImage ?? outputImage).cropped(to: originalExtent)
         }
 
-        if postProcessingOptions.contains(.contrast),
+        if pixelProcessingOptions.contains(.contrast),
            let filter = CIFilter(name: "CIColorControls") {
             filter.setValue(outputImage, forKey: kCIInputImageKey)
             filter.setValue(1.15, forKey: kCIInputContrastKey)
@@ -303,7 +315,7 @@ private final class RotatingImageView: NSImageView {
             outputImage = filter.outputImage ?? outputImage
         }
 
-        if postProcessingOptions.contains(.sharpen),
+        if pixelProcessingOptions.contains(.sharpen),
            let filter = CIFilter(name: "CISharpenLuminance") {
             filter.setValue(outputImage, forKey: kCIInputImageKey)
             filter.setValue(0.55, forKey: kCIInputSharpnessKey)
@@ -358,6 +370,8 @@ final class ImageViewerNSView: NSView {
     private var viewportState = ImageViewportState()
     private var isApplyingProgrammaticMagnification = false
     private var hasNavigatedDuringCurrentTrackpadGesture = false
+    private var commandWheelZoomGesture: CommandWheelZoomGesture?
+    private var commandWheelZoomEndTask: Task<Void, Never>?
     private var accumulatedTrackpadHorizontalDelta: CGFloat = 0
     private var accumulatedTrackpadVerticalDelta: CGFloat = 0
     private var dragStartLocationInWindow: NSPoint?
@@ -381,6 +395,7 @@ final class ImageViewerNSView: NSView {
     var onPostProcessingToggle: ((ImagePostProcessingOption) -> Void)?
     var onPostProcessingClear: (() -> Void)?
     var onVerticalSlideshowReachedEnd: (() -> Void)?
+    var onFitZoomOutRequest: (() -> Bool)?
     var displayedImage: NSImage? { imageView.image }
     var displayedImageSize: NSSize {
         Self.displayedContentSize(
@@ -389,6 +404,11 @@ final class ImageViewerNSView: NSView {
         )
     }
     override var acceptsFirstResponder: Bool { true }
+
+    private struct CommandWheelZoomGesture {
+        let startedAtFit: Bool
+        var firstSignificantDelta: CGFloat?
+    }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -588,7 +608,7 @@ final class ImageViewerNSView: NSView {
         configureImageViewCount(imageURLs.count)
         for (index, url) in imageURLs.enumerated() {
             let resolvedDisplayImage = resolvedImages?.indices.contains(index) == true ? resolvedImages?[index] : nil
-            let sourceImage = resolvedDisplayImage ?? (url == currentImageURL ? resolvedImage : nil) ?? NSImage(contentsOf: url)
+            let sourceImage = resolvedDisplayImage ?? (url == currentImageURL ? resolvedImage : nil) ?? ImageFileLoader.loadDisplayImage(at: url)
             imageViews[index].image = sourceImage
             imageViews[index].frame = NSRect(origin: .zero, size: imageViews[index].displayedImageSize)
             imageViews[index].needsDisplay = true
@@ -822,7 +842,59 @@ final class ImageViewerNSView: NSView {
 
     @objc
     private func scrollViewDidEndLiveMagnify(_ notification: Notification) {
+        finishTrackpadMagnifyGesture()
+    }
+
+    @discardableResult
+    func finishTrackpadMagnifyGesture(animated: Bool = true) -> Bool {
+        if snapBackToFitIfNeeded(animated: animated) {
+            return true
+        }
+
         handleMagnificationChange(scrollView.magnification, isUserInitiated: true)
+        return true
+    }
+
+    @discardableResult
+    func snapBackToFitIfNeeded(animated: Bool = true) -> Bool {
+        guard displayedImage != nil else { return false }
+
+        let fitScale = currentFitMagnification
+        guard fitScale.isFinite,
+              scrollView.magnification < fitScale - 0.0001 else {
+            return false
+        }
+
+        let targetZoomMode = ZoomMode.fit(lastFitMode)
+        viewportState.zoomMode = targetZoomMode
+        updateViewportPresentation(for: fitScale)
+        centerVisibleRect(for: fitScale)
+
+        isApplyingProgrammaticMagnification = true
+        guard animated else {
+            if abs(scrollView.magnification - fitScale) > 0.0001 {
+                scrollView.setMagnification(fitScale, centeredAt: containerCenterPoint)
+            }
+            finishFitSnapBack(targetZoomMode: targetZoomMode, fitScale: fitScale)
+            return true
+        }
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.32
+            context.allowsImplicitAnimation = true
+            scrollView.animator().setMagnification(fitScale, centeredAt: containerCenterPoint)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+            self.finishFitSnapBack(targetZoomMode: targetZoomMode, fitScale: fitScale)
+        }
+
+        return true
+    }
+
+    private func finishFitSnapBack(targetZoomMode: ZoomMode, fitScale: CGFloat) {
+        centerVisibleRect(for: fitScale)
+        isApplyingProgrammaticMagnification = false
+        onZoomModeChange?(targetZoomMode)
     }
 
     @discardableResult
@@ -878,7 +950,9 @@ final class ImageViewerNSView: NSView {
             return handleCommandWheelZoom(
                 verticalDelta: verticalDelta,
                 horizontalDelta: horizontalDelta,
-                locationInWindow: locationInWindow
+                locationInWindow: locationInWindow,
+                phase: phase,
+                momentumPhase: momentumPhase
             )
         }
 
@@ -902,7 +976,21 @@ final class ImageViewerNSView: NSView {
     @discardableResult
     private func handleTrackpadMagnify(_ event: NSEvent) -> Bool {
         guard displayedImage != nil else { return false }
-        guard abs(event.magnification) >= 0.001 else { return true }
+
+        let isEndingGesture = Self.isEndingMagnifyGesture(phase: event.phase)
+        guard abs(event.magnification) >= 0.001 else {
+            if isEndingGesture {
+                return finishTrackpadMagnifyGesture()
+            }
+
+            return true
+        }
+
+        if event.magnification < 0,
+           viewportState.zoomMode.isFit,
+           onFitZoomOutRequest?() == true {
+            return true
+        }
 
         hasNavigatedDuringCurrentTrackpadGesture = true
         let nextMagnification = Self.pinchMagnification(
@@ -912,15 +1000,46 @@ final class ImageViewerNSView: NSView {
             maximumMagnification: scrollView.maxMagnification
         )
         handleAnchoredMagnificationChange(nextMagnification, locationInWindow: event.locationInWindow)
+
+        if isEndingGesture {
+            finishTrackpadMagnifyGesture()
+        }
+
         return true
     }
 
     @discardableResult
-    func handleCommandWheelZoom(verticalDelta: CGFloat, horizontalDelta: CGFloat, locationInWindow: NSPoint? = nil) -> Bool {
+    func handleCommandWheelZoom(
+        verticalDelta: CGFloat,
+        horizontalDelta: CGFloat,
+        locationInWindow: NSPoint? = nil,
+        phase: NSEvent.Phase = [],
+        momentumPhase: NSEvent.Phase = []
+    ) -> Bool {
         guard displayedImage != nil else { return false }
 
+        beginCommandWheelZoomGestureIfNeeded(phase: phase)
+        let isEndingGesture = Self.isEndingScrollGesture(phase: phase, momentumPhase: momentumPhase)
         let zoomDelta = abs(verticalDelta) >= abs(horizontalDelta) ? verticalDelta : -horizontalDelta
-        guard abs(zoomDelta) >= 0.1 else { return true }
+        guard abs(zoomDelta) >= 0.1 else {
+            if isEndingGesture {
+                finishCommandWheelZoomGesture()
+            }
+            return true
+        }
+
+        if commandWheelZoomGesture?.firstSignificantDelta == nil {
+            commandWheelZoomGesture?.firstSignificantDelta = zoomDelta
+        }
+
+        if zoomDelta < 0,
+           commandWheelZoomGesture?.startedAtFit == true,
+           commandWheelZoomGesture?.firstSignificantDelta.map({ $0 < 0 }) == true,
+           viewportState.zoomMode.isFit,
+           onFitZoomOutRequest?() == true {
+            resetCommandWheelZoomGesture()
+            return true
+        }
 
         let nextMagnification = Self.commandWheelMagnification(
             currentMagnification: scrollView.magnification,
@@ -933,7 +1052,46 @@ final class ImageViewerNSView: NSView {
         } else {
             handleMagnificationChange(nextMagnification, isUserInitiated: true)
         }
+
+        if isEndingGesture {
+            finishCommandWheelZoomGesture()
+        } else {
+            scheduleCommandWheelZoomEnd()
+        }
         return true
+    }
+
+    @discardableResult
+    private func finishCommandWheelZoomGesture(animated: Bool = true) -> Bool {
+        let hadGesture = commandWheelZoomGesture != nil
+        resetCommandWheelZoomGesture()
+        return snapBackToFitIfNeeded(animated: animated) || hadGesture
+    }
+
+    private func beginCommandWheelZoomGestureIfNeeded(phase: NSEvent.Phase) {
+        if phase.contains(.began) || phase.contains(.mayBegin) || commandWheelZoomGesture == nil {
+            commandWheelZoomEndTask?.cancel()
+            commandWheelZoomEndTask = nil
+            commandWheelZoomGesture = CommandWheelZoomGesture(
+                startedAtFit: viewportState.zoomMode.isFit,
+                firstSignificantDelta: nil
+            )
+        }
+    }
+
+    private func scheduleCommandWheelZoomEnd() {
+        commandWheelZoomEndTask?.cancel()
+        commandWheelZoomEndTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .milliseconds(180))
+            guard !Task.isCancelled else { return }
+            self?.finishCommandWheelZoomGesture()
+        }
+    }
+
+    private func resetCommandWheelZoomGesture() {
+        commandWheelZoomEndTask?.cancel()
+        commandWheelZoomEndTask = nil
+        commandWheelZoomGesture = nil
     }
 
     private func handleAnchoredMagnificationChange(_ magnification: CGFloat, locationInWindow: NSPoint) {
@@ -1368,6 +1526,17 @@ final class ImageViewerNSView: NSView {
 
         let factor = exp(delta * 1.2)
         return min(max(currentMagnification * factor, minimumMagnification), maximumMagnification)
+    }
+
+    static func isEndingMagnifyGesture(phase: NSEvent.Phase) -> Bool {
+        phase.contains(.ended) || phase.contains(.cancelled)
+    }
+
+    static func isEndingScrollGesture(phase: NSEvent.Phase, momentumPhase: NSEvent.Phase) -> Bool {
+        phase.contains(.ended)
+            || phase.contains(.cancelled)
+            || momentumPhase.contains(.ended)
+            || momentumPhase.contains(.cancelled)
     }
 
     static func canPanVisibleRect(

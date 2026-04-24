@@ -1,5 +1,54 @@
 import AppKit
 import Foundation
+import ImageIO
+
+enum ImageFileLoader {
+    private static let rawImageExtensions: Set<String> = [
+        "3fr", "ari", "arw", "bay", "cr2", "cr3", "crw", "dcr", "dng", "erf",
+        "fff", "iiq", "k25", "kdc", "mef", "mos", "mrw", "nef", "nrw", "orf",
+        "pef", "raf", "raw", "rwl", "rw2", "sr2", "srf", "srw", "x3f"
+    ]
+
+    static func loadDisplayImage(at url: URL) -> NSImage? {
+        loadImage(at: url, rawMaxPixelSize: 4096)
+    }
+
+    static func loadPreloadImage(at url: URL) -> NSImage? {
+        loadImage(at: url, rawMaxPixelSize: 4096)
+    }
+
+    static func isRawImage(_ url: URL) -> Bool {
+        rawImageExtensions.contains(url.pathExtension.lowercased())
+    }
+
+    private static func loadImage(at url: URL, rawMaxPixelSize: Int) -> NSImage? {
+        guard isRawImage(url) else {
+            return NSImage(contentsOf: url)
+        }
+
+        return autoreleasepool {
+            let sourceOptions: [CFString: Any] = [
+                kCGImageSourceShouldCache: false
+            ]
+            let thumbnailOptions: [CFString: Any] = [
+                kCGImageSourceShouldCache: false,
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: rawMaxPixelSize
+            ]
+
+            guard let source = CGImageSourceCreateWithURL(url as CFURL, sourceOptions as CFDictionary),
+                  let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, thumbnailOptions as CFDictionary) else {
+                return NSImage(contentsOf: url)
+            }
+
+            return NSImage(
+                cgImage: cgImage,
+                size: NSSize(width: cgImage.width, height: cgImage.height)
+            )
+        }
+    }
+}
 
 final class ImagePreloadQueue: @unchecked Sendable {
     typealias ImageLoader = @Sendable (URL) -> NSImage?
@@ -21,7 +70,10 @@ final class ImagePreloadQueue: @unchecked Sendable {
     }
 
     func targetURLs(for urls: [URL], currentIndex: Int) -> [URL] {
-        let candidateIndexes = [currentIndex - 1, currentIndex + 1, currentIndex + 2, currentIndex + 3]
+        let isRawBrowsing = urls.indices.contains(currentIndex) && ImageFileLoader.isRawImage(urls[currentIndex])
+        let candidateIndexes = isRawBrowsing
+            ? [currentIndex - 1, currentIndex + 1]
+            : [currentIndex - 1, currentIndex + 1, currentIndex + 2, currentIndex + 3]
 
         return candidateIndexes.compactMap { index in
             guard urls.indices.contains(index) else { return nil }
@@ -57,7 +109,6 @@ final class ImagePreloadQueue: @unchecked Sendable {
     }
 
     private static func loadImage(at url: URL) -> NSImage? {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        return NSImage(data: data)
+        ImageFileLoader.loadPreloadImage(at: url)
     }
 }

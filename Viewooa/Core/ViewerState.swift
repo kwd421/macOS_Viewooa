@@ -108,6 +108,7 @@ enum ImagePostProcessingOption: String, CaseIterable, Equatable, Identifiable {
     case smooth
     case denoise
     case contrast
+    case actualSizeRepair
 
     var id: Self { self }
 
@@ -121,6 +122,33 @@ enum ImagePostProcessingOption: String, CaseIterable, Equatable, Identifiable {
             "Denoise"
         case .contrast:
             "Contrast"
+        case .actualSizeRepair:
+            "1x Zoom Repair"
+        }
+    }
+}
+
+enum ImageBrowserDisplayMode: String, CaseIterable, Equatable, Identifiable {
+    case thumbnails
+    case list
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .thumbnails:
+            "Thumbnails"
+        case .list:
+            "List"
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .thumbnails:
+            "square.grid.3x3"
+        case .list:
+            "list.bullet"
         }
     }
 }
@@ -167,6 +195,10 @@ final class ViewerState: ObservableObject {
     @Published private(set) var slideshowIntervalSeconds = 3.0
     @Published var postProcessingOptions: Set<ImagePostProcessingOption> = []
     @Published private(set) var fitRequestID = 0
+    @Published var isImageBrowserVisible = false
+    @Published var isOpenBrowserVisible = false
+    @Published var imageBrowserDisplayMode: ImageBrowserDisplayMode = .thumbnails
+    @Published var imageBrowserThumbnailSize: CGFloat = 132
 
     static let minimumSlideshowIntervalSeconds = 0.5
     static let maximumSlideshowIntervalSeconds = 60.0
@@ -244,44 +276,15 @@ final class ViewerState: ObservableObject {
     }
 
     func presentOpenFilePanel() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = false
-        panel.allowedContentTypes = [.image, .pdf]
-
-        if panel.runModal() == .OK, let url = panel.url {
-            openFile(at: url)
-        }
+        showOpenBrowser()
     }
 
     func presentOpenSelectionPanel() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = true
-        panel.allowsMultipleSelection = false
-        panel.resolvesAliases = true
-
-        if panel.runModal() == .OK, let url = panel.url {
-            var isDirectory: ObjCBool = false
-            if fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory),
-               isDirectory.boolValue {
-                openFolder(at: url)
-            } else {
-                openFile(at: url)
-            }
-        }
+        showOpenBrowser()
     }
 
     func presentOpenFolderPanel() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = false
-        panel.canChooseDirectories = true
-        panel.allowsMultipleSelection = false
-
-        if panel.runModal() == .OK, let url = panel.url {
-            openFolder(at: url)
-        }
+        showOpenBrowser()
     }
 
     func showNextImage() {
@@ -370,6 +373,11 @@ final class ViewerState: ObservableObject {
     }
 
     func zoomOut() {
+        if zoomMode.isFit, canShowImageBrowser {
+            showImageBrowser()
+            return
+        }
+
         zoomMode = .custom(clampedZoomScale(currentZoomScale / ViewerZoom.step))
     }
 
@@ -439,6 +447,57 @@ final class ViewerState: ObservableObject {
         let clampedInterval = min(max(interval, Self.minimumSlideshowIntervalSeconds), Self.maximumSlideshowIntervalSeconds)
         slideshowIntervalSeconds = (clampedInterval * 2).rounded() / 2
         restartSlideshowIfNeeded()
+    }
+
+    func showImageBrowser() {
+        guard canShowImageBrowser else { return }
+        stopSlideshow()
+        isMetadataVisible = false
+        isOpenBrowserVisible = false
+        isImageBrowserVisible = true
+    }
+
+    func hideImageBrowser() {
+        isImageBrowserVisible = false
+    }
+
+    func showOpenBrowser() {
+        stopSlideshow()
+        isMetadataVisible = false
+        isImageBrowserVisible = false
+        isOpenBrowserVisible = true
+    }
+
+    func hideOpenBrowser() {
+        isOpenBrowserVisible = false
+    }
+
+    func openSelectionFromBrowser(_ url: URL) {
+        var isDirectory: ObjCBool = false
+        if fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory),
+           isDirectory.boolValue {
+            openFolder(at: url)
+        } else {
+            openFile(at: url)
+        }
+        isOpenBrowserVisible = false
+    }
+
+    func selectImageFromBrowser(at selectedIndex: Int) {
+        guard let index,
+              !isViewingPDF,
+              index.imageURLs.indices.contains(selectedIndex) else { return }
+
+        isImageBrowserVisible = false
+        apply(index: FolderImageIndex(imageURLs: index.imageURLs, currentIndex: selectedIndex))
+    }
+
+    func setImageBrowserDisplayMode(_ mode: ImageBrowserDisplayMode) {
+        imageBrowserDisplayMode = mode
+    }
+
+    func setImageBrowserThumbnailSize(_ size: CGFloat) {
+        imageBrowserThumbnailSize = min(max(size, 72), 220)
     }
 
     var imageMetadataRows: [ImageMetadataRow] {
@@ -513,6 +572,20 @@ final class ViewerState: ObservableObject {
             .map { pdfPageImages[$0] }
     }
 
+    var browserImageURLs: [URL] {
+        guard !isViewingPDF, let index else { return [] }
+        return index.imageURLs
+    }
+
+    var currentBrowserIndex: Int? {
+        guard !isViewingPDF else { return nil }
+        return index?.currentIndex
+    }
+
+    var canShowImageBrowser: Bool {
+        !isViewingPDF && (index?.imageURLs.isEmpty == false)
+    }
+
     var navigationCountText: String? {
         guard let index else { return nil }
         return "\(index.currentIndex + 1) / \(index.imageURLs.count)"
@@ -578,6 +651,8 @@ final class ViewerState: ObservableObject {
         lastErrorMessage = nil
         isMetadataVisible = false
         transientNotice = nil
+        isImageBrowserVisible = false
+        isOpenBrowserVisible = false
         if hidesNavigationCount {
             hideNavigationCountImmediately()
         }
@@ -629,6 +704,8 @@ final class ViewerState: ObservableObject {
         lastErrorMessage = nil
         isMetadataVisible = false
         transientNotice = nil
+        isImageBrowserVisible = false
+        isOpenBrowserVisible = false
         if hidesNavigationCount {
             hideNavigationCountImmediately()
         }
