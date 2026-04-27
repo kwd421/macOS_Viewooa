@@ -58,6 +58,7 @@ struct ViewerWindowShell: View {
                     onOpen: viewerState.openSelectionFromBrowser,
                     onDismiss: viewerState.hideOpenBrowser
                 )
+                .ignoresSafeArea()
                 .transition(.opacity.combined(with: .scale(scale: 0.985)))
                 .zIndex(11)
             }
@@ -84,6 +85,7 @@ struct ViewerWindowShell: View {
         .onDisappear {
             transientNoticeDismissTask?.cancel()
         }
+        .background(WindowChromeConfigurator())
     }
 
     private var toolbarInfoButton: some View {
@@ -320,7 +322,7 @@ struct ViewerWindowShell: View {
     }
 
     private var bottomControlBar: some View {
-        HStack(spacing: 10) {
+        return HStack(spacing: 10) {
             controlButton("Open", systemImage: "folder", action: viewerState.presentOpenSelectionPanel)
 
             Divider()
@@ -586,6 +588,48 @@ struct ViewerWindowShell: View {
         guard !viewerState.isOpenBrowserVisible else { return nil }
         guard !hasImage else { return nil }
         return .empty
+    }
+}
+
+private struct WindowChromeConfigurator: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            configure(window: view.window)
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            configure(window: nsView.window)
+        }
+    }
+
+    private func configure(window: NSWindow?) {
+        guard let window else { return }
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.styleMask.insert(.fullSizeContentView)
+        alignTrafficLights(in: window)
+    }
+
+    private func alignTrafficLights(in window: NSWindow) {
+        guard let closeButton = window.standardWindowButton(.closeButton),
+              let minimizeButton = window.standardWindowButton(.miniaturizeButton),
+              let zoomButton = window.standardWindowButton(.zoomButton),
+              let buttonContainer = closeButton.superview else {
+            return
+        }
+
+        let topPadding: CGFloat = 16
+        let leftPadding: CGFloat = 16
+        let spacing = minimizeButton.frame.minX - closeButton.frame.minX
+        let y = buttonContainer.bounds.height - topPadding - closeButton.frame.height
+
+        closeButton.setFrameOrigin(NSPoint(x: leftPadding, y: y))
+        minimizeButton.setFrameOrigin(NSPoint(x: leftPadding + spacing, y: y))
+        zoomButton.setFrameOrigin(NSPoint(x: leftPadding + spacing * 2, y: y))
     }
 }
 
@@ -931,40 +975,49 @@ private struct ImageBrowserViewModeControl: View {
 private struct ThumbnailSizeStepperControl: View {
     @Binding var thumbnailSize: CGFloat
     let isVibrant: Bool
+    var availableWidth: CGFloat? = nil
+    var onWillChange: (() -> Void)? = nil
 
     private let range: ClosedRange<CGFloat> = 72...220
     private let step: CGFloat = 18
+    private let gridSpacing: CGFloat = 18
+    private let minimumMeaningfulStep: CGFloat = 18
 
     var body: some View {
         HStack(spacing: 0) {
-            stepButton(systemImage: "minus", delta: -step, isDisabled: thumbnailSize <= range.lowerBound)
+            stepButton(systemImage: "minus", delta: -step, isDisabled: !canStep(delta: -step))
 
             Rectangle()
                 .fill(separatorColor)
                 .frame(width: 1, height: 15)
 
-            stepButton(systemImage: "plus", delta: step, isDisabled: thumbnailSize >= range.upperBound)
+            stepButton(systemImage: "plus", delta: step, isDisabled: !canStep(delta: step))
         }
-        .frame(height: isVibrant ? 30 : 28)
+        .frame(height: isVibrant ? 30 : 34)
         .background {
-            RoundedRectangle(cornerRadius: isVibrant ? 15 : 8, style: .continuous)
+            RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous)
                 .fill(isVibrant ? Color.white.opacity(0.10) : Color.openBrowserControlFill)
         }
+        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Thumbnail Size")
     }
 
     private func stepButton(systemImage: String, delta: CGFloat, isDisabled: Bool) -> some View {
         Button {
+            onWillChange?()
             withAnimation(.smooth(duration: 0.18, extraBounce: 0)) {
-                thumbnailSize = min(max(thumbnailSize + delta, range.lowerBound), range.upperBound)
+                thumbnailSize = nextThumbnailSize(delta: delta)
             }
         } label: {
             Image(systemName: systemImage)
                 .font(.system(size: 12, weight: .semibold))
-                .frame(width: 32, height: isVibrant ? 30 : 28)
+                .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
                 .foregroundStyle(buttonColor(isDisabled: isDisabled))
+                .contentShape(Rectangle())
         }
+        .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
+        .contentShape(Rectangle())
         .buttonStyle(.plain)
         .disabled(isDisabled)
         .accessibilityLabel(delta < 0 ? "Smaller Thumbnails" : "Larger Thumbnails")
@@ -979,6 +1032,93 @@ private struct ThumbnailSizeStepperControl: View {
             return isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28)
         }
         return isVibrant ? Color.white.opacity(0.78) : Color.secondary
+    }
+
+    private func nextThumbnailSize(delta: CGFloat) -> CGFloat {
+        guard let availableWidth, availableWidth > range.lowerBound else {
+            return clamped(thumbnailSize + delta)
+        }
+
+        let currentColumns = columnCount(for: thumbnailSize, availableWidth: availableWidth)
+        let targetColumns = delta > 0 ? max(1, currentColumns - 1) : currentColumns + 1
+        let targetSize = (availableWidth - gridSpacing * CGFloat(max(targetColumns - 1, 0))) / CGFloat(targetColumns)
+        let clampedTargetSize = clamped(targetSize)
+
+        guard abs(clampedTargetSize - thumbnailSize) >= minimumMeaningfulStep else {
+            return thumbnailSize
+        }
+
+        return clampedTargetSize
+    }
+
+    private func canStep(delta: CGFloat) -> Bool {
+        abs(nextThumbnailSize(delta: delta) - thumbnailSize) >= minimumMeaningfulStep
+    }
+
+    private func columnCount(for size: CGFloat, availableWidth: CGFloat) -> Int {
+        max(1, Int(floor((availableWidth + gridSpacing) / (size + gridSpacing))))
+    }
+
+    private func clamped(_ size: CGFloat) -> CGFloat {
+        min(max(size, range.lowerBound), range.upperBound)
+    }
+}
+
+private enum OpenBrowserScrollCoordinateSpace {
+    static let name = "OpenBrowserScrollCoordinateSpace"
+}
+
+private struct OpenBrowserVisibleEntryFramePreferenceKey: PreferenceKey {
+    static let defaultValue: [String: CGRect] = [:]
+
+    static func reduce(value: inout [String: CGRect], nextValue: () -> [String: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { _, new in new })
+    }
+}
+
+private struct OpenBrowserResizeAnchor: Equatable {
+    let id: String
+    let minY: CGFloat
+}
+
+private struct OpenBrowserScrollViewResolver: NSViewRepresentable {
+    let onResolve: (NSScrollView) -> Void
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        resolve(from: view)
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        resolve(from: nsView)
+    }
+
+    private func resolve(from view: NSView) {
+        DispatchQueue.main.async {
+            if let scrollView = view.enclosingScrollView {
+                onResolve(scrollView)
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                    if let scrollView = view.enclosingScrollView {
+                        onResolve(scrollView)
+                    }
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    func openBrowserVisibleEntryFrame(id: String) -> some View {
+        background {
+            GeometryReader { proxy in
+                Color.clear.preference(
+                    key: OpenBrowserVisibleEntryFramePreferenceKey.self,
+                    value: [id: proxy.frame(in: .named(OpenBrowserScrollCoordinateSpace.name))]
+                )
+            }
+        }
     }
 }
 
@@ -1005,10 +1145,22 @@ private struct OpenBrowserOverlay: View {
     @State private var draggingSidebarItemID: String?
     @State private var accessErrorMessage: String?
     @State private var isSidebarVisible = true
+    @State private var sidebarWidth: CGFloat = Self.defaultSidebarWidth
+    @State private var sidebarDragStartWidth: CGFloat?
     @State private var isContentRevealed = false
+    @State private var backHistory: [URL] = []
+    @State private var forwardHistory: [URL] = []
+    @State private var isSearchExpanded = false
+    @State private var searchExpansionExtra: CGFloat = 0
+    @State private var thumbnailScrollAnchorID: String?
+    @State private var visibleEntryFrames: [String: CGRect] = [:]
+    @State private var scrollViewportSize: CGSize = .zero
+    @State private var openBrowserScrollView: NSScrollView?
+    @State private var pendingThumbnailResizeAnchor: OpenBrowserResizeAnchor?
     @State private var isPathEditing = false
     @State private var editablePath = ""
     @FocusState private var isPathEditorFocused: Bool
+    @FocusState private var isSearchFieldFocused: Bool
 
     init(
         initialDirectory: URL,
@@ -1025,6 +1177,9 @@ private struct OpenBrowserOverlay: View {
         let savedDirectory = Self.savedDirectoryURL() ?? initialDirectory
         self._currentDirectory = State(initialValue: Self.validDirectory(savedDirectory) ?? initialDirectory)
         self._isSidebarVisible = State(initialValue: UserDefaults.standard.object(forKey: Self.sidebarVisibilityDefaultsKey) as? Bool ?? true)
+        let savedSidebarWidth = UserDefaults.standard.double(forKey: Self.sidebarWidthDefaultsKey)
+        let initialSidebarWidth = abs(savedSidebarWidth - Self.previousDefaultSidebarWidth) < 0.5 ? Self.defaultSidebarWidth : (savedSidebarWidth > 0 ? CGFloat(savedSidebarWidth) : Self.defaultSidebarWidth)
+        self._sidebarWidth = State(initialValue: Self.clampedSidebarWidth(initialSidebarWidth))
         self._sortOption = State(initialValue: OpenBrowserSortOption(rawValue: UserDefaults.standard.string(forKey: Self.sortOptionDefaultsKey) ?? "") ?? .name)
         self._sortAscending = State(initialValue: UserDefaults.standard.object(forKey: Self.sortAscendingDefaultsKey) as? Bool ?? true)
         self._favoriteFileIDs = State(initialValue: Set(UserDefaults.standard.stringArray(forKey: Self.favoriteFilesDefaultsKey) ?? []))
@@ -1035,137 +1190,360 @@ private struct OpenBrowserOverlay: View {
 
     var body: some View {
         AnyView(browserContent.foregroundStyle(.primary))
+            .ignoresSafeArea(.container, edges: .top)
             .onAppear(perform: handleAppear)
             .onChange(of: currentDirectory) { _, _ in handleDirectoryChange() }
             .onChange(of: searchText) { _, value in handleSearchChange(value) }
             .onChange(of: sortOption) { _, value in handleSortOptionChange(value) }
             .onChange(of: sortAscending) { _, value in handleSortAscendingChange(value) }
             .onChange(of: isSidebarVisible) { _, value in handleSidebarVisibilityChange(value) }
+            .onChange(of: sidebarWidth) { _, value in handleSidebarWidthChange(value) }
             .onChange(of: thumbnailSize) { _, value in handleThumbnailSizeChange(value) }
             .onChange(of: displayMode) { _, value in handleDisplayModeChange(value) }
+            .onChange(of: isSearchExpanded) { _, value in handleSearchExpansionChange(value) }
+            .onChange(of: isSearchFieldFocused) { _, value in handleSearchFocusChange(value) }
             .overlay {
                 OpenBrowserKeyboardCatcher(
-                    onEscape: onDismiss,
+                    onEscape: handleEscape,
                     onSelectAll: selectAllVisibleEntries,
                     onOpen: openFocusedOrFirstSelectedEntry,
                     onParent: navigateToParent
                 )
                     .frame(width: 0, height: 0)
             }
-            .onExitCommand(perform: onDismiss)
+            .onExitCommand(perform: handleEscape)
             .accessibilityLabel("Open Browser")
     }
 
     private var browserContent: some View {
-        ZStack {
-            Rectangle()
-                .fill(Color.openBrowserWindowBackground)
-                .ignoresSafeArea()
+        GeometryReader { proxy in
+            let footerHeight = Self.footerHeight
+            let sidebarTotalWidth = isSidebarVisible ? sidebarWidth + Self.sidebarHandleWidth : 0
 
-            VStack(spacing: 0) {
-                header
-
-                Divider()
-                    .overlay(.white.opacity(0.10))
+            ZStack {
+                Rectangle()
+                    .fill(Color.openBrowserWindowBackground)
+                    .ignoresSafeArea()
 
                 HStack(spacing: 0) {
                     if isSidebarVisible {
                         sidebar
-                            .frame(width: 232)
+                            .frame(width: sidebarWidth)
                             .transition(.move(edge: .leading).combined(with: .opacity))
 
-                        Divider()
-                            .overlay(.white.opacity(0.10))
+                        sidebarResizeHandle
                     }
 
-                    ScrollView {
-                        content
-                            .padding(.horizontal, 30)
-                            .padding(.top, 24)
-                            .padding(.bottom, 24)
-                    }
-                    .scrollIndicators(.hidden)
-                    .background(Color.openBrowserContentBackground)
+                    contentPane(
+                        availableWidth: proxy.size.width,
+                        sidebarTotalWidth: sidebarTotalWidth
+                    )
                 }
+                .padding(.bottom, footerHeight)
+
+                titlebarChrome(
+                    availableWidth: proxy.size.width,
+                    sidebarTotalWidth: sidebarTotalWidth
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .zIndex(3)
 
                 footerBar
+                    .frame(height: footerHeight)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+                    .zIndex(3)
             }
-            .background(Color.openBrowserWindowBackground)
         }
     }
 
-    private var header: some View {
-        HStack(spacing: 8) {
-            Button(action: onDismiss) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 12, weight: .semibold))
-                    .frame(width: 28, height: 28)
-                    .background(.quaternary, in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Close Open Browser")
-
-            Button {
-                withAnimation(.smooth(duration: 0.22, extraBounce: 0)) {
-                    isSidebarVisible.toggle()
+    private func contentPane(availableWidth: CGFloat, sidebarTotalWidth: CGFloat) -> some View {
+        GeometryReader { viewportProxy in
+            ScrollViewReader { proxy in
+                ScrollView {
+                    content
+                        .background {
+                            OpenBrowserScrollViewResolver { scrollView in
+                                openBrowserScrollView = scrollView
+                            }
+                            .frame(width: 0, height: 0)
+                        }
+                        .padding(.horizontal, Self.contentHorizontalPadding(for: availableWidth - sidebarTotalWidth, isSidebarVisible: false))
+                        .padding(.top, Self.contentTopInset)
+                        .padding(.bottom, 24)
                 }
-            } label: {
-                Image(systemName: "sidebar.left")
-                    .font(.system(size: 13, weight: .semibold))
-                    .frame(width: 28, height: 28)
-                    .background(isSidebarVisible ? Color.openBrowserSelection.opacity(0.22) : Color.openBrowserControlFill, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .coordinateSpace(name: OpenBrowserScrollCoordinateSpace.name)
+                .scrollIndicators(.hidden)
+                .onAppear {
+                    scrollViewportSize = viewportProxy.size
+                }
+                .onChange(of: viewportProxy.size) { _, size in
+                    scrollViewportSize = size
+                }
+                .onPreferenceChange(OpenBrowserVisibleEntryFramePreferenceKey.self) { frames in
+                    visibleEntryFrames = frames
+                    adjustScrollForPendingThumbnailResize(with: frames)
+                }
+                .onChange(of: thumbnailSize) { _, _ in
+                    scrollToThumbnailAnchor(with: proxy)
+                }
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(isSidebarVisible ? "Hide Sidebar" : "Show Sidebar")
-
-            Button {
-                navigateToParent()
-            } label: {
-                Image(systemName: "chevron.up")
-                    .font(.system(size: 12, weight: .semibold))
-                    .frame(width: 28, height: 28)
-                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-            }
-            .buttonStyle(.plain)
-            .disabled(currentDirectory.path == currentDirectory.deletingLastPathComponent().path)
-            .opacity(currentDirectory.path == currentDirectory.deletingLastPathComponent().path ? 0.35 : 1)
-            .accessibilityLabel("Parent Folder")
-
-            Spacer()
-
-            ThumbnailSizeStepperControl(thumbnailSize: $thumbnailSize, isVibrant: false)
-
-            OpenBrowserViewModeControl(displayMode: $displayMode)
-
-            sortMenu
-
-            browserActionMenu
-
-            searchField
         }
-        .padding(.horizontal, 12)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
-        .background(.bar)
+        .background(Color.openBrowserContentBackground)
+    }
+
+    private func titlebarChrome(availableWidth: CGFloat, sidebarTotalWidth: CGFloat) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            if isSidebarVisible {
+                sidebarHeaderGroup
+                    .frame(width: sidebarTotalWidth, alignment: .trailing)
+
+                historyToolbarGroup
+            } else {
+                leadingToolbarGroup
+            }
+
+            contentTitleGroup
+                .layoutPriority(1)
+
+            Spacer(minLength: 10)
+
+            trailingToolbarGroup(availableWidth: availableWidth - sidebarTotalWidth)
+        }
+        .padding(.leading, isSidebarVisible ? 0 : Self.collapsedSidebarLeadingInset)
+        .padding(.trailing, 13)
+        .padding(.top, Self.titlebarChromeTopInset)
         .opacity(isContentRevealed || reduceMotion ? 1 : 0)
         .offset(y: isContentRevealed || reduceMotion ? 0 : -10)
         .animation(.smooth(duration: 0.32, extraBounce: 0), value: isContentRevealed)
     }
 
-    private var searchField: some View {
+    private var sidebarHeaderGroup: some View {
+        HStack(spacing: 0) {
+            iconToolbarButton(
+                "Hide Sidebar",
+                systemImage: "sidebar.left",
+                isActive: true
+            ) {
+                withAnimation(.smooth(duration: 0.22, extraBounce: 0)) {
+                    isSidebarVisible = false
+                }
+            }
+        }
+        .padding(1)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 17, style: .continuous)
+                .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+        }
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+        .padding(.trailing, 9)
+    }
+
+    private var leadingToolbarGroup: some View {
+        HStack(spacing: 3) {
+            iconToolbarButton(
+                isSidebarVisible ? "Hide Sidebar" : "Show Sidebar",
+                systemImage: "sidebar.left",
+                isActive: isSidebarVisible
+            ) {
+                withAnimation(.smooth(duration: 0.22, extraBounce: 0)) {
+                    isSidebarVisible.toggle()
+                }
+            }
+
+            Divider()
+                .frame(height: 22)
+                .overlay(Color.openBrowserSeparator.opacity(0.42))
+
+            historyButtons
+        }
+        .padding(1)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 19, style: .continuous)
+                .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+        }
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+    }
+
+    private var historyToolbarGroup: some View {
+        HStack(spacing: 2) {
+            historyButtons
+        }
+        .padding(1)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 19, style: .continuous)
+                .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+        }
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+    }
+
+    private var historyButtons: some View {
+        HStack(spacing: 0) {
+            iconToolbarButton("Back", systemImage: "chevron.left") {
+                navigateBack()
+            }
+            .disabled(backHistory.isEmpty)
+            .opacity(backHistory.isEmpty ? 0.35 : 1)
+
+            iconToolbarButton("Forward", systemImage: "chevron.right") {
+                navigateForward()
+            }
+            .disabled(forwardHistory.isEmpty)
+            .opacity(forwardHistory.isEmpty ? 0.35 : 1)
+        }
+    }
+
+    private var contentTitleGroup: some View {
+        VStack(alignment: .leading, spacing: 1) {
+            Text(currentFolderTitle)
+                .font(.system(size: 18, weight: .semibold))
+                .lineLimit(1)
+
+            Text(statusText)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .padding(.top, 3)
+        .shadow(color: Color.openBrowserContentBackground.opacity(0.75), radius: 6)
+    }
+
+    private func trailingToolbarGroup(availableWidth: CGFloat) -> some View {
+        let searchWidth = min(max(availableWidth * 0.34, 220), 340)
+
+        return HStack(spacing: 8) {
+            if isSearchExpanded {
+                toolbarCapsule {
+                    searchField(width: searchWidth + searchExpansionExtra, isVibrant: true) {
+                        closeSearch()
+                    }
+                }
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .scale(scale: 0.92, anchor: .trailing).combined(with: .opacity)
+                ))
+            } else {
+                toolbarCapsule {
+                    ThumbnailSizeStepperControl(
+                        thumbnailSize: $thumbnailSize,
+                        isVibrant: true,
+                        availableWidth: availableWidth - Self.openBrowserGridHorizontalPadding * 2,
+                        onWillChange: prepareThumbnailResizeAnchor
+                    )
+                }
+
+                toolbarCapsule {
+                    HStack(spacing: 2) {
+                        OpenBrowserViewModeControl(displayMode: $displayMode, isVibrant: true)
+
+                        sortMenu(isVibrant: true)
+
+                        browserActionMenu(isVibrant: true)
+                    }
+                }
+
+                searchIconButton()
+                    .transition(.scale(scale: 0.88, anchor: .trailing).combined(with: .opacity))
+            }
+        }
+        .animation(Self.searchOpenAnimation, value: isSearchExpanded)
+        .animation(Self.searchSettleAnimation, value: searchExpansionExtra)
+    }
+
+    private func toolbarCapsule<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        HStack(spacing: 0) {
+            content()
+        }
+        .padding(1)
+        .frame(height: Self.titlebarControlHeight)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay {
+            Capsule().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+        }
+        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+    }
+
+    private func iconToolbarButton(
+        _ accessibilityLabel: String,
+        systemImage: String,
+        isActive: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 12.5, weight: .semibold))
+                .frame(width: Self.titlebarButtonSize, height: Self.titlebarButtonSize)
+                .foregroundStyle(isActive ? Color.openBrowserSelection : .secondary)
+                .contentShape(RoundedRectangle(cornerRadius: Self.titlebarButtonSize / 2, style: .continuous))
+        }
+        .frame(width: Self.titlebarButtonSize, height: Self.titlebarButtonSize)
+        .contentShape(RoundedRectangle(cornerRadius: Self.titlebarButtonSize / 2, style: .continuous))
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var sidebarResizeHandle: some View {
+        Rectangle()
+            .fill(Color.clear)
+            .frame(width: Self.sidebarHandleWidth)
+            .overlay(alignment: .trailing) {
+                Rectangle()
+                    .fill(Color.openBrowserSeparator.opacity(0.55))
+                    .frame(width: 1)
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        let startWidth = sidebarDragStartWidth ?? sidebarWidth
+                        sidebarDragStartWidth = startWidth
+                        sidebarWidth = Self.clampedSidebarWidth(startWidth + value.translation.width)
+                    }
+                    .onEnded { _ in
+                        sidebarDragStartWidth = nil
+                    }
+            )
+            .accessibilityLabel("Resize Sidebar")
+    }
+
+    private func searchIconButton() -> some View {
+        Button {
+            openSearch()
+        } label: {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Color.white.opacity(searchText.isEmpty ? 0.82 : 1))
+                .frame(width: Self.titlebarControlHeight, height: Self.titlebarControlHeight)
+                .background(.ultraThinMaterial, in: Circle())
+                .overlay {
+                    Circle().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+                }
+                .contentShape(Circle())
+        }
+        .frame(width: Self.titlebarControlHeight, height: Self.titlebarControlHeight)
+        .contentShape(Circle())
+        .buttonStyle(.plain)
+        .accessibilityLabel("Search")
+    }
+
+    private func searchField(width: CGFloat, isVibrant: Bool = false, onClose: (() -> Void)? = nil) -> some View {
         HStack(spacing: 6) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(isVibrant ? Color.white.opacity(0.76) : .secondary)
 
             TextField("Search", text: $searchText)
                 .textFieldStyle(.plain)
                 .font(.system(size: 12, weight: .medium))
-                .frame(width: 138)
+                .frame(width: width)
+                .focused($isSearchFieldFocused)
 
-            if !searchText.isEmpty {
+            if !searchText.isEmpty || onClose != nil {
                 Button {
                     searchText = ""
+                    onClose?()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 11, weight: .semibold))
@@ -1176,11 +1554,14 @@ private struct OpenBrowserOverlay: View {
             }
         }
         .padding(.horizontal, 9)
-        .frame(height: 28)
-        .background(Color.openBrowserControlFill, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+        .frame(height: isVibrant ? 32 : 28)
+        .background(
+            isVibrant ? Color.white.opacity(0.08) : Color.openBrowserControlFill,
+            in: RoundedRectangle(cornerRadius: isVibrant ? 16 : 7, style: .continuous)
+        )
     }
 
-    private var sortMenu: some View {
+    private func sortMenu(isVibrant: Bool = false) -> some View {
         Menu {
             ForEach(OpenBrowserSortOption.allCases) { option in
                 Button {
@@ -1200,14 +1581,21 @@ private struct OpenBrowserOverlay: View {
         } label: {
             Image(systemName: "arrow.up.arrow.down")
                 .font(.system(size: 13, weight: .semibold))
-                .frame(width: 28, height: 28)
-                .background(Color.openBrowserControlFill, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .foregroundStyle(isVibrant ? Color.white.opacity(0.82) : .secondary)
+                .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
+                .background(
+                    isVibrant ? Color.clear : Color.openBrowserControlFill,
+                    in: RoundedRectangle(cornerRadius: 7, style: .continuous)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
         }
+        .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
+        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
         .menuStyle(.borderlessButton)
         .accessibilityLabel("Sort")
     }
 
-    private var browserActionMenu: some View {
+    private func browserActionMenu(isVibrant: Bool = false) -> some View {
         Menu {
             Button("Share...") {
                 shareEntries(selectedEntries.filter { !$0.isDirectory })
@@ -1227,9 +1615,16 @@ private struct OpenBrowserOverlay: View {
         } label: {
             Image(systemName: "ellipsis.circle")
                 .font(.system(size: 14, weight: .semibold))
-                .frame(width: 28, height: 28)
-                .background(Color.openBrowserControlFill, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                .foregroundStyle(isVibrant ? Color.white.opacity(0.82) : .secondary)
+                .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
+                .background(
+                    isVibrant ? Color.clear : Color.openBrowserControlFill,
+                    in: RoundedRectangle(cornerRadius: 7, style: .continuous)
+                )
+                .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
         }
+        .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
+        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
         .menuStyle(.borderlessButton)
         .accessibilityLabel("Actions")
     }
@@ -1266,6 +1661,61 @@ private struct OpenBrowserOverlay: View {
         trimSelectionToVisibleEntries()
     }
 
+    private func handleSearchExpansionChange(_ value: Bool) {
+        guard value else {
+            isSearchFieldFocused = false
+            return
+        }
+
+        DispatchQueue.main.async {
+            isSearchFieldFocused = true
+        }
+    }
+
+    private func handleSearchFocusChange(_ value: Bool) {
+        guard !value, searchText.isEmpty, isSearchExpanded else { return }
+        closeSearch()
+    }
+
+    private func openSearch() {
+        guard !isSearchExpanded else { return }
+
+        searchExpansionExtra = Self.searchExpansionOvershoot
+        withAnimation(Self.searchOpenAnimation) {
+            isSearchExpanded = true
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.searchOvershootDuration) {
+            guard isSearchExpanded else { return }
+            withAnimation(Self.searchSettleAnimation) {
+                searchExpansionExtra = 0
+            }
+        }
+    }
+
+    private func closeSearch() {
+        withAnimation(Self.searchCloseAnimation) {
+            searchExpansionExtra = 0
+            isSearchExpanded = false
+        }
+    }
+
+    private func handleEscape() {
+        if isSearchExpanded || !searchText.isEmpty {
+            searchText = ""
+            closeSearch()
+            return
+        }
+
+        if isPathEditing {
+            isPathEditing = false
+            editablePath = currentDirectory.path
+            return
+        }
+
+        onDismiss()
+    }
+
     private func handleSortOptionChange(_ value: OpenBrowserSortOption) {
         UserDefaults.standard.set(value.rawValue, forKey: Self.sortOptionDefaultsKey)
         loadEntries()
@@ -1278,6 +1728,10 @@ private struct OpenBrowserOverlay: View {
 
     private func handleSidebarVisibilityChange(_ value: Bool) {
         UserDefaults.standard.set(value, forKey: Self.sidebarVisibilityDefaultsKey)
+    }
+
+    private func handleSidebarWidthChange(_ value: CGFloat) {
+        UserDefaults.standard.set(Double(Self.clampedSidebarWidth(value)), forKey: Self.sidebarWidthDefaultsKey)
     }
 
     private func handleThumbnailSizeChange(_ value: CGFloat) {
@@ -1307,7 +1761,8 @@ private struct OpenBrowserOverlay: View {
                 .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 12)
+            .padding(.top, Self.sidebarContentTopInset)
+            .padding(.bottom, 12)
         }
         .scrollIndicators(.hidden)
         .background(Color.openBrowserSidebarBackground)
@@ -1360,7 +1815,7 @@ private struct OpenBrowserOverlay: View {
                 .font(.system(size: 13, weight: .regular))
                 .symbolRenderingMode(.hierarchical)
                 .frame(width: 18, alignment: .center)
-                .foregroundStyle(isSelected ? .white : .secondary)
+                .foregroundStyle(isSelected ? Color.openBrowserSelection : .secondary)
 
             Text(item.title)
                 .font(.system(size: 12, weight: .regular))
@@ -1369,11 +1824,14 @@ private struct OpenBrowserOverlay: View {
         }
         .padding(.horizontal, 8)
         .frame(height: 24)
-        .foregroundStyle(isSelected ? .white : .primary)
-        .background(isSelected ? Color.openBrowserSelection.opacity(0.92) : .clear, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .foregroundStyle(isSelected ? Color.openBrowserSelection : .primary)
+        .background(
+            isSelected ? Color.white.opacity(0.09) : .clear,
+            in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+        )
         .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         .onTapGesture {
-            currentDirectory = item.url
+            navigate(to: item.url)
         }
         .contextMenu {
             if allowsRemoval {
@@ -1446,20 +1904,29 @@ private struct OpenBrowserOverlay: View {
             spacing: 22
         ) {
             ForEach(Array(visibleEntries.enumerated()), id: \.element.id) { index, entry in
-                OpenBrowserThumbnailCell(
-                    entry: entry,
-                    index: index,
-                    thumbnailSize: thumbnailSize,
-                    isSelected: selectedEntryIDs.contains(entry.id),
-                    isFavorite: favoriteFileIDs.contains(entry.id),
-                    isRevealed: isContentRevealed,
-                    reduceMotion: reduceMotion,
-                    onClick: selectEntry,
-                    onDoubleClick: openOrNavigate,
-                    onShare: { requestedEntries in shareContextEntries(requestedEntries, sourceEntry: entry) },
-                    onToggleFavorite: toggleFavorite,
-                    onAddFolderFavorite: addFolderToFavorites
-                )
+                ZStack(alignment: .top) {
+                    OpenBrowserThumbnailCell(
+                        entry: entry,
+                        index: index,
+                        thumbnailSize: thumbnailSize,
+                        isSelected: selectedEntryIDs.contains(entry.id),
+                        isFavorite: favoriteFileIDs.contains(entry.id),
+                        isRevealed: isContentRevealed,
+                        reduceMotion: reduceMotion,
+                        onClick: selectEntry,
+                        onDoubleClick: openOrNavigate,
+                        onShare: { requestedEntries in shareContextEntries(requestedEntries, sourceEntry: entry) },
+                        onToggleFavorite: toggleFavorite,
+                        onAddFolderFavorite: addFolderToFavorites
+                    )
+
+                    Color.clear
+                        .frame(width: 1, height: 1)
+                        .offset(y: -Self.thumbnailScrollAnchorTopOffset)
+                        .id(Self.thumbnailScrollAnchorID(for: entry.id))
+                }
+                .id(entry.id)
+                .openBrowserVisibleEntryFrame(id: entry.id)
             }
         }
     }
@@ -1467,19 +1934,28 @@ private struct OpenBrowserOverlay: View {
     private var listView: some View {
         LazyVStack(spacing: 6) {
             ForEach(Array(visibleEntries.enumerated()), id: \.element.id) { index, entry in
-                OpenBrowserListRow(
-                    entry: entry,
-                    index: index,
-                    isSelected: selectedEntryIDs.contains(entry.id),
-                    isFavorite: favoriteFileIDs.contains(entry.id),
-                    isRevealed: isContentRevealed,
-                    reduceMotion: reduceMotion,
-                    onClick: selectEntry,
-                    onDoubleClick: openOrNavigate,
-                    onShare: { requestedEntries in shareContextEntries(requestedEntries, sourceEntry: entry) },
-                    onToggleFavorite: toggleFavorite,
-                    onAddFolderFavorite: addFolderToFavorites
-                )
+                ZStack(alignment: .top) {
+                    OpenBrowserListRow(
+                        entry: entry,
+                        index: index,
+                        isSelected: selectedEntryIDs.contains(entry.id),
+                        isFavorite: favoriteFileIDs.contains(entry.id),
+                        isRevealed: isContentRevealed,
+                        reduceMotion: reduceMotion,
+                        onClick: selectEntry,
+                        onDoubleClick: openOrNavigate,
+                        onShare: { requestedEntries in shareContextEntries(requestedEntries, sourceEntry: entry) },
+                        onToggleFavorite: toggleFavorite,
+                        onAddFolderFavorite: addFolderToFavorites
+                    )
+
+                    Color.clear
+                        .frame(width: 1, height: 1)
+                        .offset(y: -Self.thumbnailScrollAnchorTopOffset)
+                        .id(Self.thumbnailScrollAnchorID(for: entry.id))
+                }
+                .id(entry.id)
+                .openBrowserVisibleEntryFrame(id: entry.id)
             }
         }
         .frame(maxWidth: 820)
@@ -1529,12 +2005,16 @@ private struct OpenBrowserOverlay: View {
                 onDismiss()
             }
             .keyboardShortcut(.cancelAction)
+            .accessibilityLabel("Cancel")
+            .accessibilityIdentifier("OpenBrowserCancelButton")
 
             Button(openButtonTitle) {
                 openFocusedOrFirstSelectedEntryOrCurrentFolder()
             }
             .keyboardShortcut(.defaultAction)
             .buttonStyle(.borderedProminent)
+            .accessibilityLabel(openButtonTitle)
+            .accessibilityIdentifier("OpenBrowserOpenButton")
         }
         .padding(.horizontal, 14)
         .frame(height: 42)
@@ -1559,7 +2039,7 @@ private struct OpenBrowserOverlay: View {
             HStack(spacing: 4) {
                 ForEach(pathComponents) { component in
                     Button {
-                        currentDirectory = component.url
+                        navigate(to: component.url)
                     } label: {
                         Text(component.title)
                             .font(.system(size: 12, weight: .regular))
@@ -1680,7 +2160,7 @@ private struct OpenBrowserOverlay: View {
 
     private func openOrNavigate(_ entry: OpenBrowserEntry) {
         if entry.isDirectory {
-            currentDirectory = entry.url
+            navigate(to: entry.url)
         } else {
             onOpen(entry.url)
         }
@@ -1730,7 +2210,31 @@ private struct OpenBrowserOverlay: View {
     private func navigateToParent() {
         let parent = currentDirectory.deletingLastPathComponent()
         guard parent.path != currentDirectory.path else { return }
-        currentDirectory = parent
+        navigate(to: parent)
+    }
+
+    private func navigate(to url: URL, recordsHistory: Bool = true) {
+        let standardizedURL = url.standardizedFileURL
+        guard standardizedURL != currentDirectory.standardizedFileURL else { return }
+
+        if recordsHistory {
+            backHistory.append(currentDirectory)
+            forwardHistory.removeAll()
+        }
+
+        currentDirectory = standardizedURL
+    }
+
+    private func navigateBack() {
+        guard let previousURL = backHistory.popLast() else { return }
+        forwardHistory.append(currentDirectory)
+        navigate(to: previousURL, recordsHistory: false)
+    }
+
+    private func navigateForward() {
+        guard let nextURL = forwardHistory.popLast() else { return }
+        backHistory.append(currentDirectory)
+        navigate(to: nextURL, recordsHistory: false)
     }
 
     private func beginPathEditing() {
@@ -1756,7 +2260,7 @@ private struct OpenBrowserOverlay: View {
             return
         }
 
-        currentDirectory = url
+        navigate(to: url)
         isPathEditing = false
     }
 
@@ -1780,6 +2284,87 @@ private struct OpenBrowserOverlay: View {
         if let anchorEntryID, !visibleIDs.contains(anchorEntryID) {
             self.anchorEntryID = selectedEntryIDs.first
         }
+    }
+
+    private func thumbnailAnchorID() -> String? {
+        if let firstVisibleID = firstFullyVisibleEntryID() {
+            return firstVisibleID
+        }
+
+        if let focusedEntryID, visibleEntries.contains(where: { $0.id == focusedEntryID }) {
+            return focusedEntryID
+        }
+
+        if let selectedID = selectedEntryIDs.first(where: { selectedID in
+            visibleEntries.contains(where: { $0.id == selectedID })
+        }) {
+            return selectedID
+        }
+
+        return nil
+    }
+
+    private func prepareThumbnailResizeAnchor() {
+        let anchorID = thumbnailAnchorID()
+        thumbnailScrollAnchorID = anchorID
+        if let anchorID, let frame = visibleEntryFrames[anchorID] {
+            pendingThumbnailResizeAnchor = OpenBrowserResizeAnchor(id: anchorID, minY: frame.minY)
+        } else {
+            pendingThumbnailResizeAnchor = nil
+        }
+    }
+
+    private func scrollToThumbnailAnchor(with proxy: ScrollViewProxy) {
+        guard let thumbnailScrollAnchorID else { return }
+        guard pendingThumbnailResizeAnchor == nil || openBrowserScrollView == nil else { return }
+        DispatchQueue.main.async {
+            withAnimation(.smooth(duration: 0.24, extraBounce: 0)) {
+                proxy.scrollTo(Self.thumbnailScrollAnchorID(for: thumbnailScrollAnchorID), anchor: .top)
+            }
+        }
+    }
+
+    private func adjustScrollForPendingThumbnailResize(with frames: [String: CGRect]) {
+        guard let pendingThumbnailResizeAnchor,
+              let newFrame = frames[pendingThumbnailResizeAnchor.id],
+              let openBrowserScrollView else { return }
+
+        let deltaY = newFrame.minY - pendingThumbnailResizeAnchor.minY
+        self.pendingThumbnailResizeAnchor = nil
+        thumbnailScrollAnchorID = nil
+
+        guard abs(deltaY) > 0.5 else { return }
+        DispatchQueue.main.async {
+            var origin = openBrowserScrollView.contentView.bounds.origin
+            origin.y += deltaY
+            origin.y = max(0, origin.y)
+            openBrowserScrollView.contentView.scroll(to: origin)
+            openBrowserScrollView.reflectScrolledClipView(openBrowserScrollView.contentView)
+        }
+    }
+
+    private func firstFullyVisibleEntryID() -> String? {
+        guard scrollViewportSize.height > 0 else { return nil }
+
+        let visibleIDs = Set(visibleEntries.map(\.id))
+        let topEdge = Self.contentTopInset - 6
+        let bottomEdge = scrollViewportSize.height - 8
+
+        return visibleEntryFrames
+            .filter { id, frame in
+                visibleIDs.contains(id)
+                    && frame.minY >= topEdge
+                    && frame.maxY <= bottomEdge
+                    && frame.maxX > 0
+                    && frame.minX < scrollViewportSize.width
+            }
+            .sorted { lhs, rhs in
+                if abs(lhs.value.minY - rhs.value.minY) > 1 {
+                    return lhs.value.minY < rhs.value.minY
+                }
+                return lhs.value.minX < rhs.value.minX
+            }
+            .first?.key
     }
 
     private func revealContent() {
@@ -1957,8 +2542,28 @@ private struct OpenBrowserOverlay: View {
         return url
     }
 
+    private static func clampedSidebarWidth(_ width: CGFloat) -> CGFloat {
+        min(max(width, minimumSidebarWidth), maximumSidebarWidth)
+    }
+
+    private static func contentHorizontalPadding(for windowWidth: CGFloat, isSidebarVisible: Bool) -> CGFloat {
+        let effectiveWidth = isSidebarVisible ? windowWidth - defaultSidebarWidth : windowWidth
+        if effectiveWidth < 620 {
+            return 16
+        }
+        if effectiveWidth < 860 {
+            return 22
+        }
+        return 30
+    }
+
+    private static func thumbnailScrollAnchorID(for id: String) -> String {
+        "OpenBrowserScrollAnchor::\(id)"
+    }
+
     private static let recentDirectoryDefaultsKey = "OpenBrowserRecentDirectory"
     private static let sidebarVisibilityDefaultsKey = "OpenBrowserSidebarVisible"
+    private static let sidebarWidthDefaultsKey = "OpenBrowserSidebarWidth"
     private static let sortOptionDefaultsKey = "OpenBrowserSortOption"
     private static let sortAscendingDefaultsKey = "OpenBrowserSortAscending"
     private static let favoriteFilesDefaultsKey = "OpenBrowserFavoriteFiles"
@@ -1967,6 +2572,25 @@ private struct OpenBrowserOverlay: View {
     private static let favoriteSidebarOrderDefaultsKey = "OpenBrowserFavoriteSidebarOrder"
     private static let displayModeDefaultsKey = "OpenBrowserDisplayMode"
     private static let thumbnailSizeDefaultsKey = "OpenBrowserThumbnailSize"
+    private static let minimumSidebarWidth: CGFloat = 118
+    private static let defaultSidebarWidth: CGFloat = 156
+    private static let previousDefaultSidebarWidth = 186.0
+    private static let maximumSidebarWidth: CGFloat = 320
+    private static let contentTopInset: CGFloat = 86
+    private static let sidebarContentTopInset: CGFloat = 86
+    private static let collapsedSidebarLeadingInset: CGFloat = 116
+    private static let footerHeight: CGFloat = 42
+    private static let sidebarHandleWidth: CGFloat = 12
+    private static let titlebarChromeTopInset: CGFloat = 6
+    private static let titlebarControlHeight: CGFloat = 34
+    private static let titlebarButtonSize: CGFloat = 32
+    private static let openBrowserGridHorizontalPadding: CGFloat = 30
+    private static let thumbnailScrollAnchorTopOffset: CGFloat = contentTopInset - 6
+    private static let searchExpansionOvershoot: CGFloat = 24
+    private static let searchOvershootDuration: TimeInterval = 0.16
+    private static let searchOpenAnimation = Animation.timingCurve(0.16, 1.0, 0.30, 1.0, duration: 0.24)
+    private static let searchSettleAnimation = Animation.timingCurve(0.18, 0.92, 0.22, 1.0, duration: 0.22)
+    private static let searchCloseAnimation = Animation.timingCurve(0.18, 0.88, 0.20, 1.0, duration: 0.24)
 }
 
 private struct OpenBrowserPathComponent: Identifiable {
@@ -2053,6 +2677,7 @@ private struct OpenBrowserSidebarDropDelegate: DropDelegate {
 
 private struct OpenBrowserViewModeControl: View {
     @Binding var displayMode: ImageBrowserDisplayMode
+    var isVibrant = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -2062,19 +2687,41 @@ private struct OpenBrowserViewModeControl: View {
                 } label: {
                     Image(systemName: mode.systemImage)
                         .font(.system(size: 13, weight: .semibold))
-                        .frame(width: 32, height: 26)
-                        .foregroundStyle(displayMode == mode ? .primary : .secondary)
+                        .frame(width: isVibrant ? 31 : 32, height: isVibrant ? 30 : 26)
+                        .foregroundStyle(viewModeForeground(for: mode))
                         .background(
-                            displayMode == mode ? Color(nsColor: .selectedControlColor).opacity(0.22) : .clear,
-                            in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            viewModeBackground(for: mode),
+                            in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
                         )
+                        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous))
                 }
+                .frame(width: isVibrant ? 31 : 32, height: isVibrant ? 30 : 26)
+                .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous))
                 .buttonStyle(.plain)
                 .accessibilityLabel(mode.title)
             }
         }
-        .padding(2)
-        .background(Color.openBrowserControlFill, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .padding(isVibrant ? 0 : 2)
+        .background(
+            isVibrant ? Color.clear : Color.openBrowserControlFill,
+            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+        )
+    }
+
+    private func viewModeForeground(for mode: ImageBrowserDisplayMode) -> Color {
+        if isVibrant {
+            return displayMode == mode ? .white : Color.white.opacity(0.62)
+        }
+
+        return displayMode == mode ? .primary : .secondary
+    }
+
+    private func viewModeBackground(for mode: ImageBrowserDisplayMode) -> Color {
+        if isVibrant {
+            return displayMode == mode ? Color.white.opacity(0.16) : .clear
+        }
+
+        return displayMode == mode ? Color(nsColor: .selectedControlColor).opacity(0.22) : .clear
     }
 }
 
@@ -2097,14 +2744,7 @@ private struct OpenBrowserThumbnailCell: View {
             onClick(entry)
         } label: {
             VStack(spacing: 9) {
-                OpenBrowserItemPreview(entry: entry, targetPixelSize: max(thumbnailSize * 1.6, 160))
-                    .frame(width: thumbnailSize, height: thumbnailSize * 0.72)
-                    .clipShape(RoundedRectangle(cornerRadius: entry.isDirectory ? 9 : 6, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: entry.isDirectory ? 9 : 6, style: .continuous)
-                            .strokeBorder(.separator.opacity(0.55))
-                    }
-                    .shadow(color: .black.opacity(entry.isDirectory ? 0.08 : 0.18), radius: entry.isDirectory ? 4 : 10, y: entry.isDirectory ? 2 : 5)
+                thumbnailPreview
 
                 Text(entry.name)
                     .font(.system(size: 11, weight: .semibold))
@@ -2167,6 +2807,24 @@ private struct OpenBrowserThumbnailCell: View {
         return .smooth(duration: 0.46, extraBounce: 0.08)
             .delay(min(Double(index % 24) * 0.018, 0.26))
     }
+
+    @ViewBuilder
+    private var thumbnailPreview: some View {
+        if entry.isDirectory {
+            OpenBrowserItemPreview(entry: entry, targetPixelSize: max(thumbnailSize * 1.6, 160))
+                .frame(width: thumbnailSize, height: thumbnailSize * 0.58)
+                .shadow(color: .black.opacity(0.16), radius: 9, y: 5)
+        } else {
+            OpenBrowserItemPreview(entry: entry, targetPixelSize: max(thumbnailSize * 1.6, 160))
+                .frame(width: thumbnailSize, height: thumbnailSize * 0.72)
+                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .strokeBorder(.separator.opacity(0.55))
+                }
+                .shadow(color: .black.opacity(0.18), radius: 10, y: 5)
+        }
+    }
 }
 
 private struct OpenBrowserListRow: View {
@@ -2187,13 +2845,7 @@ private struct OpenBrowserListRow: View {
             onClick(entry)
         } label: {
             HStack(spacing: 12) {
-                OpenBrowserItemPreview(entry: entry, targetPixelSize: 96)
-                    .frame(width: 44, height: 32)
-                    .clipShape(RoundedRectangle(cornerRadius: entry.isDirectory ? 7 : 5, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: entry.isDirectory ? 7 : 5, style: .continuous)
-                            .strokeBorder(Color.openBrowserSeparator.opacity(0.65))
-                    }
+                listPreview
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(entry.name)
@@ -2258,6 +2910,22 @@ private struct OpenBrowserListRow: View {
         return .smooth(duration: 0.38, extraBounce: 0.04)
             .delay(min(Double(index % 18) * 0.015, 0.2))
     }
+
+    @ViewBuilder
+    private var listPreview: some View {
+        if entry.isDirectory {
+            OpenBrowserItemPreview(entry: entry, targetPixelSize: 96)
+                .frame(width: 44, height: 32)
+        } else {
+            OpenBrowserItemPreview(entry: entry, targetPixelSize: 96)
+                .frame(width: 44, height: 32)
+                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        .strokeBorder(Color.openBrowserSeparator.opacity(0.65))
+                }
+        }
+    }
 }
 
 private struct OpenBrowserItemPreview: View {
@@ -2266,17 +2934,20 @@ private struct OpenBrowserItemPreview: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                .fill(entry.isDirectory ? Color.openBrowserFolderTile : Color.openBrowserControlFill)
-
             if entry.isDirectory {
-                OpenBrowserFolderPreview(url: entry.url, targetPixelSize: targetPixelSize)
+                OpenBrowserFolderPreview(url: entry.url)
             } else if SupportedImageTypes.isPDF(entry.url) {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(Color.openBrowserControlFill)
+
                 Image(systemName: "doc.richtext.fill")
                     .font(.system(size: 34, weight: .regular))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(.secondary)
             } else {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(Color.openBrowserControlFill)
+
                 ImageBrowserThumbnail(url: entry.url, targetPixelSize: targetPixelSize)
             }
         }
@@ -2285,105 +2956,22 @@ private struct OpenBrowserItemPreview: View {
 
 private struct OpenBrowserFolderPreview: View {
     let url: URL
-    let targetPixelSize: CGFloat
-    @State private var previewImages: [NSImage] = []
 
     var body: some View {
-        ZStack {
-            Image(systemName: "folder.fill")
-                .font(.system(size: max(min(targetPixelSize * 0.24, 42), 28), weight: .regular))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(Color.openBrowserFolder)
-                .offset(y: previewImages.isEmpty ? 0 : 7)
-
-            if !previewImages.isEmpty {
-                HStack(spacing: -10) {
-                    ForEach(Array(previewImages.prefix(3).enumerated()), id: \.offset) { index, image in
-                        Image(nsImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: targetPixelSize * 0.25, height: targetPixelSize * 0.20)
-                            .clipShape(RoundedRectangle(cornerRadius: 3.5, style: .continuous))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 3.5, style: .continuous)
-                                    .strokeBorder(.white.opacity(0.70))
-                            }
-                            .rotationEffect(.degrees(Double(index - 1) * 5))
-                            .offset(y: CGFloat(index) * -1.5)
-                    }
-                }
-                .offset(y: -targetPixelSize * 0.09)
-                .shadow(color: .black.opacity(0.18), radius: 4, y: 2)
-            }
-        }
-        .task(id: "\(url.path)-\(Int(ImageBrowserThumbnailCache.normalizedPixelSize(targetPixelSize)))") {
-            previewImages = await OpenBrowserFolderPreviewCache.shared.previewImages(
-                for: url,
-                targetPixelSize: targetPixelSize
-            )
-        }
-    }
-}
-
-private final class OpenBrowserFolderPreviewCache: @unchecked Sendable {
-    static let shared = OpenBrowserFolderPreviewCache()
-
-    private let cache = NSCache<NSString, NSArray>()
-    private let queue = DispatchQueue(label: "com.seinel.Viewooa.OpenBrowserFolderPreviewCache", qos: .utility)
-    private let limiter = DispatchSemaphore(value: 2)
-
-    private init() {
-        cache.countLimit = 256
-        cache.totalCostLimit = 48 * 1024 * 1024
-    }
-
-    func previewImages(for folderURL: URL, targetPixelSize: CGFloat) async -> [NSImage] {
-        let pixelSize = ImageBrowserThumbnailCache.normalizedPixelSize(targetPixelSize * 0.35)
-        let cacheKey = "\(folderURL.path)|\(Int(pixelSize))" as NSString
-
-        if let cachedImages = cache.object(forKey: cacheKey) as? [NSImage] {
-            return cachedImages
-        }
-
-        let imageURLs = await sampleImageURLs(in: folderURL)
-        var images: [NSImage] = []
-        for imageURL in imageURLs.prefix(3) {
-            if let image = await ImageBrowserThumbnailCache.shared.image(for: imageURL, targetPixelSize: pixelSize) {
-                images.append(image)
-            }
-        }
-
-        cache.setObject(images as NSArray, forKey: cacheKey, cost: max(1, images.count * Int(pixelSize * pixelSize * 4)))
-        return images
-    }
-
-    private func sampleImageURLs(in folderURL: URL) async -> [URL] {
-        await withCheckedContinuation { continuation in
-            queue.async { [limiter] in
-                limiter.wait()
-                defer { limiter.signal() }
-
-                let urls = (try? FileManager.default.contentsOfDirectory(
-                    at: folderURL,
-                    includingPropertiesForKeys: [.isDirectoryKey],
-                    options: [.skipsHiddenFiles]
-                )) ?? []
-
-                continuation.resume(returning: urls.lazy.filter { SupportedImageTypes.isBrowsableImage($0) }.prefix(4).map { $0 })
-            }
-        }
+        Image(nsImage: NSWorkspace.shared.icon(forFile: url.path))
+            .resizable()
+            .scaledToFit()
+            .padding(.horizontal, 2)
     }
 }
 
 private extension Color {
     static let openBrowserWindowBackground = Color(nsColor: .windowBackgroundColor)
     static let openBrowserContentBackground = Color(nsColor: .underPageBackgroundColor)
-    static let openBrowserSidebarBackground = Color(nsColor: .controlBackgroundColor).opacity(0.82)
+    static let openBrowserSidebarBackground = Color(nsColor: .controlBackgroundColor).opacity(0.96)
     static let openBrowserSelection = Color(nsColor: .selectedContentBackgroundColor)
     static let openBrowserSeparator = Color(nsColor: .separatorColor).opacity(0.45)
     static let openBrowserControlFill = Color(nsColor: .controlBackgroundColor).opacity(0.64)
-    static let openBrowserFolder = Color(nsColor: NSColor(calibratedRed: 0.22, green: 0.55, blue: 0.96, alpha: 1))
-    static let openBrowserFolderTile = Color(nsColor: .controlBackgroundColor).opacity(0.72)
 }
 
 private struct ImageBrowserThumbnailCell: View {

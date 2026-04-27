@@ -12,6 +12,7 @@ struct ViewooaApp: App {
         Window("Viewooa", id: "viewer") {
             ViewerWindowShell(viewerState: viewerState)
         }
+        .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 900, height: 620)
         .windowResizability(.contentMinSize)
         .commands {
