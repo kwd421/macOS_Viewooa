@@ -13,13 +13,29 @@
 		A10000000000000000000011 /* SupportedImageTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedImageTypes.swift; sourceTree = "<group>"; };
 		A10000000000000000000012 /* FolderImageIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndex.swift; sourceTree = "<group>"; };
 		A10000000000000000000018 /* ViewerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerState.swift; sourceTree = "<group>"; };
+		A1000000000000000000005A /* ViewerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerModels.swift; sourceTree = "<group>"; };
+		A1000000000000000000005C /* ViewerPDFDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerPDFDocument.swift; sourceTree = "<group>"; };
+		A1000000000000000000005E /* ViewerImageMetadataReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerImageMetadataReader.swift; sourceTree = "<group>"; };
+		A10000000000000000000060 /* ViewerDocumentLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerDocumentLoader.swift; sourceTree = "<group>"; };
+		A10000000000000000000062 /* ViewerNavigationResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerNavigationResolver.swift; sourceTree = "<group>"; };
 		A10000000000000000000019 /* ViewerCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerCommands.swift; sourceTree = "<group>"; };
+		A10000000000000000000074 /* ViewerState+Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Content.swift"; sourceTree = "<group>"; };
+		A10000000000000000000076 /* ViewerState+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Navigation.swift"; sourceTree = "<group>"; };
+		A10000000000000000000078 /* ViewerState+Zoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Zoom.swift"; sourceTree = "<group>"; };
+		A1000000000000000000007A /* ViewerState+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Display.swift"; sourceTree = "<group>"; };
+		A1000000000000000000007C /* ViewerState+Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Browser.swift"; sourceTree = "<group>"; };
+		A1000000000000000000007E /* ViewerState+Slideshow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Slideshow.swift"; sourceTree = "<group>"; };
+		A10000000000000000000080 /* ViewerState+Notices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Notices.swift"; sourceTree = "<group>"; };
 		A1000000000000000000001D /* ImageViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewportState.swift; sourceTree = "<group>"; };
 		A1000000000000000000001E /* ImageViewerNSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSView.swift; sourceTree = "<group>"; };
 		A1000000000000000000001F /* ImageViewerContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerContainerView.swift; sourceTree = "<group>"; };
 		A10000000000000000000040 /* ImageViewerEventViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerEventViews.swift; sourceTree = "<group>"; };
 		A10000000000000000000042 /* RotatingImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingImageView.swift; sourceTree = "<group>"; };
 		A10000000000000000000044 /* ImageViewerGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerGeometry.swift; sourceTree = "<group>"; };
+		A1000000000000000000006C /* ImageViewerGeometry+Scaling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerGeometry+Scaling.swift"; sourceTree = "<group>"; };
+		A1000000000000000000006E /* ImageViewerGeometry+Input.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerGeometry+Input.swift"; sourceTree = "<group>"; };
+		A10000000000000000000070 /* ImageViewerGeometry+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerGeometry+Layout.swift"; sourceTree = "<group>"; };
+		A10000000000000000000072 /* ImageViewerGeometry+Viewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerGeometry+Viewport.swift"; sourceTree = "<group>"; };
 		A10000000000000000000046 /* ImageViewerNavigationHoldCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNavigationHoldCoordinator.swift; sourceTree = "<group>"; };
 		A10000000000000000000048 /* ImageViewerPostProcessingMenuPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerPostProcessingMenuPresenter.swift; sourceTree = "<group>"; };
 		A1000000000000000000004A /* ImageViewerCommandWheelZoomCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerCommandWheelZoomCoordinator.swift; sourceTree = "<group>"; };
@@ -30,7 +46,14 @@
 		A10000000000000000000054 /* ImageViewerViewportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerViewportPresenter.swift; sourceTree = "<group>"; };
 		A10000000000000000000056 /* ImageViewerKeyboardCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerKeyboardCoordinator.swift; sourceTree = "<group>"; };
 		A10000000000000000000058 /* ImageViewerZoomAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerZoomAnimator.swift; sourceTree = "<group>"; };
+		A10000000000000000000064 /* ImageViewerNSView+Input.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerNSView+Input.swift"; sourceTree = "<group>"; };
+		A10000000000000000000066 /* ImageViewerNSView+Zooming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerNSView+Zooming.swift"; sourceTree = "<group>"; };
+		A10000000000000000000068 /* ImageViewerNSView+DoubleClick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerNSView+DoubleClick.swift"; sourceTree = "<group>"; };
+		A1000000000000000000006A /* ImageViewerNSView+Viewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageViewerNSView+Viewport.swift"; sourceTree = "<group>"; };
 		A10000000000000000000030 /* ImageBrowserOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserOverlay.swift; sourceTree = "<group>"; };
+		A10000000000000000000082 /* ImageBrowserOverlayControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserOverlayControls.swift; sourceTree = "<group>"; };
+		A10000000000000000000084 /* ImageBrowserOverlayCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserOverlayCells.swift; sourceTree = "<group>"; };
+		A10000000000000000000086 /* ImageBrowserEscapeCatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserEscapeCatcher.swift; sourceTree = "<group>"; };
 		A10000000000000000000032 /* ViewerWindowChromeConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerWindowChromeConfigurator.swift; sourceTree = "<group>"; };
 		A10000000000000000000034 /* SlideshowIntervalField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideshowIntervalField.swift; sourceTree = "<group>"; };
 		A10000000000000000000036 /* VerticalSlideshowPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalSlideshowPreview.swift; sourceTree = "<group>"; };
@@ -46,6 +69,8 @@
 		A20000000000000000000005 /* OpenBrowserControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserControls.swift; sourceTree = "<group>"; };
 		A20000000000000000000006 /* OpenBrowserCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserCells.swift; sourceTree = "<group>"; };
 		A2000000000000000000000E /* OpenBrowserOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserOverlay.swift; sourceTree = "<group>"; };
+		A20000000000000000000026 /* OpenBrowserOverlay+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenBrowserOverlay+Layout.swift"; sourceTree = "<group>"; };
+		A20000000000000000000028 /* OpenBrowserOverlay+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenBrowserOverlay+Actions.swift"; sourceTree = "<group>"; };
 		A20000000000000000000010 /* OpenBrowserDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserDataSource.swift; sourceTree = "<group>"; };
 		A20000000000000000000012 /* OpenBrowserNavigationHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserNavigationHistory.swift; sourceTree = "<group>"; };
 		A20000000000000000000014 /* OpenBrowserSelectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserSelectionState.swift; sourceTree = "<group>"; };
@@ -115,7 +140,19 @@
 			children = (
 				A10000000000000000000011 /* SupportedImageTypes.swift */,
 				A10000000000000000000012 /* FolderImageIndex.swift */,
+				A1000000000000000000005A /* ViewerModels.swift */,
+				A1000000000000000000005C /* ViewerPDFDocument.swift */,
+				A1000000000000000000005E /* ViewerImageMetadataReader.swift */,
+				A10000000000000000000060 /* ViewerDocumentLoader.swift */,
+				A10000000000000000000062 /* ViewerNavigationResolver.swift */,
 				A10000000000000000000018 /* ViewerState.swift */,
+				A10000000000000000000074 /* ViewerState+Content.swift */,
+				A10000000000000000000076 /* ViewerState+Navigation.swift */,
+				A10000000000000000000078 /* ViewerState+Zoom.swift */,
+				A1000000000000000000007A /* ViewerState+Display.swift */,
+				A1000000000000000000007C /* ViewerState+Browser.swift */,
+				A1000000000000000000007E /* ViewerState+Slideshow.swift */,
+				A10000000000000000000080 /* ViewerState+Notices.swift */,
 				A10000000000000000000024 /* ImagePreloadQueue.swift */,
 			);
 			path = Core;
@@ -136,6 +173,10 @@
 				A10000000000000000000040 /* ImageViewerEventViews.swift */,
 				A10000000000000000000042 /* RotatingImageView.swift */,
 				A10000000000000000000044 /* ImageViewerGeometry.swift */,
+				A1000000000000000000006C /* ImageViewerGeometry+Scaling.swift */,
+				A1000000000000000000006E /* ImageViewerGeometry+Input.swift */,
+				A10000000000000000000070 /* ImageViewerGeometry+Layout.swift */,
+				A10000000000000000000072 /* ImageViewerGeometry+Viewport.swift */,
 				A10000000000000000000046 /* ImageViewerNavigationHoldCoordinator.swift */,
 				A10000000000000000000048 /* ImageViewerPostProcessingMenuPresenter.swift */,
 				A1000000000000000000004A /* ImageViewerCommandWheelZoomCoordinator.swift */,
@@ -146,9 +187,16 @@
 				A10000000000000000000054 /* ImageViewerViewportPresenter.swift */,
 				A10000000000000000000056 /* ImageViewerKeyboardCoordinator.swift */,
 				A10000000000000000000058 /* ImageViewerZoomAnimator.swift */,
+				A10000000000000000000064 /* ImageViewerNSView+Input.swift */,
+				A10000000000000000000066 /* ImageViewerNSView+Zooming.swift */,
+				A10000000000000000000068 /* ImageViewerNSView+DoubleClick.swift */,
+				A1000000000000000000006A /* ImageViewerNSView+Viewport.swift */,
 				A1000000000000000000001E /* ImageViewerNSView.swift */,
 				A1000000000000000000001F /* ImageViewerContainerView.swift */,
 				A10000000000000000000030 /* ImageBrowserOverlay.swift */,
+				A10000000000000000000082 /* ImageBrowserOverlayControls.swift */,
+				A10000000000000000000084 /* ImageBrowserOverlayCells.swift */,
+				A10000000000000000000086 /* ImageBrowserEscapeCatcher.swift */,
 				A10000000000000000000032 /* ViewerWindowChromeConfigurator.swift */,
 				A10000000000000000000034 /* SlideshowIntervalField.swift */,
 				A10000000000000000000036 /* VerticalSlideshowPreview.swift */,
@@ -170,6 +218,8 @@
 				A20000000000000000000005 /* OpenBrowserControls.swift */,
 				A20000000000000000000006 /* OpenBrowserCells.swift */,
 				A2000000000000000000000E /* OpenBrowserOverlay.swift */,
+				A20000000000000000000026 /* OpenBrowserOverlay+Layout.swift */,
+				A20000000000000000000028 /* OpenBrowserOverlay+Actions.swift */,
 				A20000000000000000000010 /* OpenBrowserDataSource.swift */,
 				A20000000000000000000012 /* OpenBrowserNavigationHistory.swift */,
 				A20000000000000000000014 /* OpenBrowserSelectionState.swift */,
@@ -310,12 +360,28 @@
 				1D6058960D05DD3D006BFB54 /* ViewerWindowShell.swift in Sources */,
 				A10000000000000000000013 /* SupportedImageTypes.swift in Sources */,
 				A10000000000000000000014 /* FolderImageIndex.swift in Sources */,
+				A1000000000000000000005B /* ViewerModels.swift in Sources */,
+				A1000000000000000000005D /* ViewerPDFDocument.swift in Sources */,
+				A1000000000000000000005F /* ViewerImageMetadataReader.swift in Sources */,
+				A10000000000000000000061 /* ViewerDocumentLoader.swift in Sources */,
+				A10000000000000000000063 /* ViewerNavigationResolver.swift in Sources */,
 				A1000000000000000000001B /* ViewerState.swift in Sources */,
+				A10000000000000000000075 /* ViewerState+Content.swift in Sources */,
+				A10000000000000000000077 /* ViewerState+Navigation.swift in Sources */,
+				A10000000000000000000079 /* ViewerState+Zoom.swift in Sources */,
+				A1000000000000000000007B /* ViewerState+Display.swift in Sources */,
+				A1000000000000000000007D /* ViewerState+Browser.swift in Sources */,
+				A1000000000000000000007F /* ViewerState+Slideshow.swift in Sources */,
+				A10000000000000000000081 /* ViewerState+Notices.swift in Sources */,
 				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
 				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
 				A10000000000000000000041 /* ImageViewerEventViews.swift in Sources */,
 				A10000000000000000000043 /* RotatingImageView.swift in Sources */,
 				A10000000000000000000045 /* ImageViewerGeometry.swift in Sources */,
+				A1000000000000000000006D /* ImageViewerGeometry+Scaling.swift in Sources */,
+				A1000000000000000000006F /* ImageViewerGeometry+Input.swift in Sources */,
+				A10000000000000000000071 /* ImageViewerGeometry+Layout.swift in Sources */,
+				A10000000000000000000073 /* ImageViewerGeometry+Viewport.swift in Sources */,
 				A10000000000000000000047 /* ImageViewerNavigationHoldCoordinator.swift in Sources */,
 				A10000000000000000000049 /* ImageViewerPostProcessingMenuPresenter.swift in Sources */,
 				A1000000000000000000004B /* ImageViewerCommandWheelZoomCoordinator.swift in Sources */,
@@ -326,9 +392,16 @@
 				A10000000000000000000055 /* ImageViewerViewportPresenter.swift in Sources */,
 				A10000000000000000000057 /* ImageViewerKeyboardCoordinator.swift in Sources */,
 				A10000000000000000000059 /* ImageViewerZoomAnimator.swift in Sources */,
+				A10000000000000000000065 /* ImageViewerNSView+Input.swift in Sources */,
+				A10000000000000000000067 /* ImageViewerNSView+Zooming.swift in Sources */,
+				A10000000000000000000069 /* ImageViewerNSView+DoubleClick.swift in Sources */,
+				A1000000000000000000006B /* ImageViewerNSView+Viewport.swift in Sources */,
 				A10000000000000000000022 /* ImageViewerNSView.swift in Sources */,
 				A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */,
 				A10000000000000000000031 /* ImageBrowserOverlay.swift in Sources */,
+				A10000000000000000000083 /* ImageBrowserOverlayControls.swift in Sources */,
+				A10000000000000000000085 /* ImageBrowserOverlayCells.swift in Sources */,
+				A10000000000000000000087 /* ImageBrowserEscapeCatcher.swift in Sources */,
 				A10000000000000000000033 /* ViewerWindowChromeConfigurator.swift in Sources */,
 				A10000000000000000000035 /* SlideshowIntervalField.swift in Sources */,
 				A10000000000000000000037 /* VerticalSlideshowPreview.swift in Sources */,
@@ -344,6 +417,8 @@
 				A2000000000000000000000B /* OpenBrowserControls.swift in Sources */,
 				A2000000000000000000000C /* OpenBrowserCells.swift in Sources */,
 				A2000000000000000000000F /* OpenBrowserOverlay.swift in Sources */,
+				A20000000000000000000027 /* OpenBrowserOverlay+Layout.swift in Sources */,
+				A20000000000000000000029 /* OpenBrowserOverlay+Actions.swift in Sources */,
 				A20000000000000000000011 /* OpenBrowserDataSource.swift in Sources */,
 				A20000000000000000000013 /* OpenBrowserNavigationHistory.swift in Sources */,
 				A20000000000000000000015 /* OpenBrowserSelectionState.swift in Sources */,
@@ -381,12 +456,28 @@
 		1D6058960D05DD3D006BFB54 /* ViewerWindowShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */; };
 		A10000000000000000000013 /* SupportedImageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* SupportedImageTypes.swift */; };
 		A10000000000000000000014 /* FolderImageIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* FolderImageIndex.swift */; };
+		A1000000000000000000005B /* ViewerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005A /* ViewerModels.swift */; };
+		A1000000000000000000005D /* ViewerPDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005C /* ViewerPDFDocument.swift */; };
+		A1000000000000000000005F /* ViewerImageMetadataReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005E /* ViewerImageMetadataReader.swift */; };
+		A10000000000000000000061 /* ViewerDocumentLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000060 /* ViewerDocumentLoader.swift */; };
+		A10000000000000000000063 /* ViewerNavigationResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000062 /* ViewerNavigationResolver.swift */; };
 		A1000000000000000000001B /* ViewerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* ViewerState.swift */; };
+		A10000000000000000000075 /* ViewerState+Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000074 /* ViewerState+Content.swift */; };
+		A10000000000000000000077 /* ViewerState+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000076 /* ViewerState+Navigation.swift */; };
+		A10000000000000000000079 /* ViewerState+Zoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000078 /* ViewerState+Zoom.swift */; };
+		A1000000000000000000007B /* ViewerState+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007A /* ViewerState+Display.swift */; };
+		A1000000000000000000007D /* ViewerState+Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007C /* ViewerState+Browser.swift */; };
+		A1000000000000000000007F /* ViewerState+Slideshow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007E /* ViewerState+Slideshow.swift */; };
+		A10000000000000000000081 /* ViewerState+Notices.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000080 /* ViewerState+Notices.swift */; };
 		A1000000000000000000001C /* ViewerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* ViewerCommands.swift */; };
 		A10000000000000000000021 /* ImageViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D /* ImageViewportState.swift */; };
 		A10000000000000000000041 /* ImageViewerEventViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* ImageViewerEventViews.swift */; };
 		A10000000000000000000043 /* RotatingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000042 /* RotatingImageView.swift */; };
 		A10000000000000000000045 /* ImageViewerGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000044 /* ImageViewerGeometry.swift */; };
+		A1000000000000000000006D /* ImageViewerGeometry+Scaling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006C /* ImageViewerGeometry+Scaling.swift */; };
+		A1000000000000000000006F /* ImageViewerGeometry+Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006E /* ImageViewerGeometry+Input.swift */; };
+		A10000000000000000000071 /* ImageViewerGeometry+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000070 /* ImageViewerGeometry+Layout.swift */; };
+		A10000000000000000000073 /* ImageViewerGeometry+Viewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000072 /* ImageViewerGeometry+Viewport.swift */; };
 		A10000000000000000000047 /* ImageViewerNavigationHoldCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000046 /* ImageViewerNavigationHoldCoordinator.swift */; };
 		A10000000000000000000049 /* ImageViewerPostProcessingMenuPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000048 /* ImageViewerPostProcessingMenuPresenter.swift */; };
 		A1000000000000000000004B /* ImageViewerCommandWheelZoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004A /* ImageViewerCommandWheelZoomCoordinator.swift */; };
@@ -397,9 +488,16 @@
 		A10000000000000000000055 /* ImageViewerViewportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000054 /* ImageViewerViewportPresenter.swift */; };
 		A10000000000000000000057 /* ImageViewerKeyboardCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000056 /* ImageViewerKeyboardCoordinator.swift */; };
 		A10000000000000000000059 /* ImageViewerZoomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000058 /* ImageViewerZoomAnimator.swift */; };
+		A10000000000000000000065 /* ImageViewerNSView+Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000064 /* ImageViewerNSView+Input.swift */; };
+		A10000000000000000000067 /* ImageViewerNSView+Zooming.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000066 /* ImageViewerNSView+Zooming.swift */; };
+		A10000000000000000000069 /* ImageViewerNSView+DoubleClick.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000068 /* ImageViewerNSView+DoubleClick.swift */; };
+		A1000000000000000000006B /* ImageViewerNSView+Viewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000006A /* ImageViewerNSView+Viewport.swift */; };
 		A10000000000000000000022 /* ImageViewerNSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* ImageViewerNSView.swift */; };
 		A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001F /* ImageViewerContainerView.swift */; };
 		A10000000000000000000031 /* ImageBrowserOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* ImageBrowserOverlay.swift */; };
+		A10000000000000000000083 /* ImageBrowserOverlayControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000082 /* ImageBrowserOverlayControls.swift */; };
+		A10000000000000000000085 /* ImageBrowserOverlayCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000084 /* ImageBrowserOverlayCells.swift */; };
+		A10000000000000000000087 /* ImageBrowserEscapeCatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000086 /* ImageBrowserEscapeCatcher.swift */; };
 		A10000000000000000000033 /* ViewerWindowChromeConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000032 /* ViewerWindowChromeConfigurator.swift */; };
 		A10000000000000000000035 /* SlideshowIntervalField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000034 /* SlideshowIntervalField.swift */; };
 		A10000000000000000000037 /* VerticalSlideshowPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000036 /* VerticalSlideshowPreview.swift */; };
@@ -415,6 +513,8 @@
 		A2000000000000000000000B /* OpenBrowserControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* OpenBrowserControls.swift */; };
 		A2000000000000000000000C /* OpenBrowserCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* OpenBrowserCells.swift */; };
 		A2000000000000000000000F /* OpenBrowserOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* OpenBrowserOverlay.swift */; };
+		A20000000000000000000027 /* OpenBrowserOverlay+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000026 /* OpenBrowserOverlay+Layout.swift */; };
+		A20000000000000000000029 /* OpenBrowserOverlay+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000028 /* OpenBrowserOverlay+Actions.swift */; };
 		A20000000000000000000011 /* OpenBrowserDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* OpenBrowserDataSource.swift */; };
 		A20000000000000000000013 /* OpenBrowserNavigationHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* OpenBrowserNavigationHistory.swift */; };
 		A20000000000000000000015 /* OpenBrowserSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* OpenBrowserSelectionState.swift */; };
