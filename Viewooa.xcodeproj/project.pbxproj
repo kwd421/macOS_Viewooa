@@ -17,10 +17,55 @@
 		A1000000000000000000001D /* ImageViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewportState.swift; sourceTree = "<group>"; };
 		A1000000000000000000001E /* ImageViewerNSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSView.swift; sourceTree = "<group>"; };
 		A1000000000000000000001F /* ImageViewerContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerContainerView.swift; sourceTree = "<group>"; };
+		A10000000000000000000040 /* ImageViewerEventViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerEventViews.swift; sourceTree = "<group>"; };
+		A10000000000000000000042 /* RotatingImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotatingImageView.swift; sourceTree = "<group>"; };
+		A10000000000000000000044 /* ImageViewerGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerGeometry.swift; sourceTree = "<group>"; };
+		A10000000000000000000046 /* ImageViewerNavigationHoldCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNavigationHoldCoordinator.swift; sourceTree = "<group>"; };
+		A10000000000000000000048 /* ImageViewerPostProcessingMenuPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerPostProcessingMenuPresenter.swift; sourceTree = "<group>"; };
+		A1000000000000000000004A /* ImageViewerCommandWheelZoomCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerCommandWheelZoomCoordinator.swift; sourceTree = "<group>"; };
+		A1000000000000000000004C /* ImageViewerImageStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerImageStack.swift; sourceTree = "<group>"; };
+		A1000000000000000000004E /* ImageViewerVerticalAutoScrollCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerVerticalAutoScrollCoordinator.swift; sourceTree = "<group>"; };
+		A10000000000000000000050 /* ImageViewerTrackpadScrollCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerTrackpadScrollCoordinator.swift; sourceTree = "<group>"; };
+		A10000000000000000000052 /* ImageViewerPointerDragCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerPointerDragCoordinator.swift; sourceTree = "<group>"; };
+		A10000000000000000000054 /* ImageViewerViewportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerViewportPresenter.swift; sourceTree = "<group>"; };
+		A10000000000000000000056 /* ImageViewerKeyboardCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerKeyboardCoordinator.swift; sourceTree = "<group>"; };
+		A10000000000000000000058 /* ImageViewerZoomAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerZoomAnimator.swift; sourceTree = "<group>"; };
+		A10000000000000000000030 /* ImageBrowserOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserOverlay.swift; sourceTree = "<group>"; };
+		A10000000000000000000032 /* ViewerWindowChromeConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerWindowChromeConfigurator.swift; sourceTree = "<group>"; };
+		A10000000000000000000034 /* SlideshowIntervalField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideshowIntervalField.swift; sourceTree = "<group>"; };
+		A10000000000000000000036 /* VerticalSlideshowPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerticalSlideshowPreview.swift; sourceTree = "<group>"; };
+		A10000000000000000000038 /* ViewerSupportControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerSupportControls.swift; sourceTree = "<group>"; };
+		A1000000000000000000003A /* ViewerOverlayCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerOverlayCard.swift; sourceTree = "<group>"; };
+		A1000000000000000000003C /* ViewerControlBars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerControlBars.swift; sourceTree = "<group>"; };
+		A1000000000000000000003E /* ViewerSlideshowIntervalFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerSlideshowIntervalFormatter.swift; sourceTree = "<group>"; };
 		A10000000000000000000024 /* ImagePreloadQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreloadQueue.swift; sourceTree = "<group>"; };
+		A20000000000000000000001 /* OpenBrowserModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserModels.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* OpenBrowserScrollSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserScrollSupport.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* OpenBrowserStyling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserStyling.swift; sourceTree = "<group>"; };
+		A20000000000000000000004 /* OpenBrowserKeyboardCatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserKeyboardCatcher.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* OpenBrowserControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserControls.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* OpenBrowserCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserCells.swift; sourceTree = "<group>"; };
+		A2000000000000000000000E /* OpenBrowserOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserOverlay.swift; sourceTree = "<group>"; };
+		A20000000000000000000010 /* OpenBrowserDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserDataSource.swift; sourceTree = "<group>"; };
+		A20000000000000000000012 /* OpenBrowserNavigationHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserNavigationHistory.swift; sourceTree = "<group>"; };
+		A20000000000000000000014 /* OpenBrowserSelectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserSelectionState.swift; sourceTree = "<group>"; };
+		A20000000000000000000016 /* OpenBrowserSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserSidebar.swift; sourceTree = "<group>"; };
+		A20000000000000000000018 /* OpenBrowserFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserFooter.swift; sourceTree = "<group>"; };
+		A2000000000000000000001A /* OpenBrowserTitlebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserTitlebar.swift; sourceTree = "<group>"; };
+		A2000000000000000000001C /* OpenBrowserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserPreferences.swift; sourceTree = "<group>"; };
+		A2000000000000000000001E /* OpenBrowserSidebarStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserSidebarStore.swift; sourceTree = "<group>"; };
+		A20000000000000000000020 /* OpenBrowserContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserContentView.swift; sourceTree = "<group>"; };
+		A20000000000000000000022 /* OpenBrowserPathResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserPathResolver.swift; sourceTree = "<group>"; };
+		A20000000000000000000024 /* OpenBrowserScrollCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserScrollCoordinator.swift; sourceTree = "<group>"; };
+		A30000000000000000000001 /* ThumbnailSizeStepperControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSizeStepperControl.swift; sourceTree = "<group>"; };
+		A30000000000000000000002 /* ImageBrowserThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserThumbnail.swift; sourceTree = "<group>"; };
 		A10000000000000000000001 /* FolderImageIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndexTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* ViewerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStateTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000026 /* ImagePreloadQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreloadQueueTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000028 /* OpenBrowserPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserPreferencesTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000002A /* OpenBrowserSidebarStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserSidebarStoreTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000002C /* OpenBrowserPathResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserPathResolverTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000002E /* OpenBrowserScrollCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserScrollCoordinatorTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000008 /* ViewooaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ViewooaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -57,6 +102,8 @@
 				A10000000000000000000015 /* Core */,
 				A1000000000000000000001A /* Commands */,
 				A10000000000000000000020 /* Viewer */,
+				A2000000000000000000000D /* OpenBrowser */,
+				A30000000000000000000005 /* Shared */,
 				1D6058910D05DD3D006BFB54 /* ViewooaApp.swift */,
 				1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */,
 			);
@@ -86,10 +133,65 @@
 			isa = PBXGroup;
 			children = (
 				A1000000000000000000001D /* ImageViewportState.swift */,
+				A10000000000000000000040 /* ImageViewerEventViews.swift */,
+				A10000000000000000000042 /* RotatingImageView.swift */,
+				A10000000000000000000044 /* ImageViewerGeometry.swift */,
+				A10000000000000000000046 /* ImageViewerNavigationHoldCoordinator.swift */,
+				A10000000000000000000048 /* ImageViewerPostProcessingMenuPresenter.swift */,
+				A1000000000000000000004A /* ImageViewerCommandWheelZoomCoordinator.swift */,
+				A1000000000000000000004C /* ImageViewerImageStack.swift */,
+				A1000000000000000000004E /* ImageViewerVerticalAutoScrollCoordinator.swift */,
+				A10000000000000000000050 /* ImageViewerTrackpadScrollCoordinator.swift */,
+				A10000000000000000000052 /* ImageViewerPointerDragCoordinator.swift */,
+				A10000000000000000000054 /* ImageViewerViewportPresenter.swift */,
+				A10000000000000000000056 /* ImageViewerKeyboardCoordinator.swift */,
+				A10000000000000000000058 /* ImageViewerZoomAnimator.swift */,
 				A1000000000000000000001E /* ImageViewerNSView.swift */,
 				A1000000000000000000001F /* ImageViewerContainerView.swift */,
+				A10000000000000000000030 /* ImageBrowserOverlay.swift */,
+				A10000000000000000000032 /* ViewerWindowChromeConfigurator.swift */,
+				A10000000000000000000034 /* SlideshowIntervalField.swift */,
+				A10000000000000000000036 /* VerticalSlideshowPreview.swift */,
+				A10000000000000000000038 /* ViewerSupportControls.swift */,
+				A1000000000000000000003A /* ViewerOverlayCard.swift */,
+				A1000000000000000000003C /* ViewerControlBars.swift */,
+				A1000000000000000000003E /* ViewerSlideshowIntervalFormatter.swift */,
 			);
 			path = Viewer;
+			sourceTree = "<group>";
+		};
+		A2000000000000000000000D /* OpenBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* OpenBrowserModels.swift */,
+				A20000000000000000000002 /* OpenBrowserScrollSupport.swift */,
+				A20000000000000000000003 /* OpenBrowserStyling.swift */,
+				A20000000000000000000004 /* OpenBrowserKeyboardCatcher.swift */,
+				A20000000000000000000005 /* OpenBrowserControls.swift */,
+				A20000000000000000000006 /* OpenBrowserCells.swift */,
+				A2000000000000000000000E /* OpenBrowserOverlay.swift */,
+				A20000000000000000000010 /* OpenBrowserDataSource.swift */,
+				A20000000000000000000012 /* OpenBrowserNavigationHistory.swift */,
+				A20000000000000000000014 /* OpenBrowserSelectionState.swift */,
+				A20000000000000000000016 /* OpenBrowserSidebar.swift */,
+				A20000000000000000000018 /* OpenBrowserFooter.swift */,
+				A2000000000000000000001A /* OpenBrowserTitlebar.swift */,
+				A2000000000000000000001C /* OpenBrowserPreferences.swift */,
+				A2000000000000000000001E /* OpenBrowserSidebarStore.swift */,
+				A20000000000000000000020 /* OpenBrowserContentView.swift */,
+				A20000000000000000000022 /* OpenBrowserPathResolver.swift */,
+				A20000000000000000000024 /* OpenBrowserScrollCoordinator.swift */,
+			);
+			path = OpenBrowser;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000005 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000001 /* ThumbnailSizeStepperControl.swift */,
+				A30000000000000000000002 /* ImageBrowserThumbnail.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		A10000000000000000000003 /* ViewooaTests */ = {
@@ -98,6 +200,10 @@
 				A10000000000000000000001 /* FolderImageIndexTests.swift */,
 				A10000000000000000000016 /* ViewerStateTests.swift */,
 				A10000000000000000000026 /* ImagePreloadQueueTests.swift */,
+				A10000000000000000000028 /* OpenBrowserPreferencesTests.swift */,
+				A1000000000000000000002A /* OpenBrowserSidebarStoreTests.swift */,
+				A1000000000000000000002C /* OpenBrowserPathResolverTests.swift */,
+				A1000000000000000000002E /* OpenBrowserScrollCoordinatorTests.swift */,
 			);
 			path = ViewooaTests;
 			sourceTree = "<group>";
@@ -207,9 +313,50 @@
 				A1000000000000000000001B /* ViewerState.swift in Sources */,
 				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
 				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
+				A10000000000000000000041 /* ImageViewerEventViews.swift in Sources */,
+				A10000000000000000000043 /* RotatingImageView.swift in Sources */,
+				A10000000000000000000045 /* ImageViewerGeometry.swift in Sources */,
+				A10000000000000000000047 /* ImageViewerNavigationHoldCoordinator.swift in Sources */,
+				A10000000000000000000049 /* ImageViewerPostProcessingMenuPresenter.swift in Sources */,
+				A1000000000000000000004B /* ImageViewerCommandWheelZoomCoordinator.swift in Sources */,
+				A1000000000000000000004D /* ImageViewerImageStack.swift in Sources */,
+				A1000000000000000000004F /* ImageViewerVerticalAutoScrollCoordinator.swift in Sources */,
+				A10000000000000000000051 /* ImageViewerTrackpadScrollCoordinator.swift in Sources */,
+				A10000000000000000000053 /* ImageViewerPointerDragCoordinator.swift in Sources */,
+				A10000000000000000000055 /* ImageViewerViewportPresenter.swift in Sources */,
+				A10000000000000000000057 /* ImageViewerKeyboardCoordinator.swift in Sources */,
+				A10000000000000000000059 /* ImageViewerZoomAnimator.swift in Sources */,
 				A10000000000000000000022 /* ImageViewerNSView.swift in Sources */,
 				A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */,
+				A10000000000000000000031 /* ImageBrowserOverlay.swift in Sources */,
+				A10000000000000000000033 /* ViewerWindowChromeConfigurator.swift in Sources */,
+				A10000000000000000000035 /* SlideshowIntervalField.swift in Sources */,
+				A10000000000000000000037 /* VerticalSlideshowPreview.swift in Sources */,
+				A10000000000000000000039 /* ViewerSupportControls.swift in Sources */,
+				A1000000000000000000003B /* ViewerOverlayCard.swift in Sources */,
+				A1000000000000000000003D /* ViewerControlBars.swift in Sources */,
+				A1000000000000000000003F /* ViewerSlideshowIntervalFormatter.swift in Sources */,
 				A10000000000000000000025 /* ImagePreloadQueue.swift in Sources */,
+				A20000000000000000000007 /* OpenBrowserModels.swift in Sources */,
+				A20000000000000000000008 /* OpenBrowserScrollSupport.swift in Sources */,
+				A20000000000000000000009 /* OpenBrowserStyling.swift in Sources */,
+				A2000000000000000000000A /* OpenBrowserKeyboardCatcher.swift in Sources */,
+				A2000000000000000000000B /* OpenBrowserControls.swift in Sources */,
+				A2000000000000000000000C /* OpenBrowserCells.swift in Sources */,
+				A2000000000000000000000F /* OpenBrowserOverlay.swift in Sources */,
+				A20000000000000000000011 /* OpenBrowserDataSource.swift in Sources */,
+				A20000000000000000000013 /* OpenBrowserNavigationHistory.swift in Sources */,
+				A20000000000000000000015 /* OpenBrowserSelectionState.swift in Sources */,
+				A20000000000000000000017 /* OpenBrowserSidebar.swift in Sources */,
+				A20000000000000000000019 /* OpenBrowserFooter.swift in Sources */,
+				A2000000000000000000001B /* OpenBrowserTitlebar.swift in Sources */,
+				A2000000000000000000001D /* OpenBrowserPreferences.swift in Sources */,
+				A2000000000000000000001F /* OpenBrowserSidebarStore.swift in Sources */,
+				A20000000000000000000021 /* OpenBrowserContentView.swift in Sources */,
+				A20000000000000000000023 /* OpenBrowserPathResolver.swift in Sources */,
+				A20000000000000000000025 /* OpenBrowserScrollCoordinator.swift in Sources */,
+				A30000000000000000000003 /* ThumbnailSizeStepperControl.swift in Sources */,
+				A30000000000000000000004 /* ImageBrowserThumbnail.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,6 +367,10 @@
 				A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */,
 				A10000000000000000000017 /* ViewerStateTests.swift in Sources */,
 				A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */,
+				A10000000000000000000029 /* OpenBrowserPreferencesTests.swift in Sources */,
+				A1000000000000000000002B /* OpenBrowserSidebarStoreTests.swift in Sources */,
+				A1000000000000000000002D /* OpenBrowserPathResolverTests.swift in Sources */,
+				A1000000000000000000002F /* OpenBrowserScrollCoordinatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,12 +384,57 @@
 		A1000000000000000000001B /* ViewerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000018 /* ViewerState.swift */; };
 		A1000000000000000000001C /* ViewerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* ViewerCommands.swift */; };
 		A10000000000000000000021 /* ImageViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D /* ImageViewportState.swift */; };
+		A10000000000000000000041 /* ImageViewerEventViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* ImageViewerEventViews.swift */; };
+		A10000000000000000000043 /* RotatingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000042 /* RotatingImageView.swift */; };
+		A10000000000000000000045 /* ImageViewerGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000044 /* ImageViewerGeometry.swift */; };
+		A10000000000000000000047 /* ImageViewerNavigationHoldCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000046 /* ImageViewerNavigationHoldCoordinator.swift */; };
+		A10000000000000000000049 /* ImageViewerPostProcessingMenuPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000048 /* ImageViewerPostProcessingMenuPresenter.swift */; };
+		A1000000000000000000004B /* ImageViewerCommandWheelZoomCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004A /* ImageViewerCommandWheelZoomCoordinator.swift */; };
+		A1000000000000000000004D /* ImageViewerImageStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004C /* ImageViewerImageStack.swift */; };
+		A1000000000000000000004F /* ImageViewerVerticalAutoScrollCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000004E /* ImageViewerVerticalAutoScrollCoordinator.swift */; };
+		A10000000000000000000051 /* ImageViewerTrackpadScrollCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000050 /* ImageViewerTrackpadScrollCoordinator.swift */; };
+		A10000000000000000000053 /* ImageViewerPointerDragCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000052 /* ImageViewerPointerDragCoordinator.swift */; };
+		A10000000000000000000055 /* ImageViewerViewportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000054 /* ImageViewerViewportPresenter.swift */; };
+		A10000000000000000000057 /* ImageViewerKeyboardCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000056 /* ImageViewerKeyboardCoordinator.swift */; };
+		A10000000000000000000059 /* ImageViewerZoomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000058 /* ImageViewerZoomAnimator.swift */; };
 		A10000000000000000000022 /* ImageViewerNSView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001E /* ImageViewerNSView.swift */; };
 		A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001F /* ImageViewerContainerView.swift */; };
+		A10000000000000000000031 /* ImageBrowserOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000030 /* ImageBrowserOverlay.swift */; };
+		A10000000000000000000033 /* ViewerWindowChromeConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000032 /* ViewerWindowChromeConfigurator.swift */; };
+		A10000000000000000000035 /* SlideshowIntervalField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000034 /* SlideshowIntervalField.swift */; };
+		A10000000000000000000037 /* VerticalSlideshowPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000036 /* VerticalSlideshowPreview.swift */; };
+		A10000000000000000000039 /* ViewerSupportControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000038 /* ViewerSupportControls.swift */; };
+		A1000000000000000000003B /* ViewerOverlayCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003A /* ViewerOverlayCard.swift */; };
+		A1000000000000000000003D /* ViewerControlBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003C /* ViewerControlBars.swift */; };
+		A1000000000000000000003F /* ViewerSlideshowIntervalFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003E /* ViewerSlideshowIntervalFormatter.swift */; };
 		A10000000000000000000025 /* ImagePreloadQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000024 /* ImagePreloadQueue.swift */; };
+		A20000000000000000000007 /* OpenBrowserModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* OpenBrowserModels.swift */; };
+		A20000000000000000000008 /* OpenBrowserScrollSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* OpenBrowserScrollSupport.swift */; };
+		A20000000000000000000009 /* OpenBrowserStyling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* OpenBrowserStyling.swift */; };
+		A2000000000000000000000A /* OpenBrowserKeyboardCatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* OpenBrowserKeyboardCatcher.swift */; };
+		A2000000000000000000000B /* OpenBrowserControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* OpenBrowserControls.swift */; };
+		A2000000000000000000000C /* OpenBrowserCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* OpenBrowserCells.swift */; };
+		A2000000000000000000000F /* OpenBrowserOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* OpenBrowserOverlay.swift */; };
+		A20000000000000000000011 /* OpenBrowserDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* OpenBrowserDataSource.swift */; };
+		A20000000000000000000013 /* OpenBrowserNavigationHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* OpenBrowserNavigationHistory.swift */; };
+		A20000000000000000000015 /* OpenBrowserSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* OpenBrowserSelectionState.swift */; };
+		A20000000000000000000017 /* OpenBrowserSidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* OpenBrowserSidebar.swift */; };
+		A20000000000000000000019 /* OpenBrowserFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000018 /* OpenBrowserFooter.swift */; };
+		A2000000000000000000001B /* OpenBrowserTitlebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001A /* OpenBrowserTitlebar.swift */; };
+		A2000000000000000000001D /* OpenBrowserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001C /* OpenBrowserPreferences.swift */; };
+		A2000000000000000000001F /* OpenBrowserSidebarStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000001E /* OpenBrowserSidebarStore.swift */; };
+		A20000000000000000000021 /* OpenBrowserContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000020 /* OpenBrowserContentView.swift */; };
+		A20000000000000000000023 /* OpenBrowserPathResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000022 /* OpenBrowserPathResolver.swift */; };
+		A20000000000000000000025 /* OpenBrowserScrollCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000024 /* OpenBrowserScrollCoordinator.swift */; };
+		A30000000000000000000003 /* ThumbnailSizeStepperControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* ThumbnailSizeStepperControl.swift */; };
+		A30000000000000000000004 /* ImageBrowserThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000002 /* ImageBrowserThumbnail.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
 		A10000000000000000000017 /* ViewerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ViewerStateTests.swift */; };
 		A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* ImagePreloadQueueTests.swift */; };
+		A10000000000000000000029 /* OpenBrowserPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000028 /* OpenBrowserPreferencesTests.swift */; };
+		A1000000000000000000002B /* OpenBrowserSidebarStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002A /* OpenBrowserSidebarStoreTests.swift */; };
+		A1000000000000000000002D /* OpenBrowserPathResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002C /* OpenBrowserPathResolverTests.swift */; };
+		A1000000000000000000002F /* OpenBrowserScrollCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002E /* OpenBrowserScrollCoordinatorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */

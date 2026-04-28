@@ -3,6 +3,22 @@ import PDFKit
 @testable import Viewooa
 
 final class ViewerStateTests: XCTestCase {
+    private static func mouseEvent(location: NSPoint) throws -> NSEvent {
+        try XCTUnwrap(
+            NSEvent.mouseEvent(
+                with: .leftMouseDragged,
+                location: location,
+                modifierFlags: [],
+                timestamp: 0,
+                windowNumber: 0,
+                context: nil,
+                eventNumber: 0,
+                clickCount: 1,
+                pressure: 1
+            )
+        )
+    }
+
     @MainActor
     func testNavigationPublishesPreloadedImageForDisplay() {
         let urls = [
@@ -590,6 +606,73 @@ final class ViewerStateTests: XCTestCase {
 
         XCTAssertTrue(viewer.handleDoubleClick())
         XCTAssertEqual(reportedZoomMode, .actualSize)
+    }
+
+    @MainActor
+    func testDoubleClickFromFitKeepsClickedImagePointAnchoredAfterActualSizeRelayout() throws {
+        let viewer = ImageViewerNSView()
+        viewer.frame = NSRect(x: 0, y: 0, width: 900, height: 620)
+        let imageSize = NSSize(width: 1600, height: 1200)
+        let image = NSImage(size: imageSize)
+
+        viewer.apply(
+            resolvedImage: image,
+            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
+            zoomMode: .fit(.all),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        let scrollView = try XCTUnwrap(viewer.subviews.compactMap { $0 as? NSScrollView }.first)
+        let clickedImagePoint = NSPoint(x: 1200, y: 600)
+        let currentImageFrame = ImageViewerNSView.centeredImageFrame(
+            imageSize: imageSize,
+            containerSize: scrollView.documentView?.bounds.size ?? .zero
+        )
+        let clickedDocumentPoint = ImageViewerNSView.documentPoint(
+            forImagePoint: clickedImagePoint,
+            imageFrame: currentImageFrame
+        )
+        let anchorUnitPoint = ImageViewerNSView.anchorUnitPoint(
+            anchorDocumentPoint: clickedDocumentPoint,
+            visibleRect: scrollView.contentView.bounds
+        )
+
+        XCTAssertTrue(viewer.handleDoubleClick(anchoredAtDocumentPoint: clickedDocumentPoint))
+
+        let actualContainerSize = ImageViewerNSView.documentContainerSize(
+            imageSize: imageSize,
+            viewportSize: scrollView.bounds.size,
+            magnification: 1.0
+        )
+        let actualImageFrame = ImageViewerNSView.centeredImageFrame(
+            imageSize: imageSize,
+            containerSize: actualContainerSize
+        )
+        let expectedDocumentPoint = ImageViewerNSView.documentPoint(
+            forImagePoint: clickedImagePoint,
+            imageFrame: actualImageFrame
+        )
+        let expectedOrigin = ImageViewerNSView.visibleRectOrigin(
+            anchoring: expectedDocumentPoint,
+            at: anchorUnitPoint,
+            containerSize: actualContainerSize,
+            viewportSize: scrollView.bounds.size,
+            magnification: 1.0
+        )
+
+        XCTAssertEqual(scrollView.magnification, 1.0, accuracy: 0.001)
+        XCTAssertEqual(scrollView.contentView.bounds.origin.x, expectedOrigin.x, accuracy: 0.001)
+        XCTAssertEqual(scrollView.contentView.bounds.origin.y, expectedOrigin.y, accuracy: 0.001)
+        XCTAssertNotEqual(scrollView.contentView.bounds.origin.x, 750, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testFastRepeatedDoubleClickActivatesOnFourthClickCount() {
+        XCTAssertFalse(ImageViewerClickActivation.isDoubleClickActivation(clickCount: 1))
+        XCTAssertTrue(ImageViewerClickActivation.isDoubleClickActivation(clickCount: 2))
+        XCTAssertFalse(ImageViewerClickActivation.isDoubleClickActivation(clickCount: 3))
+        XCTAssertTrue(ImageViewerClickActivation.isDoubleClickActivation(clickCount: 4))
     }
 
     @MainActor
@@ -1226,6 +1309,104 @@ final class ViewerStateTests: XCTestCase {
                 to: NSPoint(x: 104, y: 100)
             )
         )
+    }
+
+    @MainActor
+    func testPointerDragLocksPointerOnlyAfterDragTolerance() throws {
+        let coordinator = ImageViewerPointerDragCoordinator()
+        var lockBeginCount = 0
+        var lockEndCount = 0
+        var panCount = 0
+
+        XCTAssertTrue(
+            coordinator.handle(
+                .began,
+                event: try Self.mouseEvent(location: NSPoint(x: 100, y: 100)),
+                canPan: true,
+                onPan: { _, _ in panCount += 1 },
+                onPointerLockBegin: { _ in lockBeginCount += 1 },
+                onPointerLockEnd: { lockEndCount += 1 }
+            )
+        )
+        XCTAssertFalse(
+            coordinator.handle(
+                .changed,
+                event: try Self.mouseEvent(location: NSPoint(x: 102, y: 101)),
+                canPan: true,
+                onPan: { _, _ in panCount += 1 },
+                onPointerLockBegin: { _ in lockBeginCount += 1 },
+                onPointerLockEnd: { lockEndCount += 1 }
+            )
+        )
+        XCTAssertFalse(
+            coordinator.handle(
+                .ended,
+                event: try Self.mouseEvent(location: NSPoint(x: 102, y: 101)),
+                canPan: true,
+                onPan: { _, _ in panCount += 1 },
+                onPointerLockBegin: { _ in lockBeginCount += 1 },
+                onPointerLockEnd: { lockEndCount += 1 }
+            )
+        )
+
+        XCTAssertEqual(lockBeginCount, 0)
+        XCTAssertEqual(lockEndCount, 0)
+        XCTAssertEqual(panCount, 0)
+    }
+
+    @MainActor
+    func testPointerDragUnlocksPointerWhenPanDragEnds() throws {
+        let coordinator = ImageViewerPointerDragCoordinator()
+        var lockBeginCount = 0
+        var lockEndCount = 0
+        var panLocations: [(previous: NSPoint, current: NSPoint)] = []
+
+        _ = coordinator.handle(
+            .began,
+            event: try Self.mouseEvent(location: NSPoint(x: 100, y: 100)),
+            canPan: true,
+            onPan: { previous, current in panLocations.append((previous, current)) },
+            onPointerLockBegin: { _ in lockBeginCount += 1 },
+            onPointerLockEnd: { lockEndCount += 1 }
+        )
+        XCTAssertTrue(
+            coordinator.handle(
+                .changed,
+                event: try Self.mouseEvent(location: NSPoint(x: 105, y: 100)),
+                canPan: true,
+                onPan: { previous, current in panLocations.append((previous, current)) },
+                onPointerLockBegin: { _ in lockBeginCount += 1 },
+                onPointerLockEnd: { lockEndCount += 1 }
+            )
+        )
+        XCTAssertTrue(
+            coordinator.handle(
+                .changed,
+                event: try Self.mouseEvent(location: NSPoint(x: 110, y: 95)),
+                canPan: true,
+                onPan: { previous, current in panLocations.append((previous, current)) },
+                onPointerLockBegin: { _ in lockBeginCount += 1 },
+                onPointerLockEnd: { lockEndCount += 1 }
+            )
+        )
+        XCTAssertTrue(
+            coordinator.handle(
+                .ended,
+                event: try Self.mouseEvent(location: NSPoint(x: 110, y: 95)),
+                canPan: true,
+                onPan: { previous, current in panLocations.append((previous, current)) },
+                onPointerLockBegin: { _ in lockBeginCount += 1 },
+                onPointerLockEnd: { lockEndCount += 1 }
+            )
+        )
+
+        XCTAssertEqual(lockBeginCount, 1)
+        XCTAssertEqual(lockEndCount, 1)
+        XCTAssertEqual(panLocations.count, 2)
+        XCTAssertEqual(panLocations[0].previous, NSPoint(x: 100, y: 100))
+        XCTAssertEqual(panLocations[0].current, NSPoint(x: 105, y: 100))
+        XCTAssertEqual(panLocations[1].previous, NSPoint(x: 105, y: 100))
+        XCTAssertEqual(panLocations[1].current, NSPoint(x: 110, y: 95))
     }
 
     @MainActor

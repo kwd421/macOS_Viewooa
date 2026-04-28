@@ -108,7 +108,6 @@ enum ImagePostProcessingOption: String, CaseIterable, Equatable, Identifiable {
     case smooth
     case denoise
     case contrast
-    case actualSizeRepair
 
     var id: Self { self }
 
@@ -122,8 +121,6 @@ enum ImagePostProcessingOption: String, CaseIterable, Equatable, Identifiable {
             "Denoise"
         case .contrast:
             "Contrast"
-        case .actualSizeRepair:
-            "1x Zoom Repair"
         }
     }
 }
