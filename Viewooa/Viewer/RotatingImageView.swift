@@ -77,7 +77,10 @@ final class RotatingImageView: NSImageView {
         }
         transform.concat()
         image.draw(
-            in: NSRect(origin: .zero, size: image.size),
+            in: NSRect(
+                origin: .zero,
+                size: Self.unrotatedDrawSize(in: bounds.size, quarterTurns: normalizedQuarterTurns)
+            ),
             from: NSRect(origin: .zero, size: image.size),
             operation: .sourceOver,
             fraction: 1.0,
@@ -137,6 +140,14 @@ final class RotatingImageView: NSImageView {
         }
 
         return NSSize(width: imageSize.height, height: imageSize.width)
+    }
+
+    private static func unrotatedDrawSize(in boundsSize: NSSize, quarterTurns: Int) -> NSSize {
+        if quarterTurns.isMultiple(of: 2) {
+            return boundsSize
+        }
+
+        return NSSize(width: boundsSize.height, height: boundsSize.width)
     }
 
     private var effectiveBackingScaleFactor: CGFloat {
