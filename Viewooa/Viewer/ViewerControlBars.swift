@@ -30,6 +30,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
         .overlay {
             Capsule().strokeBorder(.white.opacity(0.14))
         }
+        .visualHitArea(Capsule())
         .shadow(color: .black.opacity(0.34), radius: 20, y: 10)
     }
 
@@ -75,7 +76,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
             toolbarMenuLabel(systemImage: "rectangle.split.2x1", title: pageLayoutTitle)
         }
         .fixedSize()
-        .visualHitArea()
+        .visualHitArea(Capsule())
         .accessibilityLabel("Page Layout")
     }
 
@@ -104,7 +105,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
             )
         }
         .fixedSize()
-        .visualHitArea()
+        .visualHitArea(Capsule())
         .accessibilityLabel("Fit Mode")
     }
 
@@ -123,7 +124,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
                 VerticalSlideshowPreview(intervalSeconds: store.slideshowIntervalSeconds)
             }
         }
-        .visualHitArea()
+        .visualHitArea(Capsule())
         .accessibilityLabel("Slideshow")
     }
 
@@ -132,7 +133,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
     }
 
     private var slideshowIntervalEditor: some View {
-        VisualHoverState { isHovering in
+        VisualHoverState(shape: Capsule()) { isHovering in
             HStack(spacing: 4) {
                 TextField("", text: $slideshowIntervalDraft)
                     .textFieldStyle(.plain)
@@ -162,6 +163,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
             .overlay {
                 SlideshowIntervalScrollStepper(onStep: adjustSlideshowInterval)
             }
+            .visualHitArea(Capsule())
             .onTapGesture {
                 isSlideshowIntervalFocused = true
             }
@@ -263,6 +265,7 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
         .overlay {
             Capsule().strokeBorder(.white.opacity(0.14))
         }
+        .visualHitArea(Capsule())
         .shadow(color: .black.opacity(0.34), radius: 20, y: 10)
     }
 

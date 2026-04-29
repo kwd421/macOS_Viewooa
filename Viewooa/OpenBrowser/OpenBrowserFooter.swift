@@ -67,13 +67,13 @@ struct OpenBrowserFooter: View {
                     Rectangle()
                         .fill(Color.primary.opacity(0.001))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .visualHitArea()
+                        .visualHitArea(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Edit Path")
                 .frame(minWidth: 24)
                 .frame(maxWidth: .infinity)
-                .visualHitArea()
+                .visualHitArea(Rectangle())
                 .contextMenu {
                     pathContextMenuItems
                 }
@@ -82,7 +82,7 @@ struct OpenBrowserFooter: View {
             .frame(height: 26)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.openBrowserControlFill, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-            .visualHitArea()
+            .visualHitArea(RoundedRectangle(cornerRadius: 7, style: .continuous))
             .contextMenu {
                 pathContextMenuItems
             }
@@ -105,7 +105,9 @@ private struct PathComponentButton: View {
     let onNavigate: (URL) -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: 5, style: .continuous)
+
+        VisualHoverState(shape: shape) { isHovering in
             Button {
                 onNavigate(component.url)
             } label: {
@@ -117,11 +119,12 @@ private struct PathComponentButton: View {
                     .frame(height: 20)
                     .background(
                         Color.primary.opacity(isHovering ? 0.08 : 0),
-                        in: RoundedRectangle(cornerRadius: 5, style: .continuous)
+                        in: shape
                     )
-                    .visualHitArea()
+                    .visualHitArea(shape)
             }
             .buttonStyle(.plain)
+            .visualHitArea(shape)
             .accessibilityLabel(component.title)
         }
     }

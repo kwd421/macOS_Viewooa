@@ -25,13 +25,15 @@ struct ThumbnailSizeStepperControl: View {
             RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous)
                 .fill(isVibrant ? Color.white.opacity(0.10) : Color.openBrowserControlFill)
         }
-        .visualHitArea()
+        .visualHitArea(RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Thumbnail Size")
     }
 
     private func stepButton(systemImage: String, delta: CGFloat, isDisabled: Bool) -> some View {
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous)
+
+        return VisualHoverState(shape: shape) { isHovering in
             Button {
                 onWillChange?()
                 withAnimation(.smooth(duration: 0.18, extraBounce: 0)) {
@@ -44,9 +46,9 @@ struct ThumbnailSizeStepperControl: View {
                     .foregroundStyle(Self.buttonColor(isDisabled: isDisabled, isVibrant: isVibrant))
                     .background(
                         Self.stepButtonBackground(isDisabled: isDisabled, isHovering: isHovering, isVibrant: isVibrant),
-                        in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous)
+                        in: shape
                     )
-                    .visualHitArea()
+                    .visualHitArea(shape)
             }
             .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
             .buttonStyle(.plain)

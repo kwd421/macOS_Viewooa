@@ -73,6 +73,7 @@ struct OpenBrowserTitlebar: View {
             RoundedRectangle(cornerRadius: 17, style: .continuous)
                 .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
         }
+        .visualHitArea(RoundedRectangle(cornerRadius: 17, style: .continuous))
         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
         .padding(.trailing, 9)
     }
@@ -101,6 +102,7 @@ struct OpenBrowserTitlebar: View {
             RoundedRectangle(cornerRadius: 19, style: .continuous)
                 .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
         }
+        .visualHitArea(RoundedRectangle(cornerRadius: 19, style: .continuous))
         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
     }
 
@@ -114,6 +116,7 @@ struct OpenBrowserTitlebar: View {
             RoundedRectangle(cornerRadius: 19, style: .continuous)
                 .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
         }
+        .visualHitArea(RoundedRectangle(cornerRadius: 19, style: .continuous))
         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
     }
 

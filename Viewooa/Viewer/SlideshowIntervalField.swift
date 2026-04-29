@@ -19,6 +19,8 @@ final class ScrollStepperView: NSView {
     var onStep: ((Double) -> Void)?
     private var eventMonitor: Any?
     private var preciseScrollRemainder: CGFloat = 0
+    private static let secondsPerStep = 0.5
+    private static let preciseScrollThreshold: CGFloat = 8
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -68,17 +70,27 @@ final class ScrollStepperView: NSView {
     }
 
     private func handleScroll(_ event: NSEvent) {
-        let delta = event.hasPreciseScrollingDeltas ? -event.scrollingDeltaY : event.scrollingDeltaY
-        guard abs(delta) > 0 else { return }
+        guard let step = stepDirection(for: event) else { return }
+
+        onStep?(Double(step) * Self.secondsPerStep)
+    }
+
+    private func stepDirection(for event: NSEvent) -> Int? {
+        let delta = normalizedVerticalDelta(for: event)
+        guard delta != 0 else { return nil }
 
         if event.hasPreciseScrollingDeltas {
             preciseScrollRemainder += delta
-            guard abs(preciseScrollRemainder) >= 8 else { return }
-            onStep?(preciseScrollRemainder > 0 ? 0.5 : -0.5)
+            guard abs(preciseScrollRemainder) >= Self.preciseScrollThreshold else { return nil }
+            let direction = preciseScrollRemainder > 0 ? 1 : -1
             preciseScrollRemainder = 0
-            return
+            return direction
         }
 
-        onStep?(delta > 0 ? 0.5 : -0.5)
+        return delta > 0 ? 1 : -1
+    }
+
+    private func normalizedVerticalDelta(for event: NSEvent) -> CGFloat {
+        event.hasPreciseScrollingDeltas ? -event.scrollingDeltaY : event.scrollingDeltaY
     }
 }

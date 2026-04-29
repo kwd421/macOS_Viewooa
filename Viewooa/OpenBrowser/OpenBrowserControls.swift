@@ -13,6 +13,7 @@ struct OpenBrowserToolbarCapsule<Content: View>: View {
         .overlay {
             Capsule().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
         }
+        .visualHitArea(Capsule())
         .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
     }
 }
@@ -29,7 +30,7 @@ struct OpenBrowserIconToolbarButton: View {
         }
         .frame(width: OpenBrowserLayout.titlebarButtonSize, height: OpenBrowserLayout.titlebarButtonSize)
         .buttonStyle(.plain)
-        .visualHitArea()
+        .visualHitArea(Circle())
         .accessibilityLabel(accessibilityLabel)
     }
 }
@@ -39,7 +40,7 @@ struct OpenBrowserIconToolbarSurface: View {
     var isActive = false
 
     var body: some View {
-        VisualHoverState { isHovering in
+        VisualHoverState(shape: Circle()) { isHovering in
             VisualIconButtonLabel(
                 systemImage: systemImage,
                 size: OpenBrowserLayout.titlebarButtonSize,
@@ -65,7 +66,7 @@ struct OpenBrowserSearchIconButton: View {
     let action: () -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        VisualHoverState(shape: Circle()) { isHovering in
             Button(action: action) {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 14, weight: .semibold))
@@ -76,9 +77,10 @@ struct OpenBrowserSearchIconButton: View {
                     .overlay {
                         Circle().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
                     }
-                    .visualHitArea()
+                    .visualHitArea(Circle())
             }
             .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
+            .visualHitArea(Circle())
             .buttonStyle(.plain)
             .accessibilityLabel("Search")
         }
@@ -118,6 +120,7 @@ struct OpenBrowserSearchField: View {
             isVibrant ? Color.white.opacity(0.08) : Color.openBrowserControlFill,
             in: RoundedRectangle(cornerRadius: isVibrant ? 16 : 7, style: .continuous)
         )
+        .visualHitArea(RoundedRectangle(cornerRadius: isVibrant ? 16 : 7, style: .continuous))
     }
 }
 
@@ -125,7 +128,7 @@ private struct OpenBrowserClearSearchButton: View {
     let action: () -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        VisualHoverState(shape: Circle()) { isHovering in
             Button(action: action) {
                 VisualIconButtonLabel(
                     systemImage: "xmark.circle.fill",
@@ -136,6 +139,7 @@ private struct OpenBrowserClearSearchButton: View {
                 )
             }
             .frame(width: 20, height: 20)
+            .visualHitArea(Circle())
             .buttonStyle(.plain)
             .accessibilityLabel("Clear Search")
         }
@@ -219,7 +223,9 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
     var body: some View {
         let size = Self.controlSize(isVibrant: isVibrant)
 
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous)
+
+        VisualHoverState(shape: shape) { isHovering in
             Menu {
                 menuContent()
             } label: {
@@ -231,9 +237,10 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
                         Self.backgroundColor(isVibrant: isVibrant, isHovering: isHovering),
                         in: RoundedRectangle(cornerRadius: 7, style: .continuous)
                     )
-                    .visualHitArea()
+                    .visualHitArea(shape)
             }
             .frame(width: size.width, height: size.height)
+            .visualHitArea(shape)
             .menuStyle(.borderlessButton)
             .accessibilityLabel(accessibilityLabel)
         }
@@ -273,12 +280,15 @@ struct OpenBrowserViewModeControl: View {
             isVibrant ? Color.clear : Color.openBrowserControlFill,
             in: RoundedRectangle(cornerRadius: 8, style: .continuous)
         )
+        .visualHitArea(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private func modeButton(for displayModeOption: ImageBrowserDisplayMode) -> some View {
         let size = Self.modeButtonSize(isVibrant: isVibrant)
 
-        return VisualHoveredSelection(id: displayModeOption, hoveredID: $hoveredDisplayMode) { isHovering in
+        let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
+
+        return VisualHoveredSelection(id: displayModeOption, hoveredID: $hoveredDisplayMode, shape: shape) { isHovering in
             Button {
                 displayMode = displayModeOption
             } label: {
@@ -294,9 +304,10 @@ struct OpenBrowserViewModeControl: View {
                         ),
                         in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
                     )
-                    .visualHitArea()
+                    .visualHitArea(shape)
             }
             .frame(width: size.width, height: size.height)
+            .visualHitArea(shape)
             .buttonStyle(.plain)
             .accessibilityLabel(displayModeOption.title)
         }

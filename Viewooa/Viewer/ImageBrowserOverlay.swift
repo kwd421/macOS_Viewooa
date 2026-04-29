@@ -164,16 +164,16 @@ private struct ImageBrowserCloseButton: View {
     let action: () -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        VisualHoverState(shape: Circle()) { isHovering in
             Button(action: action) {
                 Image(systemName: "xmark")
                     .font(.system(size: 12, weight: .bold))
                     .frame(width: 28, height: 28)
                     .background(.white.opacity(isHovering ? 0.28 : 0.12), in: Circle())
-                    .visualHitArea()
+                    .visualHitArea(Circle())
             }
             .frame(width: 28, height: 28)
-            .visualHitArea()
+            .visualHitArea(Circle())
             .buttonStyle(.plain)
             .accessibilityLabel("Close Image Browser")
         }

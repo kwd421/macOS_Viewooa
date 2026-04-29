@@ -16,7 +16,9 @@ struct OpenBrowserThumbnailCell: View {
     let onAddFolderFavorite: (OpenBrowserEntry) -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+
+        VisualHoverState(shape: shape) { isHovering in
             Button {
                 onClick(entry)
             } label: {
@@ -33,15 +35,15 @@ struct OpenBrowserThumbnailCell: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 10)
                 .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57, alignment: .top)
-                .background(Self.thumbnailBackground(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .background(Self.thumbnailBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    shape
                         .strokeBorder(Self.thumbnailBorder(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
                 }
-                .visualHitArea()
+                .visualHitArea(shape)
             }
             .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57)
-            .visualHitArea()
+            .visualHitArea(shape)
             .buttonStyle(.plain)
             .accessibilityLabel(entry.name)
         }
@@ -138,7 +140,9 @@ struct OpenBrowserListRow: View {
     let onAddFolderFavorite: (OpenBrowserEntry) -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
+
+        VisualHoverState(shape: shape) { isHovering in
             Button {
                 onClick(entry)
             } label: {
@@ -165,18 +169,18 @@ struct OpenBrowserListRow: View {
                 }
                 .padding(.horizontal, 9)
                 .frame(height: 40)
-                .background(Self.listBackground(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .background(Self.listBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    shape
                         .strokeBorder(Self.listBorder(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
                 }
-                .visualHitArea()
+                .visualHitArea(shape)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(entry.name)
-            .visualHitArea()
+            .visualHitArea(shape)
         }
-        .visualHitArea()
+        .visualHitArea(shape)
         .simultaneousGesture(TapGesture(count: 2).onEnded {
             onDoubleClick(entry)
         })

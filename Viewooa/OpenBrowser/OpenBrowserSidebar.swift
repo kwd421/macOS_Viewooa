@@ -121,13 +121,15 @@ private struct SidebarHoverButton<Label: View>: View {
     @ViewBuilder let label: () -> Label
 
     var body: some View {
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
+
+        VisualHoverState(shape: shape) { isHovering in
             Button(action: action) {
                 label()
-                    .background(Self.backgroundColor(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
-                    .visualHitArea()
+                    .background(Self.backgroundColor(isSelected: isSelected, isHovering: isHovering), in: shape)
+                    .visualHitArea(shape)
             }
-            .visualHitArea()
+            .visualHitArea(shape)
             .buttonStyle(.plain)
         }
     }

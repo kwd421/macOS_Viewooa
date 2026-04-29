@@ -10,7 +10,9 @@ struct ImageBrowserThumbnailCell: View {
     let onSelect: (Int) -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
+
+        VisualHoverState(shape: shape) { isHovering in
             Button {
                 onSelect(index)
             } label: {
@@ -32,14 +34,14 @@ struct ImageBrowserThumbnailCell: View {
                         .frame(width: thumbnailSize)
                 }
                 .padding(8)
-                .background(Self.thumbnailBackground(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                .visualHitArea()
+                .background(Self.thumbnailBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
+                .visualHitArea(shape)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(url.lastPathComponent)
-            .visualHitArea()
+            .visualHitArea(shape)
         }
-        .visualHitArea()
+        .visualHitArea(shape)
         .opacity(isRevealed || reduceMotion ? 1 : 0)
         .scaleEffect(isRevealed || reduceMotion ? 1 : 0.965)
         .offset(y: isRevealed || reduceMotion ? 0 : 18)
@@ -74,7 +76,9 @@ struct ImageBrowserListRow: View {
     let onSelect: (Int) -> Void
 
     var body: some View {
-        VisualHoverState { isHovering in
+        let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+
+        VisualHoverState(shape: shape) { isHovering in
             Button {
                 onSelect(index)
             } label: {
@@ -105,18 +109,17 @@ struct ImageBrowserListRow: View {
                 }
                 .padding(.horizontal, 12)
                 .frame(height: 58)
-                .background(Self.listBackground(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .background(Self.listBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .strokeBorder(Self.listBorder(isSelected: isSelected, isHovering: isHovering))
+                    shape.strokeBorder(Self.listBorder(isSelected: isSelected, isHovering: isHovering))
                 }
-                .visualHitArea()
+                .visualHitArea(shape)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(url.lastPathComponent)
-            .visualHitArea()
+            .visualHitArea(shape)
         }
-        .visualHitArea()
+        .visualHitArea(shape)
         .opacity(isRevealed || reduceMotion ? 1 : 0)
         .scaleEffect(isRevealed || reduceMotion ? 1 : 0.985)
         .offset(y: isRevealed || reduceMotion ? 0 : 12)

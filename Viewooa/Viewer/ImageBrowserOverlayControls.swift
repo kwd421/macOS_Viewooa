@@ -6,7 +6,9 @@ struct ImageBrowserViewModeControl: View {
     var body: some View {
         HStack(spacing: 0) {
             ForEach(ImageBrowserDisplayMode.allCases) { mode in
-                VisualHoverState { isHovering in
+                let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
+
+                VisualHoverState(shape: shape) { isHovering in
                     Button {
                         displayMode = mode
                     } label: {
@@ -18,10 +20,10 @@ struct ImageBrowserViewModeControl: View {
                                 Self.backgroundColor(isSelected: displayMode == mode, isHovering: isHovering),
                                 in: RoundedRectangle(cornerRadius: 6, style: .continuous)
                             )
-                            .visualHitArea()
+                            .visualHitArea(shape)
                     }
                     .frame(width: 32, height: 26)
-                    .visualHitArea()
+                    .visualHitArea(shape)
                     .buttonStyle(.plain)
                     .accessibilityLabel(mode.title)
                 }
@@ -30,6 +32,7 @@ struct ImageBrowserViewModeControl: View {
         }
         .padding(2)
         .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .visualHitArea(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private static func foregroundColor(isSelected: Bool) -> Color {

@@ -39,6 +39,8 @@ enum ViewerControlVisualStyle {
     static let iconBaseOpacity = 0.10
     static let iconHoverOpacity = 0.28
     static let iconPressedOpacity = 0.32
+    static let iconInactiveForegroundOpacity = 0.82
+    static let iconActiveForegroundOpacity = 1.0
     static let capsuleBaseOpacity = 0.10
     static let capsuleHoverOpacity = 0.26
     static let capsuleBorderBaseOpacity = 0.10
@@ -58,6 +60,10 @@ enum ViewerControlVisualStyle {
 
     static func capsuleBorderOpacity(isHovering: Bool) -> Double {
         isHovering ? capsuleBorderHoverOpacity : capsuleBorderBaseOpacity
+    }
+
+    static func iconForegroundOpacity(isActive: Bool) -> Double {
+        isActive ? iconActiveForegroundOpacity : iconInactiveForegroundOpacity
     }
 }
 
@@ -149,7 +155,7 @@ struct ViewerControlIconButton: View {
             ViewerControlIconSurface(systemImage: systemImage, isActive: isActive)
         }
         .buttonStyle(.plain)
-        .visualHitArea()
+        .visualHitArea(Circle())
         .foregroundStyle(.white)
         .accessibilityLabel(accessibilityLabel)
     }
@@ -161,11 +167,11 @@ struct ViewerControlIconSurface: View {
     var isPressed = false
 
     var body: some View {
-        VisualHoverState { isHovering in
+        VisualHoverState(shape: Circle()) { isHovering in
             VisualIconButtonLabel(
                 systemImage: systemImage,
                 size: ViewerControlVisualStyle.iconSize,
-                foregroundColor: .white,
+                foregroundColor: .white.opacity(ViewerControlVisualStyle.iconForegroundOpacity(isActive: isActive)),
                 backgroundColor: .white.opacity(ViewerControlVisualStyle.iconBackgroundOpacity(
                     isHovering: isHovering,
                     isPressed: isPressed
@@ -180,7 +186,7 @@ struct ViewerControlCapsuleLabel: View {
     let title: String
 
     var body: some View {
-        VisualHoverState { isHovering in
+        VisualHoverState(shape: Capsule()) { isHovering in
             VisualCapsuleIconTextLabel(
                 systemImage: systemImage,
                 title: title,
