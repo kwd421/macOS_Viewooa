@@ -16,31 +16,36 @@ struct OpenBrowserThumbnailCell: View {
     let onAddFolderFavorite: (OpenBrowserEntry) -> Void
 
     var body: some View {
-        Button {
-            onClick(entry)
-        } label: {
-            VStack(spacing: 9) {
-                thumbnailPreview
+        VisualHoverState { isHovering in
+            Button {
+                onClick(entry)
+            } label: {
+                VStack(spacing: 9) {
+                    thumbnailPreview
 
-                Text(entry.name)
-                    .font(.system(size: 11, weight: .semibold))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.primary)
-                    .frame(width: thumbnailSize, height: 28, alignment: .top)
+                    Text(entry.name)
+                        .font(.system(size: 11, weight: .semibold))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.primary)
+                        .frame(width: thumbnailSize, height: 28, alignment: .top)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 10)
+                .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57, alignment: .top)
+                .background(Self.thumbnailBackground(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .strokeBorder(Self.thumbnailBorder(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
+                }
+                .visualHitArea()
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 10)
-            .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57, alignment: .top)
-            .background(isSelected ? Color.openBrowserSelection.opacity(0.07) : .clear, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .strokeBorder(isSelected ? Color.openBrowserSelection.opacity(0.46) : .clear, lineWidth: 1)
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57)
+            .visualHitArea()
+            .buttonStyle(.plain)
+            .accessibilityLabel(entry.name)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(entry.name)
+        .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57)
         .simultaneousGesture(TapGesture(count: 2).onEnded {
             onDoubleClick(entry)
         })
@@ -76,6 +81,22 @@ struct OpenBrowserThumbnailCell: View {
         .scaleEffect(isRevealed || reduceMotion ? 1 : 0.965)
         .offset(y: isRevealed || reduceMotion ? 0 : 18)
         .animation(revealAnimation, value: isRevealed)
+    }
+
+    private static func thumbnailBackground(isSelected: Bool, isHovering: Bool) -> Color {
+        if isSelected {
+            return Color.openBrowserSelection.opacity(isHovering ? 0.12 : 0.07)
+        }
+
+        return isHovering ? Color.primary.opacity(0.055) : .clear
+    }
+
+    private static func thumbnailBorder(isSelected: Bool, isHovering: Bool) -> Color {
+        if isSelected {
+            return Color.openBrowserSelection.opacity(isHovering ? 0.62 : 0.46)
+        }
+
+        return isHovering ? Color.primary.opacity(0.10) : .clear
     }
 
     private var revealAnimation: Animation? {
@@ -117,41 +138,45 @@ struct OpenBrowserListRow: View {
     let onAddFolderFavorite: (OpenBrowserEntry) -> Void
 
     var body: some View {
-        Button {
-            onClick(entry)
-        } label: {
-            HStack(spacing: 12) {
-                listPreview
+        VisualHoverState { isHovering in
+            Button {
+                onClick(entry)
+            } label: {
+                HStack(spacing: 12) {
+                    listPreview
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(entry.name)
-                        .font(.system(size: 13, weight: .regular))
-                        .lineLimit(1)
-                    Text(entry.isDirectory ? "Folder" : entry.url.pathExtension.uppercased())
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(entry.name)
+                            .font(.system(size: 13, weight: .regular))
+                            .lineLimit(1)
+                        Text(entry.isDirectory ? "Folder" : entry.url.pathExtension.uppercased())
+                            .font(.system(size: 11, weight: .regular))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+
+                    Spacer()
+
+                    if isFavorite && !entry.isDirectory {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.red)
+                    }
                 }
-
-                Spacer()
-
-                if isFavorite && !entry.isDirectory {
-                    Image(systemName: "heart.fill")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(.red)
+                .padding(.horizontal, 9)
+                .frame(height: 40)
+                .background(Self.listBackground(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .strokeBorder(Self.listBorder(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
                 }
+                .visualHitArea()
             }
-            .padding(.horizontal, 9)
-            .frame(height: 40)
-            .background(isSelected ? Color.openBrowserSelection.opacity(0.16) : .clear, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(isSelected ? Color.openBrowserSelection.opacity(0.24) : .clear, lineWidth: 1)
-            }
-            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .buttonStyle(.plain)
+            .accessibilityLabel(entry.name)
+            .visualHitArea()
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(entry.name)
+        .visualHitArea()
         .simultaneousGesture(TapGesture(count: 2).onEnded {
             onDoubleClick(entry)
         })
@@ -179,6 +204,22 @@ struct OpenBrowserListRow: View {
         .scaleEffect(isRevealed || reduceMotion ? 1 : 0.985)
         .offset(y: isRevealed || reduceMotion ? 0 : 12)
         .animation(revealAnimation, value: isRevealed)
+    }
+
+    private static func listBackground(isSelected: Bool, isHovering: Bool) -> Color {
+        if isSelected {
+            return Color.openBrowserSelection.opacity(isHovering ? 0.22 : 0.16)
+        }
+
+        return isHovering ? Color.primary.opacity(0.055) : .clear
+    }
+
+    private static func listBorder(isSelected: Bool, isHovering: Bool) -> Color {
+        if isSelected {
+            return Color.openBrowserSelection.opacity(isHovering ? 0.34 : 0.24)
+        }
+
+        return isHovering ? Color.primary.opacity(0.08) : .clear
     }
 
     private var revealAnimation: Animation? {

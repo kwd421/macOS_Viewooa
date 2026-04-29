@@ -57,14 +57,7 @@ struct ImageBrowserOverlay: View {
 
     private var header: some View {
         HStack(spacing: 14) {
-            Button(action: onDismiss) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 12, weight: .bold))
-                    .frame(width: 28, height: 28)
-                    .background(.white.opacity(0.12), in: Circle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Close Image Browser")
+            ImageBrowserCloseButton(action: onDismiss)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Images")
@@ -164,5 +157,26 @@ struct ImageBrowserOverlay: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.035) {
             isContentRevealed = true
         }
+    }
+}
+
+private struct ImageBrowserCloseButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        VisualHoverState { isHovering in
+            Button(action: action) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .frame(width: 28, height: 28)
+                    .background(.white.opacity(isHovering ? 0.28 : 0.12), in: Circle())
+                    .visualHitArea()
+            }
+            .frame(width: 28, height: 28)
+            .visualHitArea()
+            .buttonStyle(.plain)
+            .accessibilityLabel("Close Image Browser")
+        }
+        .frame(width: 28, height: 28)
     }
 }

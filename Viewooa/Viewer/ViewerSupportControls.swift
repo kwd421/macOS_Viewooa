@@ -34,6 +34,33 @@ struct ImageMetadataPanel: View {
     }
 }
 
+enum ViewerControlVisualStyle {
+    static let iconSize: CGFloat = 30
+    static let iconBaseOpacity = 0.10
+    static let iconHoverOpacity = 0.28
+    static let iconPressedOpacity = 0.32
+    static let capsuleBaseOpacity = 0.10
+    static let capsuleHoverOpacity = 0.26
+    static let capsuleBorderBaseOpacity = 0.10
+    static let capsuleBorderHoverOpacity = 0.28
+
+    static func iconBackgroundOpacity(isHovering: Bool, isPressed: Bool = false) -> Double {
+        if isPressed {
+            return iconPressedOpacity
+        }
+
+        return isHovering ? iconHoverOpacity : iconBaseOpacity
+    }
+
+    static func capsuleBackgroundOpacity(isHovering: Bool) -> Double {
+        isHovering ? capsuleHoverOpacity : capsuleBaseOpacity
+    }
+
+    static func capsuleBorderOpacity(isHovering: Bool) -> Double {
+        isHovering ? capsuleBorderHoverOpacity : capsuleBorderBaseOpacity
+    }
+}
+
 struct RepeatingControlButton: View {
     let accessibilityLabel: String
     let systemImage: String
@@ -47,12 +74,7 @@ struct RepeatingControlButton: View {
     private static let initialDelay: Duration = .milliseconds(500)
 
     var body: some View {
-        Image(systemName: systemImage)
-            .font(.system(size: 15, weight: .semibold))
-            .frame(width: 30, height: 30)
-            .background(.white.opacity(isPressed ? 0.18 : 0.10), in: Circle())
-            .foregroundStyle(.white)
-            .contentShape(Circle())
+        ViewerControlIconSurface(systemImage: systemImage, isPressed: isPressed)
             .accessibilityLabel(accessibilityLabel)
             .accessibilityAddTraits(.isButton)
             .gesture(
@@ -116,10 +138,54 @@ struct RepeatingControlButton: View {
     }
 }
 
-struct ActualSizeIcon: View {
+struct ViewerControlIconButton: View {
+    let accessibilityLabel: String
+    let systemImage: String
+    var isActive = false
+    let action: () -> Void
+
     var body: some View {
-        Image(systemName: "1.magnifyingglass")
-            .font(.system(size: 15, weight: .semibold))
-            .frame(width: 30, height: 30)
+        Button(action: action) {
+            ViewerControlIconSurface(systemImage: systemImage, isActive: isActive)
+        }
+        .buttonStyle(.plain)
+        .visualHitArea()
+        .foregroundStyle(.white)
+        .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+struct ViewerControlIconSurface: View {
+    let systemImage: String
+    var isActive = false
+    var isPressed = false
+
+    var body: some View {
+        VisualHoverState { isHovering in
+            VisualIconButtonLabel(
+                systemImage: systemImage,
+                size: ViewerControlVisualStyle.iconSize,
+                foregroundColor: .white,
+                backgroundColor: .white.opacity(ViewerControlVisualStyle.iconBackgroundOpacity(
+                    isHovering: isHovering,
+                    isPressed: isPressed
+                ))
+            )
+        }
+    }
+}
+
+struct ViewerControlCapsuleLabel: View {
+    let systemImage: String
+    let title: String
+
+    var body: some View {
+        VisualHoverState { isHovering in
+            VisualCapsuleIconTextLabel(
+                systemImage: systemImage,
+                title: title,
+                backgroundColor: .white.opacity(ViewerControlVisualStyle.capsuleBackgroundOpacity(isHovering: isHovering))
+            )
+        }
     }
 }

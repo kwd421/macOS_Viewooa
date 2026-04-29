@@ -25,16 +25,38 @@ struct OpenBrowserIconToolbarButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 12.5, weight: .semibold))
-                .frame(width: OpenBrowserLayout.titlebarButtonSize, height: OpenBrowserLayout.titlebarButtonSize)
-                .foregroundStyle(isActive ? Color.openBrowserSelection : .secondary)
-                .contentShape(RoundedRectangle(cornerRadius: OpenBrowserLayout.titlebarButtonSize / 2, style: .continuous))
+            OpenBrowserIconToolbarSurface(systemImage: systemImage, isActive: isActive)
         }
         .frame(width: OpenBrowserLayout.titlebarButtonSize, height: OpenBrowserLayout.titlebarButtonSize)
-        .contentShape(RoundedRectangle(cornerRadius: OpenBrowserLayout.titlebarButtonSize / 2, style: .continuous))
         .buttonStyle(.plain)
+        .visualHitArea()
         .accessibilityLabel(accessibilityLabel)
+    }
+}
+
+struct OpenBrowserIconToolbarSurface: View {
+    let systemImage: String
+    var isActive = false
+
+    var body: some View {
+        VisualHoverState { isHovering in
+            VisualIconButtonLabel(
+                systemImage: systemImage,
+                size: OpenBrowserLayout.titlebarButtonSize,
+                fontSize: 12.5,
+                foregroundColor: Self.iconColor(isActive: isActive),
+                backgroundColor: Self.iconBackgroundColor(isHovering: isHovering)
+            )
+        }
+        .frame(width: OpenBrowserLayout.titlebarButtonSize, height: OpenBrowserLayout.titlebarButtonSize)
+    }
+
+    private static func iconColor(isActive: Bool) -> Color {
+        isActive ? Color.openBrowserSelection : .secondary
+    }
+
+    private static func iconBackgroundColor(isHovering: Bool) -> Color {
+        return isHovering ? Color.primary.opacity(0.08) : .clear
     }
 }
 
@@ -43,21 +65,24 @@ struct OpenBrowserSearchIconButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.white.opacity(hasSearchText ? 1 : 0.82))
-                .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
-                .background(.ultraThinMaterial, in: Circle())
-                .overlay {
-                    Circle().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
-                }
-                .contentShape(Circle())
+        VisualHoverState { isHovering in
+            Button(action: action) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Color.white.opacity(hasSearchText ? 1 : 0.82))
+                    .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
+                    .background(.ultraThinMaterial, in: Circle())
+                    .background(Color.white.opacity(isHovering ? 0.12 : 0), in: Circle())
+                    .overlay {
+                        Circle().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+                    }
+                    .visualHitArea()
+            }
+            .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
+            .buttonStyle(.plain)
+            .accessibilityLabel("Search")
         }
         .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
-        .contentShape(Circle())
-        .buttonStyle(.plain)
-        .accessibilityLabel("Search")
     }
 }
 
@@ -81,16 +106,10 @@ struct OpenBrowserSearchField: View {
                 .focused(isFocused)
 
             if !searchText.isEmpty || onClose != nil {
-                Button {
+                OpenBrowserClearSearchButton {
                     searchText = ""
                     onClose?()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Clear Search")
             }
         }
         .padding(.horizontal, 9)
@@ -102,13 +121,40 @@ struct OpenBrowserSearchField: View {
     }
 }
 
+private struct OpenBrowserClearSearchButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        VisualHoverState { isHovering in
+            Button(action: action) {
+                VisualIconButtonLabel(
+                    systemImage: "xmark.circle.fill",
+                    size: 20,
+                    fontSize: 11,
+                    foregroundColor: .secondary,
+                    backgroundColor: Color.primary.opacity(isHovering ? 0.08 : 0)
+                )
+            }
+            .frame(width: 20, height: 20)
+            .buttonStyle(.plain)
+            .accessibilityLabel("Clear Search")
+        }
+        .frame(width: 20, height: 20)
+    }
+}
+
 struct OpenBrowserSortMenu: View {
     @Binding var sortOption: OpenBrowserSortOption
     @Binding var sortAscending: Bool
     var isVibrant = false
 
     var body: some View {
-        Menu {
+        OpenBrowserToolbarIconMenu(
+            accessibilityLabel: "Sort",
+            systemImage: "arrow.up.arrow.down",
+            iconFontSize: 13,
+            isVibrant: isVibrant
+        ) {
             ForEach(OpenBrowserSortOption.allCases) { option in
                 Button {
                     sortOption = option
@@ -124,21 +170,7 @@ struct OpenBrowserSortMenu: View {
             } label: {
                 Label(sortAscending ? "Ascending" : "Descending", systemImage: sortAscending ? "arrow.up" : "arrow.down")
             }
-        } label: {
-            Image(systemName: "arrow.up.arrow.down")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isVibrant ? Color.white.opacity(0.82) : .secondary)
-                .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
-                .background(
-                    isVibrant ? Color.clear : Color.openBrowserControlFill,
-                    in: RoundedRectangle(cornerRadius: 7, style: .continuous)
-                )
-                .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
         }
-        .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
-        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
-        .menuStyle(.borderlessButton)
-        .accessibilityLabel("Sort")
     }
 }
 
@@ -154,7 +186,12 @@ struct OpenBrowserActionMenu: View {
     }
 
     var body: some View {
-        Menu {
+        OpenBrowserToolbarIconMenu(
+            accessibilityLabel: "Actions",
+            systemImage: "ellipsis.circle",
+            iconFontSize: 14,
+            isVibrant: isVibrant
+        ) {
             Button("Share...") {
                 onShare(selectedFiles)
             }
@@ -168,48 +205,67 @@ struct OpenBrowserActionMenu: View {
             Divider()
 
             Button("Add Current Folder to Sidebar", action: onAddCurrentFolderToSidebar)
-        } label: {
-            Image(systemName: "ellipsis.circle")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(isVibrant ? Color.white.opacity(0.82) : .secondary)
-                .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
-                .background(
-                    isVibrant ? Color.clear : Color.openBrowserControlFill,
-                    in: RoundedRectangle(cornerRadius: 7, style: .continuous)
-                )
-                .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
         }
-        .frame(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
-        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous))
-        .menuStyle(.borderlessButton)
-        .accessibilityLabel("Actions")
+    }
+}
+
+private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
+    let accessibilityLabel: String
+    let systemImage: String
+    let iconFontSize: CGFloat
+    let isVibrant: Bool
+    @ViewBuilder let menuContent: () -> MenuContent
+
+    var body: some View {
+        let size = Self.controlSize(isVibrant: isVibrant)
+
+        VisualHoverState { isHovering in
+            Menu {
+                menuContent()
+            } label: {
+                Image(systemName: systemImage)
+                    .font(.system(size: iconFontSize, weight: .semibold))
+                    .foregroundStyle(Self.iconColor(isVibrant: isVibrant))
+                    .frame(width: size.width, height: size.height)
+                    .background(
+                        Self.backgroundColor(isVibrant: isVibrant, isHovering: isHovering),
+                        in: RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    )
+                    .visualHitArea()
+            }
+            .frame(width: size.width, height: size.height)
+            .menuStyle(.borderlessButton)
+            .accessibilityLabel(accessibilityLabel)
+        }
+        .frame(width: size.width, height: size.height)
+    }
+
+    private static func controlSize(isVibrant: Bool) -> CGSize {
+        CGSize(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
+    }
+
+    private static func iconColor(isVibrant: Bool) -> Color {
+        isVibrant ? Color.white.opacity(0.82) : .secondary
+    }
+
+    private static func backgroundColor(isVibrant: Bool, isHovering: Bool) -> Color {
+        if isVibrant {
+            return isHovering ? Color.white.opacity(0.12) : .clear
+        }
+
+        return isHovering ? Color.openBrowserControlFill.opacity(1.25) : Color.openBrowserControlFill
     }
 }
 
 struct OpenBrowserViewModeControl: View {
     @Binding var displayMode: ImageBrowserDisplayMode
     var isVibrant = false
+    @State private var hoveredDisplayMode: ImageBrowserDisplayMode?
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(ImageBrowserDisplayMode.allCases) { mode in
-                Button {
-                    displayMode = mode
-                } label: {
-                    Image(systemName: mode.systemImage)
-                        .font(.system(size: 13, weight: .semibold))
-                        .frame(width: isVibrant ? 31 : 32, height: isVibrant ? 30 : 26)
-                        .foregroundStyle(viewModeForeground(for: mode))
-                        .background(
-                            viewModeBackground(for: mode),
-                            in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
-                        )
-                        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous))
-                }
-                .frame(width: isVibrant ? 31 : 32, height: isVibrant ? 30 : 26)
-                .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous))
-                .buttonStyle(.plain)
-                .accessibilityLabel(mode.title)
+            ForEach(ImageBrowserDisplayMode.allCases) { displayModeOption in
+                modeButton(for: displayModeOption)
             }
         }
         .padding(isVibrant ? 0 : 2)
@@ -219,19 +275,50 @@ struct OpenBrowserViewModeControl: View {
         )
     }
 
-    private func viewModeForeground(for mode: ImageBrowserDisplayMode) -> Color {
-        if isVibrant {
-            return displayMode == mode ? .white : Color.white.opacity(0.62)
-        }
+    private func modeButton(for displayModeOption: ImageBrowserDisplayMode) -> some View {
+        let size = Self.modeButtonSize(isVibrant: isVibrant)
 
-        return displayMode == mode ? .primary : .secondary
+        return VisualHoveredSelection(id: displayModeOption, hoveredID: $hoveredDisplayMode) { isHovering in
+            Button {
+                displayMode = displayModeOption
+            } label: {
+                Image(systemName: displayModeOption.systemImage)
+                    .font(.system(size: 13, weight: .semibold))
+                    .frame(width: size.width, height: size.height)
+                    .foregroundStyle(Self.modeIconColor(isSelected: displayMode == displayModeOption, isVibrant: isVibrant))
+                    .background(
+                        Self.modeBackgroundColor(
+                            isSelected: displayMode == displayModeOption,
+                            isVibrant: isVibrant,
+                            isHovering: isHovering
+                        ),
+                        in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
+                    )
+                    .visualHitArea()
+            }
+            .frame(width: size.width, height: size.height)
+            .buttonStyle(.plain)
+            .accessibilityLabel(displayModeOption.title)
+        }
     }
 
-    private func viewModeBackground(for mode: ImageBrowserDisplayMode) -> Color {
+    private static func modeButtonSize(isVibrant: Bool) -> CGSize {
+        CGSize(width: isVibrant ? 31 : 32, height: isVibrant ? 30 : 26)
+    }
+
+    private static func modeIconColor(isSelected: Bool, isVibrant: Bool) -> Color {
         if isVibrant {
-            return displayMode == mode ? Color.white.opacity(0.16) : .clear
+            return isSelected ? .white : Color.white.opacity(0.62)
         }
 
-        return displayMode == mode ? Color(nsColor: .selectedControlColor).opacity(0.22) : .clear
+        return isSelected ? .primary : .secondary
+    }
+
+    private static func modeBackgroundColor(isSelected: Bool, isVibrant: Bool, isHovering: Bool) -> Color {
+        if isVibrant {
+            return isSelected ? Color.white.opacity(isHovering ? 0.22 : 0.16) : (isHovering ? Color.white.opacity(0.10) : .clear)
+        }
+
+        return isSelected ? Color(nsColor: .selectedControlColor).opacity(isHovering ? 0.30 : 0.22) : (isHovering ? Color.primary.opacity(0.07) : .clear)
     }
 }

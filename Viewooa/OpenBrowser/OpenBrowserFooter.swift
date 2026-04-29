@@ -54,16 +54,7 @@ struct OpenBrowserFooter: View {
         } else {
             HStack(spacing: 4) {
                 ForEach(pathComponents) { component in
-                    Button {
-                        onNavigate(component.url)
-                    } label: {
-                        Text(component.title)
-                            .font(.system(size: 12, weight: .regular))
-                            .lineLimit(1)
-                            .foregroundStyle(.secondary)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(component.title)
+                    PathComponentButton(component: component, onNavigate: onNavigate)
 
                     if component.id != pathComponents.last?.id {
                         Image(systemName: "chevron.right")
@@ -76,12 +67,13 @@ struct OpenBrowserFooter: View {
                     Rectangle()
                         .fill(Color.primary.opacity(0.001))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .contentShape(Rectangle())
+                        .visualHitArea()
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Edit Path")
                 .frame(minWidth: 24)
                 .frame(maxWidth: .infinity)
+                .visualHitArea()
                 .contextMenu {
                     pathContextMenuItems
                 }
@@ -90,7 +82,7 @@ struct OpenBrowserFooter: View {
             .frame(height: 26)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.openBrowserControlFill, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-            .contentShape(Rectangle())
+            .visualHitArea()
             .contextMenu {
                 pathContextMenuItems
             }
@@ -105,5 +97,32 @@ struct OpenBrowserFooter: View {
         }
 
         Button("Edit Path", action: onBeginPathEditing)
+    }
+}
+
+private struct PathComponentButton: View {
+    let component: OpenBrowserPathComponent
+    let onNavigate: (URL) -> Void
+
+    var body: some View {
+        VisualHoverState { isHovering in
+            Button {
+                onNavigate(component.url)
+            } label: {
+                Text(component.title)
+                    .font(.system(size: 12, weight: .regular))
+                    .lineLimit(1)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 5)
+                    .frame(height: 20)
+                    .background(
+                        Color.primary.opacity(isHovering ? 0.08 : 0),
+                        in: RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    )
+                    .visualHitArea()
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(component.title)
+        }
     }
 }

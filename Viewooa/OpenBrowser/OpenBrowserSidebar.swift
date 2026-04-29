@@ -68,42 +68,39 @@ struct OpenBrowserSidebar: View {
     }
 
     private var addCurrentFolderButton: some View {
-        Button(action: onAddCurrentFolder) {
+        SidebarHoverButton {
+            onAddCurrentFolder()
+        } label: {
             Label("Add Current Folder", systemImage: "plus")
                 .font(.system(size: 12, weight: .medium))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 8)
                 .frame(height: 26)
         }
-        .buttonStyle(.plain)
         .foregroundStyle(.secondary)
     }
 
     private func sidebarRow(_ item: OpenBrowserSidebarItem, allowsRemoval: Bool) -> some View {
         let isSelected = item.url.standardizedFileURL == currentDirectory.standardizedFileURL
 
-        return HStack(spacing: 9) {
-            Image(systemName: item.systemImage)
-                .font(.system(size: 13, weight: .regular))
-                .symbolRenderingMode(.hierarchical)
-                .frame(width: 18, alignment: .center)
-                .foregroundStyle(isSelected ? Color.openBrowserSelection : .secondary)
-
-            Text(item.title)
-                .font(.system(size: 12, weight: .regular))
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.horizontal, 8)
-        .frame(height: 24)
-        .foregroundStyle(isSelected ? Color.openBrowserSelection : .primary)
-        .background(
-            isSelected ? Color.white.opacity(0.09) : .clear,
-            in: RoundedRectangle(cornerRadius: 6, style: .continuous)
-        )
-        .contentShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        .onTapGesture {
+        return SidebarHoverButton(isSelected: isSelected) {
             onNavigate(item.url)
+        } label: {
+            HStack(spacing: 9) {
+                Image(systemName: item.systemImage)
+                    .font(.system(size: 13, weight: .regular))
+                    .symbolRenderingMode(.hierarchical)
+                    .frame(width: 18, alignment: .center)
+                    .foregroundStyle(isSelected ? Color.openBrowserSelection : .secondary)
+
+                Text(item.title)
+                    .font(.system(size: 12, weight: .regular))
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, 8)
+            .frame(height: 24)
+            .foregroundStyle(isSelected ? Color.openBrowserSelection : .primary)
         }
         .contextMenu {
             if allowsRemoval {
@@ -115,5 +112,31 @@ struct OpenBrowserSidebar: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(item.title)
         .accessibilityAddTraits(.isButton)
+    }
+}
+
+private struct SidebarHoverButton<Label: View>: View {
+    var isSelected = false
+    let action: () -> Void
+    @ViewBuilder let label: () -> Label
+
+    var body: some View {
+        VisualHoverState { isHovering in
+            Button(action: action) {
+                label()
+                    .background(Self.backgroundColor(isSelected: isSelected, isHovering: isHovering), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .visualHitArea()
+            }
+            .visualHitArea()
+            .buttonStyle(.plain)
+        }
+    }
+
+    private static func backgroundColor(isSelected: Bool, isHovering: Bool) -> Color {
+        if isSelected {
+            return Color.white.opacity(isHovering ? 0.13 : 0.09)
+        }
+
+        return isHovering ? Color.primary.opacity(0.06) : .clear
     }
 }

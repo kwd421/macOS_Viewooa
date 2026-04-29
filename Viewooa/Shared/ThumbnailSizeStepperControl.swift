@@ -10,7 +10,6 @@ struct ThumbnailSizeStepperControl: View {
     private let step: CGFloat = 18
     private let gridSpacing: CGFloat = 18
     private let minimumMeaningfulStep: CGFloat = 18
-
     var body: some View {
         HStack(spacing: 0) {
             stepButton(systemImage: "minus", delta: -step, isDisabled: !canStep(delta: -step))
@@ -26,40 +25,51 @@ struct ThumbnailSizeStepperControl: View {
             RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous)
                 .fill(isVibrant ? Color.white.opacity(0.10) : Color.openBrowserControlFill)
         }
-        .contentShape(RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous))
+        .visualHitArea()
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Thumbnail Size")
     }
 
     private func stepButton(systemImage: String, delta: CGFloat, isDisabled: Bool) -> some View {
-        Button {
-            onWillChange?()
-            withAnimation(.smooth(duration: 0.18, extraBounce: 0)) {
-                thumbnailSize = nextThumbnailSize(delta: delta)
+        VisualHoverState { isHovering in
+            Button {
+                onWillChange?()
+                withAnimation(.smooth(duration: 0.18, extraBounce: 0)) {
+                    thumbnailSize = nextThumbnailSize(delta: delta)
+                }
+            } label: {
+                Image(systemName: systemImage)
+                    .font(.system(size: 12, weight: .semibold))
+                    .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
+                    .foregroundStyle(Self.buttonColor(isDisabled: isDisabled, isVibrant: isVibrant))
+                    .background(
+                        Self.stepButtonBackground(isDisabled: isDisabled, isHovering: isHovering, isVibrant: isVibrant),
+                        in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous)
+                    )
+                    .visualHitArea()
             }
-        } label: {
-            Image(systemName: systemImage)
-                .font(.system(size: 12, weight: .semibold))
-                .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
-                .foregroundStyle(buttonColor(isDisabled: isDisabled))
-                .contentShape(Rectangle())
+            .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
+            .buttonStyle(.plain)
+            .disabled(isDisabled)
+            .accessibilityLabel(delta < 0 ? "Smaller Thumbnails" : "Larger Thumbnails")
         }
         .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
-        .contentShape(Rectangle())
-        .buttonStyle(.plain)
-        .disabled(isDisabled)
-        .accessibilityLabel(delta < 0 ? "Smaller Thumbnails" : "Larger Thumbnails")
     }
 
     private var separatorColor: Color {
         isVibrant ? Color.white.opacity(0.18) : Color.openBrowserSeparator.opacity(0.65)
     }
 
-    private func buttonColor(isDisabled: Bool) -> Color {
+    private static func buttonColor(isDisabled: Bool, isVibrant: Bool) -> Color {
         if isDisabled {
             return isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28)
         }
         return isVibrant ? Color.white.opacity(0.78) : Color.secondary
+    }
+
+    private static func stepButtonBackground(isDisabled: Bool, isHovering: Bool, isVibrant: Bool) -> Color {
+        guard !isDisabled, isHovering else { return .clear }
+        return isVibrant ? Color.white.opacity(0.12) : Color.primary.opacity(0.07)
     }
 
     private func nextThumbnailSize(delta: CGFloat) -> CGFloat {
@@ -91,4 +101,3 @@ struct ThumbnailSizeStepperControl: View {
         min(max(size, range.lowerBound), range.upperBound)
     }
 }
-

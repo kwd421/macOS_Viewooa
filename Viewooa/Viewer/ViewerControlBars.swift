@@ -5,9 +5,10 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
     @Binding var isPinned: Bool
     @Binding var isHoveringRevealArea: Bool
     @Binding var slideshowIntervalDraft: String
+    @FocusState private var isSlideshowIntervalFocused: Bool
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             toolbarInfoButton
 
             ViewerControlSeparator()
@@ -20,12 +21,11 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
 
             toolbarPinButton
         }
-        .font(.system(size: 13, weight: .semibold))
+        .font(.system(size: 12, weight: .semibold))
         .buttonStyle(.plain)
         .foregroundStyle(.white)
-        .labelStyle(.titleAndIcon)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 9)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
         .background(.ultraThinMaterial, in: Capsule())
         .overlay {
             Capsule().strokeBorder(.white.opacity(0.14))
@@ -34,13 +34,13 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
     }
 
     private var toolbarInfoButton: some View {
-        Button {
-            store.toggleMetadataVisibility()
-        } label: {
-            Label("Info", systemImage: store.isMetadataVisible ? "info.circle.fill" : "info.circle")
-        }
+        ViewerControlIconButton(
+            accessibilityLabel: "Info",
+            systemImage: store.isMetadataVisible ? "info.circle.fill" : "info.circle",
+            isActive: store.isMetadataVisible,
+            action: store.toggleMetadataVisibility
+        )
         .keyboardShortcut(.tab, modifiers: [])
-        .accessibilityLabel("Info")
     }
 
     private var toolbarPageLayoutMenu: some View {
@@ -72,9 +72,10 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
                 store.setPageLayout(.verticalStrip)
             }
         } label: {
-            Label("View: \(pageLayoutTitle)", systemImage: "rectangle.split.2x1")
+            toolbarMenuLabel(systemImage: "rectangle.split.2x1", title: pageLayoutTitle)
         }
         .fixedSize()
+        .visualHitArea()
         .accessibilityLabel("Page Layout")
     }
 
@@ -97,22 +98,24 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
                 }
             }
         } label: {
-            Label("Fit: \(currentFitMode?.shortTitle ?? "Custom")", systemImage: "arrow.up.left.and.down.right.magnifyingglass")
+            toolbarMenuLabel(
+                systemImage: "arrow.up.left.and.down.right.magnifyingglass",
+                title: currentFitMode?.shortTitle ?? "Custom"
+            )
         }
         .fixedSize()
+        .visualHitArea()
         .accessibilityLabel("Fit Mode")
     }
 
     private var toolbarSlideshowControl: some View {
         HStack(spacing: 8) {
-            Button {
-                store.toggleSlideshow()
-            } label: {
-                Label(
-                    store.isSlideshowPlaying ? "Pause" : "Slideshow",
-                    systemImage: store.isSlideshowPlaying ? "pause.circle.fill" : "play.circle"
-                )
-            }
+            ViewerControlIconButton(
+                accessibilityLabel: store.isSlideshowPlaying ? "Pause Slideshow" : "Start Slideshow",
+                systemImage: store.isSlideshowPlaying ? "pause.circle.fill" : "play.circle",
+                isActive: store.isSlideshowPlaying,
+                action: store.toggleSlideshow
+            )
 
             slideshowIntervalEditor
 
@@ -120,43 +123,67 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
                 VerticalSlideshowPreview(intervalSeconds: store.slideshowIntervalSeconds)
             }
         }
+        .visualHitArea()
         .accessibilityLabel("Slideshow")
     }
 
-    private var slideshowIntervalEditor: some View {
-        HStack(spacing: 4) {
-            SlideshowIntervalField(
-                text: $slideshowIntervalDraft,
-                onCommit: commitSlideshowIntervalDraft,
-                onStep: adjustSlideshowInterval
-            )
-            .frame(width: 32, height: 18)
+    private func toolbarMenuLabel(systemImage: String, title: String) -> some View {
+        ViewerControlCapsuleLabel(systemImage: systemImage, title: title)
+    }
 
-            Text("s")
-                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(0.58))
-                .offset(y: 0.5)
-        }
-        .padding(.leading, 8)
-        .padding(.trailing, 7)
-        .frame(height: 26)
-        .background(.white.opacity(0.10), in: Capsule())
-        .overlay {
-            Capsule().strokeBorder(.white.opacity(0.10))
+    private var slideshowIntervalEditor: some View {
+        VisualHoverState { isHovering in
+            HStack(spacing: 4) {
+                TextField("", text: $slideshowIntervalDraft)
+                    .textFieldStyle(.plain)
+                    .focused($isSlideshowIntervalFocused)
+                    .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 34, height: 22)
+                    .onSubmit(commitSlideshowIntervalDraft)
+                    .onChange(of: isSlideshowIntervalFocused) { _, isFocused in
+                        if !isFocused {
+                            commitSlideshowIntervalDraft()
+                        }
+                    }
+
+                Text("s")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.68))
+            }
+            .padding(.leading, 9)
+            .padding(.trailing, 9)
+            .frame(height: 28)
+            .background(.white.opacity(ViewerControlVisualStyle.capsuleBackgroundOpacity(isHovering: isHovering)), in: Capsule())
+            .overlay {
+                Capsule().strokeBorder(.white.opacity(ViewerControlVisualStyle.capsuleBorderOpacity(isHovering: isHovering)))
+            }
+            .overlay {
+                SlideshowIntervalScrollStepper(onStep: adjustSlideshowInterval)
+            }
+            .onTapGesture {
+                isSlideshowIntervalFocused = true
+            }
         }
         .accessibilityLabel("Slideshow interval \(slideshowIntervalText)")
     }
 
     private var toolbarPinButton: some View {
-        Button {
-            isPinned.toggle()
+        ViewerControlIconButton(
+            accessibilityLabel: isPinned ? "Unpin Toolbar" : "Pin Toolbar",
+            systemImage: isPinned ? "pin.fill" : "pin",
+            isActive: isPinned
+        ) {
+            toggleToolbarPin()
+        }
+    }
+
+    private func toggleToolbarPin() {
+        isPinned.toggle()
             if !isPinned {
                 isHoveringRevealArea = true
             }
-        } label: {
-            Image(systemName: isPinned ? "pin.fill" : "pin")
-        }
-        .accessibilityLabel(isPinned ? "Unpin Toolbar" : "Pin Toolbar")
     }
 
     private var currentFitMode: FitMode? {
@@ -240,15 +267,7 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
     }
 
     private func controlButton(_ accessibilityLabel: String, systemImage: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 15, weight: .semibold))
-                .frame(width: 30, height: 30)
-                .background(.white.opacity(0.10), in: Circle())
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.white)
-        .accessibilityLabel(accessibilityLabel)
+        ViewerControlIconButton(accessibilityLabel: accessibilityLabel, systemImage: systemImage, action: action)
     }
 
     private func repeatingControlButton(_ accessibilityLabel: String, systemImage: String, action: @escaping () -> Void) -> some View {
@@ -267,15 +286,12 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
     }
 
     private var actualSizeButton: some View {
-        Button(action: store.toggleActualSize) {
-            ActualSizeIcon()
-                .frame(width: 30, height: 30)
-                .background(isActualSize ? .white.opacity(0.20) : .white.opacity(0.10), in: Circle())
-                .contentShape(Circle())
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.white)
-        .accessibilityLabel("Actual Size")
+        ViewerControlIconButton(
+            accessibilityLabel: "Actual Size",
+            systemImage: "1.magnifyingglass",
+            isActive: isActualSize,
+            action: store.toggleActualSize
+        )
     }
 
     private var isActualSize: Bool {
