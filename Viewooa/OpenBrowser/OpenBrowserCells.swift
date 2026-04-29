@@ -35,10 +35,10 @@ struct OpenBrowserThumbnailCell: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 10)
                 .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57, alignment: .top)
-                .background(Self.thumbnailBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
+                .background(Self.thumbnailBackground.color(isSelected: isSelected, isHovering: isHovering), in: shape)
                 .overlay {
                     shape
-                        .strokeBorder(Self.thumbnailBorder(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
+                        .strokeBorder(Self.thumbnailBorder.color(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
                 }
                 .visualHitArea(shape)
             }
@@ -85,21 +85,19 @@ struct OpenBrowserThumbnailCell: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static func thumbnailBackground(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return Color.openBrowserSelection.opacity(isHovering ? 0.12 : 0.07)
-        }
+    private static let thumbnailBackground = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.055),
+        selected: Color.openBrowserSelection.opacity(0.07),
+        selectedHover: Color.openBrowserSelection.opacity(0.12)
+    )
 
-        return isHovering ? Color.primary.opacity(0.055) : .clear
-    }
-
-    private static func thumbnailBorder(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return Color.openBrowserSelection.opacity(isHovering ? 0.62 : 0.46)
-        }
-
-        return isHovering ? Color.primary.opacity(0.10) : .clear
-    }
+    private static let thumbnailBorder = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.10),
+        selected: Color.openBrowserSelection.opacity(0.46),
+        selectedHover: Color.openBrowserSelection.opacity(0.62)
+    )
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
@@ -169,10 +167,10 @@ struct OpenBrowserListRow: View {
                 }
                 .padding(.horizontal, 9)
                 .frame(height: 40)
-                .background(Self.listBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
+                .background(Self.listBackground.color(isSelected: isSelected, isHovering: isHovering), in: shape)
                 .overlay {
                     shape
-                        .strokeBorder(Self.listBorder(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
+                        .strokeBorder(Self.listBorder.color(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
                 }
                 .visualHitArea(shape)
             }
@@ -210,21 +208,19 @@ struct OpenBrowserListRow: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static func listBackground(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return Color.openBrowserSelection.opacity(isHovering ? 0.22 : 0.16)
-        }
+    private static let listBackground = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.055),
+        selected: Color.openBrowserSelection.opacity(0.16),
+        selectedHover: Color.openBrowserSelection.opacity(0.22)
+    )
 
-        return isHovering ? Color.primary.opacity(0.055) : .clear
-    }
-
-    private static func listBorder(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return Color.openBrowserSelection.opacity(isHovering ? 0.34 : 0.24)
-        }
-
-        return isHovering ? Color.primary.opacity(0.08) : .clear
-    }
+    private static let listBorder = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.08),
+        selected: Color.openBrowserSelection.opacity(0.24),
+        selectedHover: Color.openBrowserSelection.opacity(0.34)
+    )
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }

@@ -126,7 +126,7 @@ private struct SidebarHoverButton<Label: View>: View {
         VisualHoverState(shape: shape) { isHovering in
             Button(action: action) {
                 label()
-                    .background(Self.backgroundColor(isSelected: isSelected, isHovering: isHovering), in: shape)
+                    .background(Self.backgroundColor.color(isSelected: isSelected, isHovering: isHovering), in: shape)
                     .visualHitArea(shape)
             }
             .visualHitArea(shape)
@@ -134,11 +134,12 @@ private struct SidebarHoverButton<Label: View>: View {
         }
     }
 
-    private static func backgroundColor(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return Color.white.opacity(isHovering ? 0.13 : 0.09)
-        }
-
-        return isHovering ? Color.primary.opacity(0.06) : .clear
+    private static var backgroundColor: VisualInteractionColorStyle {
+        VisualInteractionColorStyle(
+            normal: .clear,
+            hover: Color.primary.opacity(0.06),
+            selected: Color.white.opacity(0.09),
+            selectedHover: Color.white.opacity(0.13)
+        )
     }
 }

@@ -1,5 +1,25 @@
 import SwiftUI
 
+struct VisualInteractionColorStyle {
+    let normal: Color
+    let hover: Color
+    let selected: Color
+    let selectedHover: Color
+
+    func color(isSelected: Bool, isHovering: Bool) -> Color {
+        switch (isSelected, isHovering) {
+        case (true, true):
+            return selectedHover
+        case (true, false):
+            return selected
+        case (false, true):
+            return hover
+        case (false, false):
+            return normal
+        }
+    }
+}
+
 extension View {
     func visualHitArea<S: Shape>(_ shape: S) -> some View {
         contentShape(shape)

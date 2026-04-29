@@ -34,7 +34,7 @@ struct ImageBrowserThumbnailCell: View {
                         .frame(width: thumbnailSize)
                 }
                 .padding(8)
-                .background(Self.thumbnailBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
+                .background(Self.thumbnailBackground.color(isSelected: isSelected, isHovering: isHovering), in: shape)
                 .visualHitArea(shape)
             }
             .buttonStyle(.plain)
@@ -48,13 +48,12 @@ struct ImageBrowserThumbnailCell: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static func thumbnailBackground(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return .white.opacity(isHovering ? 0.26 : 0.15)
-        }
-
-        return isHovering ? .white.opacity(0.10) : .clear
-    }
+    private static let thumbnailBackground = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: .white.opacity(0.10),
+        selected: .white.opacity(0.15),
+        selectedHover: .white.opacity(0.26)
+    )
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
@@ -109,9 +108,9 @@ struct ImageBrowserListRow: View {
                 }
                 .padding(.horizontal, 12)
                 .frame(height: 58)
-                .background(Self.listBackground(isSelected: isSelected, isHovering: isHovering), in: shape)
+                .background(Self.listBackground.color(isSelected: isSelected, isHovering: isHovering), in: shape)
                 .overlay {
-                    shape.strokeBorder(Self.listBorder(isSelected: isSelected, isHovering: isHovering))
+                    shape.strokeBorder(Self.listBorder.color(isSelected: isSelected, isHovering: isHovering))
                 }
                 .visualHitArea(shape)
             }
@@ -126,21 +125,19 @@ struct ImageBrowserListRow: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static func listBackground(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return .white.opacity(isHovering ? 0.26 : 0.16)
-        }
+    private static let listBackground = VisualInteractionColorStyle(
+        normal: .white.opacity(0.055),
+        hover: .white.opacity(0.12),
+        selected: .white.opacity(0.16),
+        selectedHover: .white.opacity(0.26)
+    )
 
-        return .white.opacity(isHovering ? 0.12 : 0.055)
-    }
-
-    private static func listBorder(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return .white.opacity(isHovering ? 0.62 : 0.48)
-        }
-
-        return .white.opacity(isHovering ? 0.18 : 0.08)
-    }
+    private static let listBorder = VisualInteractionColorStyle(
+        normal: .white.opacity(0.08),
+        hover: .white.opacity(0.18),
+        selected: .white.opacity(0.48),
+        selectedHover: .white.opacity(0.62)
+    )
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }

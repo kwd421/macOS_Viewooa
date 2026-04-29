@@ -17,7 +17,7 @@ struct ImageBrowserViewModeControl: View {
                             .frame(width: 32, height: 26)
                             .foregroundStyle(Self.foregroundColor(isSelected: displayMode == mode))
                             .background(
-                                Self.backgroundColor(isSelected: displayMode == mode, isHovering: isHovering),
+                                Self.backgroundColor.color(isSelected: displayMode == mode, isHovering: isHovering),
                                 in: RoundedRectangle(cornerRadius: 6, style: .continuous)
                             )
                             .visualHitArea(shape)
@@ -39,11 +39,10 @@ struct ImageBrowserViewModeControl: View {
         isSelected ? .white : .white.opacity(0.58)
     }
 
-    private static func backgroundColor(isSelected: Bool, isHovering: Bool) -> Color {
-        if isSelected {
-            return .white.opacity(isHovering ? 0.28 : 0.18)
-        }
-
-        return isHovering ? .white.opacity(0.12) : .clear
-    }
+    private static let backgroundColor = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: .white.opacity(0.12),
+        selected: .white.opacity(0.18),
+        selectedHover: .white.opacity(0.28)
+    )
 }

@@ -297,11 +297,8 @@ struct OpenBrowserViewModeControl: View {
                     .frame(width: size.width, height: size.height)
                     .foregroundStyle(Self.modeIconColor(isSelected: displayMode == displayModeOption, isVibrant: isVibrant))
                     .background(
-                        Self.modeBackgroundColor(
-                            isSelected: displayMode == displayModeOption,
-                            isVibrant: isVibrant,
-                            isHovering: isHovering
-                        ),
+                        Self.modeBackgroundColor(isVibrant: isVibrant)
+                            .color(isSelected: displayMode == displayModeOption, isHovering: isHovering),
                         in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
                     )
                     .visualHitArea(shape)
@@ -325,11 +322,21 @@ struct OpenBrowserViewModeControl: View {
         return isSelected ? .primary : .secondary
     }
 
-    private static func modeBackgroundColor(isSelected: Bool, isVibrant: Bool, isHovering: Bool) -> Color {
+    private static func modeBackgroundColor(isVibrant: Bool) -> VisualInteractionColorStyle {
         if isVibrant {
-            return isSelected ? Color.white.opacity(isHovering ? 0.22 : 0.16) : (isHovering ? Color.white.opacity(0.10) : .clear)
+            return VisualInteractionColorStyle(
+                normal: .clear,
+                hover: Color.white.opacity(0.10),
+                selected: Color.white.opacity(0.16),
+                selectedHover: Color.white.opacity(0.22)
+            )
         }
 
-        return isSelected ? Color(nsColor: .selectedControlColor).opacity(isHovering ? 0.30 : 0.22) : (isHovering ? Color.primary.opacity(0.07) : .clear)
+        return VisualInteractionColorStyle(
+            normal: .clear,
+            hover: Color.primary.opacity(0.07),
+            selected: Color(nsColor: .selectedControlColor).opacity(0.22),
+            selectedHover: Color(nsColor: .selectedControlColor).opacity(0.30)
+        )
     }
 }
