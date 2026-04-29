@@ -90,14 +90,13 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
             ZStack {
                 Color.clear
                     .frame(height: 112)
-                    .contentShape(Rectangle())
-                    .onHover { isHoveringControlRevealArea = $0 }
+                    .visualHoverTracking(isHovering: $isHoveringControlRevealArea, shape: Rectangle())
 
                 if bottomControlsVisible {
                     bottomControlBar
                         .padding(.bottom, PhotoViewerOverlayLayout.controlBarEdgePadding)
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
-                        .onHover { isHoveringControlRevealArea = $0 }
+                        .visualHoverTracking(isHovering: $isHoveringControlRevealArea, shape: Capsule())
                 }
             }
         }
@@ -108,8 +107,7 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
             ZStack(alignment: .top) {
                 Color.clear
                     .frame(height: 78)
-                    .contentShape(Rectangle())
-                    .onHover { isHoveringTopControlRevealArea = $0 }
+                    .visualHoverTracking(isHovering: $isHoveringTopControlRevealArea, shape: Rectangle())
 
                 topControlBar
                     .padding(.top, PhotoViewerOverlayLayout.controlBarEdgePadding)
@@ -117,7 +115,7 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
                     .offset(y: topControlsVisible ? 0 : -4)
                     .blur(radius: topControlsVisible ? 0 : 0.7)
                     .allowsHitTesting(topControlsVisible)
-                    .onHover { isHoveringTopControlRevealArea = $0 }
+                    .visualHoverTracking(isHovering: $isHoveringTopControlRevealArea, shape: Capsule())
             }
 
             Spacer()

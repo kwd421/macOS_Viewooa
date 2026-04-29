@@ -111,7 +111,7 @@ extension OpenBrowserOverlay {
                     .fill(Color.openBrowserSeparator.opacity(0.55))
                     .frame(width: 1)
             }
-            .contentShape(Rectangle())
+            .visualHitArea(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in

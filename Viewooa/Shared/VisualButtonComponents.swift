@@ -12,6 +12,14 @@ extension View {
     ) -> some View {
         modifier(VisualHoverTrackingModifier(isHovering: isHovering, shape: shape, animation: animation))
     }
+
+    func visualHoverTracking<S: Shape>(
+        isHovering: Binding<Bool>,
+        shape: S,
+        animation: Animation = .smooth(duration: 0.12, extraBounce: 0)
+    ) -> some View {
+        visualHoverTracking(isHovering: isHovering, shape: AnyShape(shape), animation: animation)
+    }
 }
 
 private struct VisualHoverTrackingModifier: ViewModifier {
