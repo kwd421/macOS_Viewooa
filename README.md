@@ -1,46 +1,70 @@
 # Viewooa
 
-Fast, simple macOS image viewer inspired by Honeyview.
+Viewooa is a native macOS photo viewer and visual file browser. The product goal is calm, fast, Apple-like browsing where photos and files stay more important than the app chrome.
 
-## Build
+## Product Direction
 
-Open `Viewooa.xcodeproj` in Xcode and run the `Viewooa` scheme, or build from Terminal:
+The design source of truth lives in:
 
-```bash
-xcodebuild -project Viewooa.xcodeproj -scheme Viewooa -destination 'platform=macOS' build
+- [Product Design Constitution](docs/product/DESIGN.md)
+- [Implementation Map](docs/product/IMPLEMENTATION_MAP.md)
+
+Before adding major behavior, check that the work fits the design principles: native first, content first, reversible file operations, and quiet AI assistance through explicit app commands.
+
+## Architecture
+
+Viewooa is organized into three product areas:
+
+- `Photo Viewer`: image rendering, fit/actual size, zoom, pan, rotate, page layout, slideshow, and viewer overlays.
+- `Browser`: Finder/Photos-inspired browsing, sidebar, path, grid/list display, selection, and open confirmation.
+- `App Bridge`: cross-feature routing between viewer and browser, shared overlay state, and future shared favorites/tags/AI command previews.
+
+The photo viewer should remain independently releasable. The browser should remain replaceable by native macOS open panels or a future standalone browser app.
+
+## Run
+
+Double-click:
+
+```text
+Open Viewooa.command
 ```
 
-Run the full test suite:
+Or run from Terminal:
 
 ```bash
-xcodebuild test -project Viewooa.xcodeproj -scheme Viewooa -destination 'platform=macOS'
+./script/build_and_run.sh
 ```
 
-The app targets macOS 15.0 and builds with Xcode 26.4.1 / Swift 6.
+## Build And Test
 
-## Current capabilities
+Build:
 
-- Open a single image file or an image folder
-- Browse folder images by filename order
-- Show one image large in a minimal viewer-first window
-- Move to previous and next images with toolbar buttons or arrow keys
-- Zoom in, zoom out, fit to window, and jump to 100%
-- Rotate clockwise
-- Reuse bounded neighbor preload for faster nearby navigation
-- Show lightweight inline empty and error states
-- Work in both standard windowed mode and fullscreen
+```bash
+xcodebuild -project Viewooa.xcodeproj -scheme Viewooa -configuration Debug -derivedDataPath .build/DerivedData build
+```
 
-## Shortcuts
+Run tests:
 
-- `Left Arrow`: previous image
-- `Right Arrow`: next image
-- `Command` + `=`: zoom in
-- `Command` + `-`: zoom out
-- `Command` + `0`: actual size
-- `Command` + `R`: rotate right
+```bash
+xcodebuild test -project Viewooa.xcodeproj -scheme Viewooa -configuration Debug -derivedDataPath .build/DerivedData
+```
 
-## v1 non-goals
+The app targets macOS 15.0 and Swift 6.
 
-- Archive browsing
-- File delete, move, or copy management
-- Thumbnail-browser-first workflows
+## Current Capabilities
+
+- Open images and folders through the Viewooa browser flow.
+- Browse folder images with previous/next controls and keyboard shortcuts.
+- Fit all, fit width, fit height, actual size, zoom in/out, and pan oversized images.
+- Use single page, two-page spread, cover mode, and vertical strip layouts.
+- Show metadata, navigation count, slideshow controls, and post-processing options.
+- Browse image lists through an Apple-inspired internal browser overlay.
+- Keep viewer/browser communication routed through the app bridge.
+
+## Working Rules
+
+- Keep viewer-only behavior inside viewer stores/views/coordinators.
+- Keep browser-only behavior inside browser stores/views/coordinators.
+- Put cross-feature state in the bridge.
+- Do not add hidden file mutations; risky file operations need preview and undo where possible.
+- AI features must call the same safe command model as the UI.
