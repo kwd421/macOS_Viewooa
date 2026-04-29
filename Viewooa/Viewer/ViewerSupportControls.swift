@@ -36,35 +36,25 @@ struct ImageMetadataPanel: View {
 
 enum ViewerControlVisualStyle {
     static let iconSize: CGFloat = 30
-    static let iconBaseOpacity = 0.10
-    static let iconHoverOpacity = 0.28
-    static let iconPressedOpacity = 0.32
-    static let iconInactiveForegroundOpacity = 0.82
-    static let iconActiveForegroundOpacity = 1.0
-    static let capsuleBaseOpacity = 0.10
-    static let capsuleHoverOpacity = 0.26
-    static let capsuleBorderBaseOpacity = 0.10
-    static let capsuleBorderHoverOpacity = 0.28
-
-    static func iconBackgroundOpacity(isHovering: Bool, isPressed: Bool = false) -> Double {
-        if isPressed {
-            return iconPressedOpacity
-        }
-
-        return isHovering ? iconHoverOpacity : iconBaseOpacity
-    }
-
-    static func capsuleBackgroundOpacity(isHovering: Bool) -> Double {
-        isHovering ? capsuleHoverOpacity : capsuleBaseOpacity
-    }
-
-    static func capsuleBorderOpacity(isHovering: Bool) -> Double {
-        isHovering ? capsuleBorderHoverOpacity : capsuleBorderBaseOpacity
-    }
-
-    static func iconForegroundOpacity(isActive: Bool) -> Double {
-        isActive ? iconActiveForegroundOpacity : iconInactiveForegroundOpacity
-    }
+    static let iconBackground = VisualPressColorStyle(
+        normal: .white.opacity(0.10),
+        hover: .white.opacity(0.28),
+        pressed: .white.opacity(0.32)
+    )
+    static let iconForeground = VisualInteractionColorStyle(
+        normal: .white.opacity(0.82),
+        hover: .white.opacity(0.82),
+        selected: .white,
+        selectedHover: .white
+    )
+    static let capsuleBackground = VisualHoverColorStyle(
+        normal: .white.opacity(0.10),
+        hover: .white.opacity(0.26)
+    )
+    static let capsuleBorder = VisualHoverColorStyle(
+        normal: .white.opacity(0.10),
+        hover: .white.opacity(0.28)
+    )
 }
 
 struct RepeatingControlButton: View {
@@ -171,11 +161,11 @@ struct ViewerControlIconSurface: View {
             VisualIconButtonLabel(
                 systemImage: systemImage,
                 size: ViewerControlVisualStyle.iconSize,
-                foregroundColor: .white.opacity(ViewerControlVisualStyle.iconForegroundOpacity(isActive: isActive)),
-                backgroundColor: .white.opacity(ViewerControlVisualStyle.iconBackgroundOpacity(
+                foregroundColor: ViewerControlVisualStyle.iconForeground.color(isSelected: isActive, isHovering: isHovering),
+                backgroundColor: ViewerControlVisualStyle.iconBackground.color(
                     isHovering: isHovering,
                     isPressed: isPressed
-                ))
+                )
             )
         }
     }
@@ -190,7 +180,7 @@ struct ViewerControlCapsuleLabel: View {
             VisualCapsuleIconTextLabel(
                 systemImage: systemImage,
                 title: title,
-                backgroundColor: .white.opacity(ViewerControlVisualStyle.capsuleBackgroundOpacity(isHovering: isHovering))
+                backgroundColor: ViewerControlVisualStyle.capsuleBackground.color(isHovering: isHovering)
             )
         }
     }

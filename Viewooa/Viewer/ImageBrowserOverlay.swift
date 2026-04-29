@@ -169,7 +169,7 @@ private struct ImageBrowserCloseButton: View {
                 Image(systemName: "xmark")
                     .font(.system(size: 12, weight: .bold))
                     .frame(width: 28, height: 28)
-                    .background(.white.opacity(isHovering ? 0.28 : 0.12), in: Circle())
+                    .background(Self.backgroundColor.color(isHovering: isHovering), in: Circle())
                     .visualHitArea(Circle())
             }
             .frame(width: 28, height: 28)
@@ -179,4 +179,9 @@ private struct ImageBrowserCloseButton: View {
         }
         .frame(width: 28, height: 28)
     }
+
+    private static let backgroundColor = VisualHoverColorStyle(
+        normal: .white.opacity(0.12),
+        hover: .white.opacity(0.28)
+    )
 }

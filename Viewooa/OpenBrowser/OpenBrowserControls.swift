@@ -46,7 +46,7 @@ struct OpenBrowserIconToolbarSurface: View {
                 size: OpenBrowserLayout.titlebarButtonSize,
                 fontSize: 12.5,
                 foregroundColor: Self.iconColor(isActive: isActive),
-                backgroundColor: Self.iconBackgroundColor(isHovering: isHovering)
+                backgroundColor: Self.iconBackgroundColor.color(isHovering: isHovering)
             )
         }
         .frame(width: OpenBrowserLayout.titlebarButtonSize, height: OpenBrowserLayout.titlebarButtonSize)
@@ -56,9 +56,10 @@ struct OpenBrowserIconToolbarSurface: View {
         isActive ? Color.openBrowserSelection : .secondary
     }
 
-    private static func iconBackgroundColor(isHovering: Bool) -> Color {
-        return isHovering ? Color.primary.opacity(0.08) : .clear
-    }
+    private static let iconBackgroundColor = VisualHoverColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.08)
+    )
 }
 
 struct OpenBrowserSearchIconButton: View {
@@ -73,7 +74,7 @@ struct OpenBrowserSearchIconButton: View {
                     .foregroundStyle(Color.white.opacity(hasSearchText ? 1 : 0.82))
                     .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
                     .background(.ultraThinMaterial, in: Circle())
-                    .background(Color.white.opacity(isHovering ? 0.12 : 0), in: Circle())
+                    .background(Self.backgroundColor.color(isHovering: isHovering), in: Circle())
                     .overlay {
                         Circle().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
                     }
@@ -86,6 +87,11 @@ struct OpenBrowserSearchIconButton: View {
         }
         .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
     }
+
+    private static let backgroundColor = VisualHoverColorStyle(
+        normal: .clear,
+        hover: .white.opacity(0.12)
+    )
 }
 
 struct OpenBrowserSearchField: View {
@@ -135,7 +141,7 @@ private struct OpenBrowserClearSearchButton: View {
                     size: 20,
                     fontSize: 11,
                     foregroundColor: .secondary,
-                    backgroundColor: Color.primary.opacity(isHovering ? 0.08 : 0)
+                    backgroundColor: Self.backgroundColor.color(isHovering: isHovering)
                 )
             }
             .frame(width: 20, height: 20)
@@ -145,6 +151,11 @@ private struct OpenBrowserClearSearchButton: View {
         }
         .frame(width: 20, height: 20)
     }
+
+    private static let backgroundColor = VisualHoverColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.08)
+    )
 }
 
 struct OpenBrowserSortMenu: View {
@@ -234,7 +245,7 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
                     .foregroundStyle(Self.iconColor(isVibrant: isVibrant))
                     .frame(width: size.width, height: size.height)
                     .background(
-                        Self.backgroundColor(isVibrant: isVibrant, isHovering: isHovering),
+                        Self.backgroundColor(isVibrant: isVibrant).color(isHovering: isHovering),
                         in: RoundedRectangle(cornerRadius: 7, style: .continuous)
                     )
                     .visualHitArea(shape)
@@ -255,12 +266,15 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
         isVibrant ? Color.white.opacity(0.82) : .secondary
     }
 
-    private static func backgroundColor(isVibrant: Bool, isHovering: Bool) -> Color {
+    private static func backgroundColor(isVibrant: Bool) -> VisualHoverColorStyle {
         if isVibrant {
-            return isHovering ? Color.white.opacity(0.12) : .clear
+            return VisualHoverColorStyle(normal: .clear, hover: Color.white.opacity(0.12))
         }
 
-        return isHovering ? Color.openBrowserControlFill.opacity(1.25) : Color.openBrowserControlFill
+        return VisualHoverColorStyle(
+            normal: Color.openBrowserControlFill,
+            hover: Color.openBrowserControlFill.opacity(1.25)
+        )
     }
 }
 

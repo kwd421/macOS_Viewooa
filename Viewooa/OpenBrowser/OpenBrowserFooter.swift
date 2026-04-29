@@ -118,7 +118,7 @@ private struct PathComponentButton: View {
                     .padding(.horizontal, 5)
                     .frame(height: 20)
                     .background(
-                        Color.primary.opacity(isHovering ? 0.08 : 0),
+                        Self.backgroundColor.color(isHovering: isHovering),
                         in: shape
                     )
                     .visualHitArea(shape)
@@ -128,4 +128,9 @@ private struct PathComponentButton: View {
             .accessibilityLabel(component.title)
         }
     }
+
+    private static let backgroundColor = VisualHoverColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.08)
+    )
 }

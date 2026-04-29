@@ -156,9 +156,9 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
             .padding(.leading, 9)
             .padding(.trailing, 9)
             .frame(height: 28)
-            .background(.white.opacity(ViewerControlVisualStyle.capsuleBackgroundOpacity(isHovering: isHovering)), in: Capsule())
+            .background(ViewerControlVisualStyle.capsuleBackground.color(isHovering: isHovering), in: Capsule())
             .overlay {
-                Capsule().strokeBorder(.white.opacity(ViewerControlVisualStyle.capsuleBorderOpacity(isHovering: isHovering)))
+                Capsule().strokeBorder(ViewerControlVisualStyle.capsuleBorder.color(isHovering: isHovering))
             }
             .overlay {
                 SlideshowIntervalScrollStepper(onStep: adjustSlideshowInterval)

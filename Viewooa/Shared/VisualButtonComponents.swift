@@ -20,6 +20,29 @@ struct VisualInteractionColorStyle {
     }
 }
 
+struct VisualHoverColorStyle {
+    let normal: Color
+    let hover: Color
+
+    func color(isHovering: Bool) -> Color {
+        isHovering ? hover : normal
+    }
+}
+
+struct VisualPressColorStyle {
+    let normal: Color
+    let hover: Color
+    let pressed: Color
+
+    func color(isHovering: Bool, isPressed: Bool = false) -> Color {
+        if isPressed {
+            return pressed
+        }
+
+        return isHovering ? hover : normal
+    }
+}
+
 extension View {
     func visualHitArea<S: Shape>(_ shape: S) -> some View {
         contentShape(shape)
