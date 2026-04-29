@@ -14,11 +14,6 @@ extension ViewerState {
     }
 
     func zoomOut() {
-        if zoomMode.isFit, canShowImageBrowser {
-            showImageBrowser()
-            return
-        }
-
         zoomMode = .custom(clampedZoomScale(currentZoomScale / ViewerZoom.step))
     }
 

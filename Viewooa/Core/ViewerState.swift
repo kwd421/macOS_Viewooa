@@ -26,10 +26,6 @@ final class ViewerState: ObservableObject {
     @Published var slideshowIntervalSeconds = 3.0
     @Published var postProcessingOptions: Set<ImagePostProcessingOption> = []
     @Published var fitRequestID = 0
-    @Published var isImageBrowserVisible = false
-    @Published var isOpenBrowserVisible = false
-    @Published var imageBrowserDisplayMode: ImageBrowserDisplayMode = .thumbnails
-    @Published var imageBrowserThumbnailSize: CGFloat = 132
 
     static let minimumSlideshowIntervalSeconds = 0.5
     static let maximumSlideshowIntervalSeconds = 60.0
@@ -83,15 +79,4 @@ final class ViewerState: ObservableObject {
         }
     }
 
-    func presentOpenFilePanel() {
-        showOpenBrowser()
-    }
-
-    func presentOpenSelectionPanel() {
-        showOpenBrowser()
-    }
-
-    func presentOpenFolderPanel() {
-        showOpenBrowser()
-    }
 }

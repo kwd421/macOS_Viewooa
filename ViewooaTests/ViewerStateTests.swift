@@ -1,5 +1,6 @@
 import XCTest
 import PDFKit
+import SwiftUI
 @testable import Viewooa
 
 final class ViewerStateTests: XCTestCase {
@@ -74,17 +75,120 @@ final class ViewerStateTests: XCTestCase {
     @MainActor
     func testAppUsesSingleWindowScene() {
         let sceneType = String(
-            reflecting: type(of: ViewooaApp.makeViewerScene(viewerState: ViewerState()))
+            reflecting: type(of: ViewooaApp.makeViewerScene(bridge: ViewooaBridge()))
         )
 
         XCTAssertTrue(sceneType.contains("Window<"))
     }
 
     @MainActor
-    func testViewerWindowShellAcceptsInjectedViewerState() {
-        let state = ViewerState()
+    func testViewerWindowShellAcceptsInjectedBridge() {
+        let bridge = ViewooaBridge()
 
-        _ = ViewerWindowShell(viewerState: state)
+        _ = ViewerWindowShell(bridge: bridge)
+    }
+
+    @MainActor
+    func testBrowserFeatureHostDoesNotRequireBridge() {
+        var displayMode = ImageBrowserDisplayMode.thumbnails
+        var thumbnailSize: CGFloat = 132
+
+        _ = BrowserFeatureHostView(
+            isImageBrowserVisible: false,
+            isOpenBrowserVisible: false,
+            imageURLs: [],
+            currentIndex: nil,
+            initialDirectory: FileManager.default.homeDirectoryForCurrentUser,
+            displayMode: Binding(
+                get: { displayMode },
+                set: { displayMode = $0 }
+            ),
+            thumbnailSize: Binding(
+                get: { thumbnailSize },
+                set: { thumbnailSize = $0 }
+            ),
+            onSelectImage: { _ in },
+            onOpen: { _ in },
+            onDismissImageBrowser: {},
+            onDismissOpenBrowser: {}
+        )
+    }
+
+    @MainActor
+    func testImageViewerContainerDoesNotRequireViewerState() {
+        _ = ImageViewerContainerView(
+            configuration: ImageViewerContainerConfiguration(
+                resolvedImage: nil,
+                resolvedImages: nil,
+                imageURL: nil,
+                imageURLs: nil,
+                zoomMode: .fit(.all),
+                rotationQuarterTurns: 0,
+                pageLayout: .single,
+                fitRequestID: 0,
+                postProcessingOptions: [],
+                verticalAutoScrollScreenSpeed: 0
+            ),
+            actions: ImageViewerContainerActions(
+                onZoomModeChange: { _ in },
+                onViewportMetricsChange: { _, _, _ in },
+                onNavigate: { _ in },
+                onToggleMetadata: {},
+                onNavigationHoldChange: { _ in },
+                onPostProcessingToggle: { _ in },
+                onPostProcessingClear: {},
+                onVerticalSlideshowReachedEnd: {},
+                onFitZoomOutRequest: { false }
+            )
+        )
+    }
+
+    @MainActor
+    func testPhotoViewerFeatureUsesStoreBoundary() {
+        let store = PhotoViewerStore(viewerState: ViewerState())
+
+        _ = PhotoViewerFeatureView(
+            store: store,
+            areBrowserOverlaysVisible: false,
+            onOpenBrowser: {},
+            onZoomOut: {},
+            onFitZoomOutRequest: { false }
+        )
+    }
+
+    @MainActor
+    func testBridgeCanBeComposedFromFeatureStores() {
+        let photoViewerStore = PhotoViewerStore(viewerState: ViewerState())
+        let browserOverlayStore = BrowserOverlayStore()
+
+        let bridge = ViewooaBridge(
+            photoViewerStore: photoViewerStore,
+            browserOverlayStore: browserOverlayStore
+        )
+
+        bridge.presentOpenBrowser()
+
+        XCTAssertTrue(browserOverlayStore.isOpenBrowserVisible)
+        XCTAssertTrue(bridge.isOpenBrowserVisible)
+    }
+
+    @MainActor
+    func testBrowserOverlayStoreOwnsOverlayStateAndThumbnailRange() {
+        let store = BrowserOverlayStore()
+
+        store.showOpenBrowser()
+        XCTAssertTrue(store.isOpenBrowserVisible)
+        XCTAssertFalse(store.isImageBrowserVisible)
+
+        store.showImageBrowser()
+        XCTAssertFalse(store.isOpenBrowserVisible)
+        XCTAssertTrue(store.isImageBrowserVisible)
+
+        store.setThumbnailSize(12)
+        XCTAssertEqual(store.thumbnailSize, 72)
+
+        store.setThumbnailSize(500)
+        XCTAssertEqual(store.thumbnailSize, 220)
     }
 
     @MainActor
@@ -444,10 +548,11 @@ final class ViewerStateTests: XCTestCase {
             URL(fileURLWithPath: "/tmp/b.jpg")
         ]
         let state = ViewerState(index: FolderImageIndex(imageURLs: urls, currentIndex: 0))
+        let bridge = ViewooaBridge(viewerState: state)
 
-        state.zoomOut()
+        bridge.zoomOut()
 
-        XCTAssertTrue(state.isImageBrowserVisible)
+        XCTAssertTrue(bridge.isImageBrowserVisible)
         XCTAssertEqual(state.zoomMode, .fit(.all))
     }
 
@@ -459,24 +564,25 @@ final class ViewerStateTests: XCTestCase {
             URL(fileURLWithPath: "/tmp/c.jpg")
         ]
         let state = ViewerState(index: FolderImageIndex(imageURLs: urls, currentIndex: 0))
-        state.showImageBrowser()
+        let bridge = ViewooaBridge(viewerState: state)
+        bridge.showImageBrowser()
 
-        state.selectImageFromBrowser(at: 2)
+        bridge.selectImageFromBrowser(at: 2)
 
-        XCTAssertFalse(state.isImageBrowserVisible)
+        XCTAssertFalse(bridge.isImageBrowserVisible)
         XCTAssertEqual(state.index?.currentIndex, 2)
         XCTAssertEqual(state.currentImageURL, urls[2])
     }
 
     @MainActor
     func testImageBrowserThumbnailSizeClampsToFinderLikeRange() {
-        let state = ViewerState()
+        let bridge = ViewooaBridge()
 
-        state.setImageBrowserThumbnailSize(12)
-        XCTAssertEqual(state.imageBrowserThumbnailSize, 72)
+        bridge.setBrowserThumbnailSize(12)
+        XCTAssertEqual(bridge.browserThumbnailSize, 72)
 
-        state.setImageBrowserThumbnailSize(500)
-        XCTAssertEqual(state.imageBrowserThumbnailSize, 220)
+        bridge.setBrowserThumbnailSize(500)
+        XCTAssertEqual(bridge.browserThumbnailSize, 220)
     }
 
     @MainActor
@@ -560,6 +666,45 @@ final class ViewerStateTests: XCTestCase {
         viewer.handleMagnificationChange(1.0, isUserInitiated: false)
 
         XCTAssertFalse(didReportZoomMode)
+    }
+
+    @MainActor
+    func testOpeningNewImageAppliesFitImmediatelyWithoutZoomAnimation() {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 900, height: 620),
+            styleMask: [.titled],
+            backing: .buffered,
+            defer: false
+        )
+        let viewer = ImageViewerNSView(frame: window.contentView?.bounds ?? .zero)
+        window.contentView = viewer
+        viewer.layoutSubtreeIfNeeded()
+
+        viewer.apply(
+            resolvedImage: NSImage(size: NSSize(width: 300, height: 200)),
+            imageURL: URL(fileURLWithPath: "/tmp/first.png"),
+            zoomMode: .custom(2.0),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        viewer.apply(
+            resolvedImage: NSImage(size: NSSize(width: 1086, height: 1448)),
+            imageURL: URL(fileURLWithPath: "/tmp/second.png"),
+            zoomMode: .fit(.all),
+            rotationQuarterTurns: 0
+        )
+
+        let expectedFit = ImageViewerNSView.fitMagnification(
+            imageSize: NSSize(width: 1086, height: 1448),
+            viewportSize: NSSize(width: 900, height: 620),
+            fitMode: .all,
+            minimumMagnification: viewer.scrollView.minMagnification,
+            maximumMagnification: viewer.scrollView.maxMagnification
+        )
+
+        XCTAssertEqual(viewer.scrollView.magnification, expectedFit, accuracy: 0.001)
+        XCTAssertTrue(viewer.isEntireImageVisible)
     }
 
     private func makeTemporaryPDF(pageCount: Int) throws -> URL {
@@ -673,6 +818,13 @@ final class ViewerStateTests: XCTestCase {
         XCTAssertTrue(ImageViewerClickActivation.isDoubleClickActivation(clickCount: 2))
         XCTAssertFalse(ImageViewerClickActivation.isDoubleClickActivation(clickCount: 3))
         XCTAssertTrue(ImageViewerClickActivation.isDoubleClickActivation(clickCount: 4))
+    }
+
+    func testFastRepeatedDoubleClickConsumesThirdClickWithoutToggling() {
+        XCTAssertFalse(ImageViewerClickActivation.isMultiClickContinuation(clickCount: 1))
+        XCTAssertFalse(ImageViewerClickActivation.isMultiClickContinuation(clickCount: 2))
+        XCTAssertTrue(ImageViewerClickActivation.isMultiClickContinuation(clickCount: 3))
+        XCTAssertFalse(ImageViewerClickActivation.isMultiClickContinuation(clickCount: 4))
     }
 
     @MainActor
@@ -899,6 +1051,96 @@ final class ViewerStateTests: XCTestCase {
 
         XCTAssertTrue(didConsumeScroll)
         XCTAssertEqual(requestedDirection, .next)
+    }
+
+    @MainActor
+    func testMouseScrollNavigatesWhenAnyFitAllImageIsEntirelyVisible() {
+        let cases: [(name: String, size: NSSize, viewport: NSSize)] = [
+            ("portrait", NSSize(width: 1086, height: 1448), NSSize(width: 900, height: 620)),
+            ("landscape", NSSize(width: 2400, height: 1350), NSSize(width: 900, height: 620)),
+            ("square", NSSize(width: 3000, height: 3000), NSSize(width: 900, height: 620)),
+            ("panorama", NSSize(width: 6000, height: 1200), NSSize(width: 900, height: 620)),
+            ("veryTall", NSSize(width: 800, height: 6000), NSSize(width: 900, height: 620))
+        ]
+
+        for testCase in cases {
+            assertMouseScrollNavigatesWhenFitAll(
+                imageSize: testCase.size,
+                viewportSize: testCase.viewport,
+                file: #filePath,
+                line: #line
+            )
+        }
+    }
+
+    @MainActor
+    private func assertMouseScrollNavigatesWhenFitAll(
+        imageSize: NSSize,
+        viewportSize: NSSize,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let viewer = ImageViewerNSView()
+        viewer.frame = NSRect(origin: .zero, size: viewportSize)
+        let image = NSImage(size: imageSize)
+        var requestedDirection: ImageViewerNSView.NavigationDirection?
+
+        viewer.onNavigateRequest = { direction in
+            requestedDirection = direction
+        }
+        viewer.apply(
+            resolvedImage: image,
+            imageURL: URL(fileURLWithPath: "/tmp/sample.png"),
+            zoomMode: .fit(.all),
+            rotationQuarterTurns: 0
+        )
+        viewer.layoutSubtreeIfNeeded()
+
+        let didConsumeScroll = viewer.handleScrollGesture(verticalDelta: -12, horizontalDelta: 0)
+
+        XCTAssertTrue(viewer.isEntireImageVisible, file: file, line: line)
+        XCTAssertFalse(viewer.isImageScrollableHorizontally, file: file, line: line)
+        XCTAssertFalse(viewer.isImageScrollableVertically, file: file, line: line)
+        XCTAssertTrue(didConsumeScroll, file: file, line: line)
+        XCTAssertEqual(requestedDirection, .next, file: file, line: line)
+    }
+
+    @MainActor
+    func testFitVisibilityAllowsSubPointOverflowFromRoundingForAnyAspectRatio() {
+        let cases: [(imageSize: NSSize, viewportSize: NSSize, magnification: CGFloat)] = [
+            (NSSize(width: 1086, height: 1448), NSSize(width: 900, height: 620), 620.6 / 1448),
+            (NSSize(width: 2400, height: 1350), NSSize(width: 900, height: 620), 900.5 / 2400),
+            (NSSize(width: 3000, height: 3000), NSSize(width: 900, height: 620), 620.4 / 3000)
+        ]
+
+        for testCase in cases {
+            let scrollability = ImageViewerNSView.imageScrollability(
+                imageSize: testCase.imageSize,
+                viewportSize: testCase.viewportSize,
+                magnification: testCase.magnification
+            )
+
+            XCTAssertFalse(scrollability.horizontal)
+            XCTAssertFalse(scrollability.vertical)
+        }
+    }
+
+    @MainActor
+    func testDocumentPanToleranceUsesScreenPointToleranceAtCurrentMagnification() {
+        XCTAssertFalse(
+            ImageViewerNSView.canPanVisibleRect(
+                documentSize: NSSize(width: 2001.5, height: 1000),
+                viewportSize: NSSize(width: 1000, height: 500),
+                magnification: 0.5
+            )
+        )
+        XCTAssertTrue(
+            ImageViewerNSView.canPanVisibleRect(
+                documentSize: NSSize(width: 2003, height: 1000),
+                viewportSize: NSSize(width: 1000, height: 500),
+                magnification: 0.5
+            )
+        )
     }
 
     @MainActor

@@ -65,7 +65,7 @@ final class ImageViewerNSView: NSView {
         scrollView.frame = bounds
 
         if case let .fit(fitMode) = viewportState.zoomMode {
-            applyZoomMode(.fit(fitMode))
+            applyZoomMode(.fit(fitMode), animated: false)
         } else {
             updateViewportPresentation(for: scrollView.magnification)
         }
@@ -135,7 +135,8 @@ final class ImageViewerNSView: NSView {
 
         viewportState = newState
         if shouldApplyZoom {
-            applyZoomMode(zoomMode)
+            let shouldAnimateZoom = !(didChangeImage && zoomMode.isFit)
+            applyZoomMode(zoomMode, animated: shouldAnimateZoom)
         }
 
         lastAppliedFitRequestID = fitRequestID

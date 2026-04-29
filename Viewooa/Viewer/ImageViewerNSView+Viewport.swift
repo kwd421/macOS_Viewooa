@@ -24,13 +24,16 @@ extension ImageViewerNSView {
     func applyProgrammaticMagnification(
         _ magnification: CGFloat,
         centeredAt documentPoint: NSPoint,
-        finalOrigin: NSPoint? = nil
+        finalOrigin: NSPoint? = nil,
+        animated: Bool = true,
+        originForMagnification: (@MainActor (CGFloat) -> NSPoint)? = nil
     ) {
         zoomAnimator.applyProgrammaticMagnification(
             magnification,
             centeredAt: documentPoint,
             finalOrigin: finalOrigin,
-            canAnimateInWindow: window != nil,
+            canAnimateInWindow: animated && window != nil,
+            originForMagnification: originForMagnification,
             updatePresentation: { [weak self] in
                 self?.updateViewportPresentation(for: $0)
             }
@@ -42,40 +45,94 @@ extension ImageViewerNSView {
         contentOffset: NSPoint,
         anchorUnitPoint: NSPoint
     ) {
-        zoomAnimator.applyAnchoredProgrammaticMagnification(
-            magnification,
+        let target = anchoredZoomTarget(
             contentOffset: contentOffset,
             anchorUnitPoint: anchorUnitPoint,
-            canAnimateInWindow: window != nil,
-            updatePresentation: { [weak self] in
-                self?.updateViewportPresentation(for: $0)
-            },
-            targetForMagnification: { [weak self] currentMagnification in
-                guard let self else {
-                    return (documentPoint: .zero, origin: .zero)
-                }
+            magnification: magnification,
+            usingContainerSize: Self.documentContainerSize(
+                imageSize: displayedImageSize,
+                viewportSize: viewportSizeForLayout,
+                magnification: magnification
+            )
+        )
+        applyProgrammaticMagnification(
+            magnification,
+            centeredAt: target.documentPoint,
+            finalOrigin: target.origin,
+            originForMagnification: { [weak self] currentMagnification in
+                guard let self else { return target.origin }
                 return self.anchoredZoomTarget(
                     contentOffset: contentOffset,
                     anchorUnitPoint: anchorUnitPoint,
-                    magnification: currentMagnification
-                )
+                    magnification: currentMagnification,
+                    usingContainerSize: Self.documentContainerSize(
+                        imageSize: self.displayedImageSize,
+                        viewportSize: self.viewportSizeForLayout,
+                        magnification: currentMagnification
+                    )
+                ).origin
             }
+        )
+    }
+
+    func applyVisibleCenterProgrammaticMagnification(_ magnification: CGFloat) {
+        let visibleCenter = viewportPresenter.visibleDocumentCenterPoint
+        let contentOffset = Self.anchoredContentOffset(
+            documentPoint: visibleCenter,
+            contentFrame: currentContentFrame()
+        )
+        applyAnchoredProgrammaticMagnification(
+            magnification,
+            contentOffset: contentOffset,
+            anchorUnitPoint: NSPoint(x: 0.5, y: 0.5)
+        )
+    }
+
+    func applyImageCenterProgrammaticMagnification(_ magnification: CGFloat) {
+        let contentFrame = currentContentFrame()
+        let contentCenter = NSPoint(x: contentFrame.midX, y: contentFrame.midY)
+        let contentOffset = Self.anchoredContentOffset(
+            documentPoint: contentCenter,
+            contentFrame: contentFrame
+        )
+        applyAnchoredProgrammaticMagnification(
+            magnification,
+            contentOffset: contentOffset,
+            anchorUnitPoint: NSPoint(x: 0.5, y: 0.5)
+        )
+    }
+
+    func centeredOrigin(for documentPoint: NSPoint, magnification: CGFloat) -> NSPoint {
+        Self.visibleRectOrigin(
+            centeredOn: documentPoint,
+            containerSize: Self.documentContainerSize(
+                imageSize: displayedImageSize,
+                viewportSize: viewportSizeForLayout,
+                magnification: magnification
+            ),
+            viewportSize: viewportSizeForLayout,
+            magnification: magnification
         )
     }
 
     func anchoredZoomTarget(
         contentOffset: NSPoint,
         anchorUnitPoint: NSPoint,
-        magnification: CGFloat
+        magnification: CGFloat,
+        usingContainerSize targetContainerSize: NSSize? = nil
     ) -> (documentPoint: NSPoint, origin: NSPoint) {
+        let containerSize = targetContainerSize ?? documentContainerView.bounds.size
         let updatedDocumentPoint = Self.documentPoint(
             contentOffset: contentOffset,
-            contentFrame: currentContentFrame()
+            contentFrame: Self.centeredImageFrame(
+                imageSize: displayedImageSize,
+                containerSize: containerSize
+            )
         )
         let targetOrigin = Self.visibleRectOrigin(
             anchoring: updatedDocumentPoint,
             at: anchorUnitPoint,
-            containerSize: documentContainerView.bounds.size,
+            containerSize: containerSize,
             viewportSize: viewportSizeForLayout,
             magnification: magnification
         )

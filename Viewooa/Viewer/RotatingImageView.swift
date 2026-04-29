@@ -35,7 +35,13 @@ final class RotatingImageView: NSImageView {
     var displayedImageSize: NSSize {
         guard let image else { return .zero }
 
-        return Self.displayedSize(for: image.size, quarterTurns: rotationQuarterTurns)
+        return Self.displayedSize(
+            for: Self.pixelAccuratePointSize(
+                for: image,
+                backingScaleFactor: effectiveBackingScaleFactor
+            ),
+            quarterTurns: rotationQuarterTurns
+        )
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -89,6 +95,10 @@ final class RotatingImageView: NSImageView {
             return
         }
 
+        if ImageViewerClickActivation.isMultiClickContinuation(clickCount: event.clickCount) {
+            return
+        }
+
         _ = dragHandler?(.began, event)
 
         super.mouseDown(with: event)
@@ -127,6 +137,40 @@ final class RotatingImageView: NSImageView {
         }
 
         return NSSize(width: imageSize.height, height: imageSize.width)
+    }
+
+    private var effectiveBackingScaleFactor: CGFloat {
+        max(1, window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1)
+    }
+
+    private static func pixelAccuratePointSize(for image: NSImage, backingScaleFactor: CGFloat) -> NSSize {
+        guard backingScaleFactor > 0,
+              let pixelSize = pixelSize(for: image) else {
+            return image.size
+        }
+
+        return NSSize(
+            width: CGFloat(pixelSize.width) / backingScaleFactor,
+            height: CGFloat(pixelSize.height) / backingScaleFactor
+        )
+    }
+
+    private static func pixelSize(for image: NSImage) -> NSSize? {
+        if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+            return NSSize(width: cgImage.width, height: cgImage.height)
+        }
+
+        let bitmapRepresentation = image.representations
+            .compactMap { $0 as? NSBitmapImageRep }
+            .max { lhs, rhs in
+                lhs.pixelsWide * lhs.pixelsHigh < rhs.pixelsWide * rhs.pixelsHigh
+            }
+
+        guard let bitmapRepresentation else { return nil }
+        return NSSize(
+            width: bitmapRepresentation.pixelsWide,
+            height: bitmapRepresentation.pixelsHigh
+        )
     }
 
     private static func normalizedQuarterTurnsValue(_ quarterTurns: Int) -> Int {

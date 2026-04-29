@@ -10,8 +10,14 @@
 		1D6058900D05DD3D006BFB54 /* Viewooa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Viewooa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D6058910D05DD3D006BFB54 /* ViewooaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewooaApp.swift; sourceTree = "<group>"; };
 		1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerWindowShell.swift; sourceTree = "<group>"; };
+		B10000000000000000000001 /* PhotoViewerStandaloneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewerStandaloneApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* FinderBrowserStandaloneApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderBrowserStandaloneApp.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* Viewooa Photo Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Viewooa Photo Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000004 /* Viewooa Finder Browser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Viewooa Finder Browser.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000011 /* SupportedImageTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportedImageTypes.swift; sourceTree = "<group>"; };
 		A10000000000000000000012 /* FolderImageIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndex.swift; sourceTree = "<group>"; };
+		A10000000000000000000088 /* ViewooaBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewooaBridge.swift; sourceTree = "<group>"; };
+		A1000000000000000000008E /* BrowserOverlayStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserOverlayStore.swift; sourceTree = "<group>"; };
 		A10000000000000000000018 /* ViewerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerState.swift; sourceTree = "<group>"; };
 		A1000000000000000000005A /* ViewerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerModels.swift; sourceTree = "<group>"; };
 		A1000000000000000000005C /* ViewerPDFDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerPDFDocument.swift; sourceTree = "<group>"; };
@@ -23,10 +29,11 @@
 		A10000000000000000000076 /* ViewerState+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Navigation.swift"; sourceTree = "<group>"; };
 		A10000000000000000000078 /* ViewerState+Zoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Zoom.swift"; sourceTree = "<group>"; };
 		A1000000000000000000007A /* ViewerState+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Display.swift"; sourceTree = "<group>"; };
-		A1000000000000000000007C /* ViewerState+Browser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Browser.swift"; sourceTree = "<group>"; };
 		A1000000000000000000007E /* ViewerState+Slideshow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Slideshow.swift"; sourceTree = "<group>"; };
 		A10000000000000000000080 /* ViewerState+Notices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Notices.swift"; sourceTree = "<group>"; };
 		A1000000000000000000001D /* ImageViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewportState.swift; sourceTree = "<group>"; };
+		A1000000000000000000008A /* PhotoViewerFeatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewerFeatureView.swift; sourceTree = "<group>"; };
+		A1000000000000000000008C /* PhotoViewerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewerStore.swift; sourceTree = "<group>"; };
 		A1000000000000000000001E /* ImageViewerNSView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSView.swift; sourceTree = "<group>"; };
 		A1000000000000000000001F /* ImageViewerContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerContainerView.swift; sourceTree = "<group>"; };
 		A10000000000000000000040 /* ImageViewerEventViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerEventViews.swift; sourceTree = "<group>"; };
@@ -68,6 +75,7 @@
 		A20000000000000000000004 /* OpenBrowserKeyboardCatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserKeyboardCatcher.swift; sourceTree = "<group>"; };
 		A20000000000000000000005 /* OpenBrowserControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserControls.swift; sourceTree = "<group>"; };
 		A20000000000000000000006 /* OpenBrowserCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserCells.swift; sourceTree = "<group>"; };
+		A2000000000000000000002A /* BrowserFeatureHostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserFeatureHostView.swift; sourceTree = "<group>"; };
 		A2000000000000000000000E /* OpenBrowserOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserOverlay.swift; sourceTree = "<group>"; };
 		A20000000000000000000026 /* OpenBrowserOverlay+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenBrowserOverlay+Layout.swift"; sourceTree = "<group>"; };
 		A20000000000000000000028 /* OpenBrowserOverlay+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenBrowserOverlay+Actions.swift"; sourceTree = "<group>"; };
@@ -84,6 +92,7 @@
 		A20000000000000000000024 /* OpenBrowserScrollCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserScrollCoordinator.swift; sourceTree = "<group>"; };
 		A30000000000000000000001 /* ThumbnailSizeStepperControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThumbnailSizeStepperControl.swift; sourceTree = "<group>"; };
 		A30000000000000000000002 /* ImageBrowserThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserThumbnail.swift; sourceTree = "<group>"; };
+		A30000000000000000000006 /* ImageBrowserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserDisplayMode.swift; sourceTree = "<group>"; };
 		A10000000000000000000001 /* FolderImageIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndexTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* ViewerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStateTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000026 /* ImagePreloadQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreloadQueueTests.swift; sourceTree = "<group>"; };
@@ -109,6 +118,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B10000000000000000000011 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000021 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -125,10 +148,12 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000015 /* Core */,
+				A40000000000000000000001 /* AppBridge */,
 				A1000000000000000000001A /* Commands */,
 				A10000000000000000000020 /* Viewer */,
 				A2000000000000000000000D /* OpenBrowser */,
 				A30000000000000000000005 /* Shared */,
+				B10000000000000000000005 /* StandaloneApps */,
 				1D6058910D05DD3D006BFB54 /* ViewooaApp.swift */,
 				1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */,
 			);
@@ -150,12 +175,20 @@
 				A10000000000000000000076 /* ViewerState+Navigation.swift */,
 				A10000000000000000000078 /* ViewerState+Zoom.swift */,
 				A1000000000000000000007A /* ViewerState+Display.swift */,
-				A1000000000000000000007C /* ViewerState+Browser.swift */,
 				A1000000000000000000007E /* ViewerState+Slideshow.swift */,
 				A10000000000000000000080 /* ViewerState+Notices.swift */,
 				A10000000000000000000024 /* ImagePreloadQueue.swift */,
 			);
 			path = Core;
+			sourceTree = "<group>";
+		};
+		A40000000000000000000001 /* AppBridge */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000088 /* ViewooaBridge.swift */,
+				A1000000000000000000008E /* BrowserOverlayStore.swift */,
+			);
+			path = AppBridge;
 			sourceTree = "<group>";
 		};
 		A1000000000000000000001A /* Commands */ = {
@@ -170,6 +203,8 @@
 			isa = PBXGroup;
 			children = (
 				A1000000000000000000001D /* ImageViewportState.swift */,
+				A1000000000000000000008A /* PhotoViewerFeatureView.swift */,
+				A1000000000000000000008C /* PhotoViewerStore.swift */,
 				A10000000000000000000040 /* ImageViewerEventViews.swift */,
 				A10000000000000000000042 /* RotatingImageView.swift */,
 				A10000000000000000000044 /* ImageViewerGeometry.swift */,
@@ -217,6 +252,7 @@
 				A20000000000000000000004 /* OpenBrowserKeyboardCatcher.swift */,
 				A20000000000000000000005 /* OpenBrowserControls.swift */,
 				A20000000000000000000006 /* OpenBrowserCells.swift */,
+				A2000000000000000000002A /* BrowserFeatureHostView.swift */,
 				A2000000000000000000000E /* OpenBrowserOverlay.swift */,
 				A20000000000000000000026 /* OpenBrowserOverlay+Layout.swift */,
 				A20000000000000000000028 /* OpenBrowserOverlay+Actions.swift */,
@@ -240,8 +276,18 @@
 			children = (
 				A30000000000000000000001 /* ThumbnailSizeStepperControl.swift */,
 				A30000000000000000000002 /* ImageBrowserThumbnail.swift */,
+				A30000000000000000000006 /* ImageBrowserDisplayMode.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		B10000000000000000000005 /* StandaloneApps */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* PhotoViewerStandaloneApp.swift */,
+				B10000000000000000000002 /* FinderBrowserStandaloneApp.swift */,
+			);
+			path = StandaloneApps;
 			sourceTree = "<group>";
 		};
 		A10000000000000000000003 /* ViewooaTests */ = {
@@ -262,6 +308,8 @@
 			isa = PBXGroup;
 			children = (
 				1D6058900D05DD3D006BFB54 /* Viewooa.app */,
+				B10000000000000000000003 /* Viewooa Photo Viewer.app */,
+				B10000000000000000000004 /* Viewooa Finder Browser.app */,
 				A10000000000000000000008 /* ViewooaTests.xctest */,
 			);
 			name = Products;
@@ -304,6 +352,40 @@
 			productReference = A10000000000000000000008 /* ViewooaTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		B10000000000000000000030 /* PhotoViewerApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000040 /* Build configuration list for PBXNativeTarget "PhotoViewerApp" */;
+			buildPhases = (
+				B10000000000000000000010 /* Sources */,
+				B10000000000000000000011 /* Frameworks */,
+				B10000000000000000000012 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PhotoViewerApp;
+			productName = "Viewooa Photo Viewer";
+			productReference = B10000000000000000000003 /* Viewooa Photo Viewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B10000000000000000000031 /* FinderBrowserApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B10000000000000000000041 /* Build configuration list for PBXNativeTarget "FinderBrowserApp" */;
+			buildPhases = (
+				B10000000000000000000020 /* Sources */,
+				B10000000000000000000021 /* Frameworks */,
+				B10000000000000000000022 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FinderBrowserApp;
+			productName = "Viewooa Finder Browser";
+			productReference = B10000000000000000000004 /* Viewooa Finder Browser.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -314,6 +396,12 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					1D60588F0D05DD3D006BFB54 = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
+					B10000000000000000000030 = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
+					B10000000000000000000031 = {
 						CreatedOnToolsVersion = 26.4.1;
 					};
 				};
@@ -328,6 +416,8 @@
 			projectRoot = "";
 			targets = (
 				1D60588F0D05DD3D006BFB54 /* Viewooa */,
+				B10000000000000000000030 /* PhotoViewerApp */,
+				B10000000000000000000031 /* FinderBrowserApp */,
 				A10000000000000000000004 /* ViewooaTests */,
 			);
 		};
@@ -335,6 +425,20 @@
 
 /* Begin PBXResourcesBuildPhase section */
 		1D6058990D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000012 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000022 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -360,6 +464,8 @@
 				1D6058960D05DD3D006BFB54 /* ViewerWindowShell.swift in Sources */,
 				A10000000000000000000013 /* SupportedImageTypes.swift in Sources */,
 				A10000000000000000000014 /* FolderImageIndex.swift in Sources */,
+				A10000000000000000000089 /* ViewooaBridge.swift in Sources */,
+				A1000000000000000000008F /* BrowserOverlayStore.swift in Sources */,
 				A1000000000000000000005B /* ViewerModels.swift in Sources */,
 				A1000000000000000000005D /* ViewerPDFDocument.swift in Sources */,
 				A1000000000000000000005F /* ViewerImageMetadataReader.swift in Sources */,
@@ -370,11 +476,12 @@
 				A10000000000000000000077 /* ViewerState+Navigation.swift in Sources */,
 				A10000000000000000000079 /* ViewerState+Zoom.swift in Sources */,
 				A1000000000000000000007B /* ViewerState+Display.swift in Sources */,
-				A1000000000000000000007D /* ViewerState+Browser.swift in Sources */,
 				A1000000000000000000007F /* ViewerState+Slideshow.swift in Sources */,
 				A10000000000000000000081 /* ViewerState+Notices.swift in Sources */,
 				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
 				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
+				A1000000000000000000008B /* PhotoViewerFeatureView.swift in Sources */,
+				A1000000000000000000008D /* PhotoViewerStore.swift in Sources */,
 				A10000000000000000000041 /* ImageViewerEventViews.swift in Sources */,
 				A10000000000000000000043 /* RotatingImageView.swift in Sources */,
 				A10000000000000000000045 /* ImageViewerGeometry.swift in Sources */,
@@ -416,6 +523,7 @@
 				A2000000000000000000000A /* OpenBrowserKeyboardCatcher.swift in Sources */,
 				A2000000000000000000000B /* OpenBrowserControls.swift in Sources */,
 				A2000000000000000000000C /* OpenBrowserCells.swift in Sources */,
+				A2000000000000000000002B /* BrowserFeatureHostView.swift in Sources */,
 				A2000000000000000000000F /* OpenBrowserOverlay.swift in Sources */,
 				A20000000000000000000027 /* OpenBrowserOverlay+Layout.swift in Sources */,
 				A20000000000000000000029 /* OpenBrowserOverlay+Actions.swift in Sources */,
@@ -432,6 +540,7 @@
 				A20000000000000000000025 /* OpenBrowserScrollCoordinator.swift in Sources */,
 				A30000000000000000000003 /* ThumbnailSizeStepperControl.swift in Sources */,
 				A30000000000000000000004 /* ImageBrowserThumbnail.swift in Sources */,
+				A30000000000000000000007 /* ImageBrowserDisplayMode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,13 +558,106 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B10000000000000000000010 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000006 /* PhotoViewerStandaloneApp.swift in Sources */,
+				A10000000000000000000013 /* SupportedImageTypes.swift in Sources */,
+				A10000000000000000000014 /* FolderImageIndex.swift in Sources */,
+				A1000000000000000000005B /* ViewerModels.swift in Sources */,
+				A1000000000000000000005D /* ViewerPDFDocument.swift in Sources */,
+				A1000000000000000000005F /* ViewerImageMetadataReader.swift in Sources */,
+				A10000000000000000000061 /* ViewerDocumentLoader.swift in Sources */,
+				A10000000000000000000063 /* ViewerNavigationResolver.swift in Sources */,
+				A1000000000000000000001B /* ViewerState.swift in Sources */,
+				A10000000000000000000075 /* ViewerState+Content.swift in Sources */,
+				A10000000000000000000077 /* ViewerState+Navigation.swift in Sources */,
+				A10000000000000000000079 /* ViewerState+Zoom.swift in Sources */,
+				A1000000000000000000007B /* ViewerState+Display.swift in Sources */,
+				A1000000000000000000007F /* ViewerState+Slideshow.swift in Sources */,
+				A10000000000000000000081 /* ViewerState+Notices.swift in Sources */,
+				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
+				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
+				A1000000000000000000008B /* PhotoViewerFeatureView.swift in Sources */,
+				A1000000000000000000008D /* PhotoViewerStore.swift in Sources */,
+				A10000000000000000000041 /* ImageViewerEventViews.swift in Sources */,
+				A10000000000000000000043 /* RotatingImageView.swift in Sources */,
+				A10000000000000000000045 /* ImageViewerGeometry.swift in Sources */,
+				A1000000000000000000006D /* ImageViewerGeometry+Scaling.swift in Sources */,
+				A1000000000000000000006F /* ImageViewerGeometry+Input.swift in Sources */,
+				A10000000000000000000071 /* ImageViewerGeometry+Layout.swift in Sources */,
+				A10000000000000000000073 /* ImageViewerGeometry+Viewport.swift in Sources */,
+				A10000000000000000000047 /* ImageViewerNavigationHoldCoordinator.swift in Sources */,
+				A10000000000000000000049 /* ImageViewerPostProcessingMenuPresenter.swift in Sources */,
+				A1000000000000000000004B /* ImageViewerCommandWheelZoomCoordinator.swift in Sources */,
+				A1000000000000000000004D /* ImageViewerImageStack.swift in Sources */,
+				A1000000000000000000004F /* ImageViewerVerticalAutoScrollCoordinator.swift in Sources */,
+				A10000000000000000000051 /* ImageViewerTrackpadScrollCoordinator.swift in Sources */,
+				A10000000000000000000053 /* ImageViewerPointerDragCoordinator.swift in Sources */,
+				A10000000000000000000055 /* ImageViewerViewportPresenter.swift in Sources */,
+				A10000000000000000000057 /* ImageViewerKeyboardCoordinator.swift in Sources */,
+				A10000000000000000000059 /* ImageViewerZoomAnimator.swift in Sources */,
+				A10000000000000000000065 /* ImageViewerNSView+Input.swift in Sources */,
+				A10000000000000000000067 /* ImageViewerNSView+Zooming.swift in Sources */,
+				A10000000000000000000069 /* ImageViewerNSView+DoubleClick.swift in Sources */,
+				A1000000000000000000006B /* ImageViewerNSView+Viewport.swift in Sources */,
+				A10000000000000000000022 /* ImageViewerNSView.swift in Sources */,
+				A10000000000000000000023 /* ImageViewerContainerView.swift in Sources */,
+				A10000000000000000000033 /* ViewerWindowChromeConfigurator.swift in Sources */,
+				A10000000000000000000035 /* SlideshowIntervalField.swift in Sources */,
+				A10000000000000000000037 /* VerticalSlideshowPreview.swift in Sources */,
+				A10000000000000000000039 /* ViewerSupportControls.swift in Sources */,
+				A1000000000000000000003B /* ViewerOverlayCard.swift in Sources */,
+				A1000000000000000000003D /* ViewerControlBars.swift in Sources */,
+				A1000000000000000000003F /* ViewerSlideshowIntervalFormatter.swift in Sources */,
+				A10000000000000000000025 /* ImagePreloadQueue.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B10000000000000000000020 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B10000000000000000000007 /* FinderBrowserStandaloneApp.swift in Sources */,
+				A10000000000000000000013 /* SupportedImageTypes.swift in Sources */,
+				A20000000000000000000007 /* OpenBrowserModels.swift in Sources */,
+				A20000000000000000000008 /* OpenBrowserScrollSupport.swift in Sources */,
+				A20000000000000000000009 /* OpenBrowserStyling.swift in Sources */,
+				A2000000000000000000000A /* OpenBrowserKeyboardCatcher.swift in Sources */,
+				A2000000000000000000000B /* OpenBrowserControls.swift in Sources */,
+				A2000000000000000000000C /* OpenBrowserCells.swift in Sources */,
+				A2000000000000000000000F /* OpenBrowserOverlay.swift in Sources */,
+				A20000000000000000000027 /* OpenBrowserOverlay+Layout.swift in Sources */,
+				A20000000000000000000029 /* OpenBrowserOverlay+Actions.swift in Sources */,
+				A20000000000000000000011 /* OpenBrowserDataSource.swift in Sources */,
+				A20000000000000000000013 /* OpenBrowserNavigationHistory.swift in Sources */,
+				A20000000000000000000015 /* OpenBrowserSelectionState.swift in Sources */,
+				A20000000000000000000017 /* OpenBrowserSidebar.swift in Sources */,
+				A20000000000000000000019 /* OpenBrowserFooter.swift in Sources */,
+				A2000000000000000000001B /* OpenBrowserTitlebar.swift in Sources */,
+				A2000000000000000000001D /* OpenBrowserPreferences.swift in Sources */,
+				A2000000000000000000001F /* OpenBrowserSidebarStore.swift in Sources */,
+				A20000000000000000000021 /* OpenBrowserContentView.swift in Sources */,
+				A20000000000000000000023 /* OpenBrowserPathResolver.swift in Sources */,
+				A20000000000000000000025 /* OpenBrowserScrollCoordinator.swift in Sources */,
+				A30000000000000000000003 /* ThumbnailSizeStepperControl.swift in Sources */,
+				A30000000000000000000004 /* ImageBrowserThumbnail.swift in Sources */,
+				A30000000000000000000007 /* ImageBrowserDisplayMode.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXBuildFile section */
 		1D6058950D05DD3D006BFB54 /* ViewooaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6058910D05DD3D006BFB54 /* ViewooaApp.swift */; };
 		1D6058960D05DD3D006BFB54 /* ViewerWindowShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6058920D05DD3D006BFB54 /* ViewerWindowShell.swift */; };
+		B10000000000000000000006 /* PhotoViewerStandaloneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* PhotoViewerStandaloneApp.swift */; };
+		B10000000000000000000007 /* FinderBrowserStandaloneApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* FinderBrowserStandaloneApp.swift */; };
 		A10000000000000000000013 /* SupportedImageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000011 /* SupportedImageTypes.swift */; };
 		A10000000000000000000014 /* FolderImageIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* FolderImageIndex.swift */; };
+		A10000000000000000000089 /* ViewooaBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000088 /* ViewooaBridge.swift */; };
+		A1000000000000000000008F /* BrowserOverlayStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008E /* BrowserOverlayStore.swift */; };
 		A1000000000000000000005B /* ViewerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005A /* ViewerModels.swift */; };
 		A1000000000000000000005D /* ViewerPDFDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005C /* ViewerPDFDocument.swift */; };
 		A1000000000000000000005F /* ViewerImageMetadataReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000005E /* ViewerImageMetadataReader.swift */; };
@@ -466,11 +668,12 @@
 		A10000000000000000000077 /* ViewerState+Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000076 /* ViewerState+Navigation.swift */; };
 		A10000000000000000000079 /* ViewerState+Zoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000078 /* ViewerState+Zoom.swift */; };
 		A1000000000000000000007B /* ViewerState+Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007A /* ViewerState+Display.swift */; };
-		A1000000000000000000007D /* ViewerState+Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007C /* ViewerState+Browser.swift */; };
 		A1000000000000000000007F /* ViewerState+Slideshow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000007E /* ViewerState+Slideshow.swift */; };
 		A10000000000000000000081 /* ViewerState+Notices.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000080 /* ViewerState+Notices.swift */; };
 		A1000000000000000000001C /* ViewerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000019 /* ViewerCommands.swift */; };
 		A10000000000000000000021 /* ImageViewportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000001D /* ImageViewportState.swift */; };
+		A1000000000000000000008B /* PhotoViewerFeatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008A /* PhotoViewerFeatureView.swift */; };
+		A1000000000000000000008D /* PhotoViewerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000008C /* PhotoViewerStore.swift */; };
 		A10000000000000000000041 /* ImageViewerEventViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000040 /* ImageViewerEventViews.swift */; };
 		A10000000000000000000043 /* RotatingImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000042 /* RotatingImageView.swift */; };
 		A10000000000000000000045 /* ImageViewerGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000044 /* ImageViewerGeometry.swift */; };
@@ -512,6 +715,7 @@
 		A2000000000000000000000A /* OpenBrowserKeyboardCatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* OpenBrowserKeyboardCatcher.swift */; };
 		A2000000000000000000000B /* OpenBrowserControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* OpenBrowserControls.swift */; };
 		A2000000000000000000000C /* OpenBrowserCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* OpenBrowserCells.swift */; };
+		A2000000000000000000002B /* BrowserFeatureHostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000002A /* BrowserFeatureHostView.swift */; };
 		A2000000000000000000000F /* OpenBrowserOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* OpenBrowserOverlay.swift */; };
 		A20000000000000000000027 /* OpenBrowserOverlay+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000026 /* OpenBrowserOverlay+Layout.swift */; };
 		A20000000000000000000029 /* OpenBrowserOverlay+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000028 /* OpenBrowserOverlay+Actions.swift */; };
@@ -528,6 +732,7 @@
 		A20000000000000000000025 /* OpenBrowserScrollCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000024 /* OpenBrowserScrollCoordinator.swift */; };
 		A30000000000000000000003 /* ThumbnailSizeStepperControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000001 /* ThumbnailSizeStepperControl.swift */; };
 		A30000000000000000000004 /* ImageBrowserThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000002 /* ImageBrowserThumbnail.swift */; };
+		A30000000000000000000007 /* ImageBrowserDisplayMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000006 /* ImageBrowserDisplayMode.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
 		A10000000000000000000017 /* ViewerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ViewerStateTests.swift */; };
 		A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* ImagePreloadQueueTests.swift */; };
@@ -708,6 +913,124 @@
 			};
 			name = Release;
 		};
+		B10000000000000000000042 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = en;
+				INFOPLIST_KEY_CFBundleDisplayName = "Viewooa Photo Viewer";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seinel.Viewooa.PhotoViewer;
+				PRODUCT_NAME = "Viewooa Photo Viewer";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B10000000000000000000043 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = en;
+				INFOPLIST_KEY_CFBundleDisplayName = "Viewooa Photo Viewer";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seinel.Viewooa.PhotoViewer;
+				PRODUCT_NAME = "Viewooa Photo Viewer";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B10000000000000000000044 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = en;
+				INFOPLIST_KEY_CFBundleDisplayName = "Viewooa Finder Browser";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seinel.Viewooa.FinderBrowser;
+				PRODUCT_NAME = "Viewooa Finder Browser";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B10000000000000000000045 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDevelopmentRegion = en;
+				INFOPLIST_KEY_CFBundleDisplayName = "Viewooa Finder Browser";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seinel.Viewooa.FinderBrowser;
+				PRODUCT_NAME = "Viewooa Finder Browser";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -725,6 +1048,24 @@
 			buildConfigurations = (
 				A1000000000000000000000C /* Debug */,
 				A1000000000000000000000D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000040 /* Build configuration list for PBXNativeTarget "PhotoViewerApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000042 /* Debug */,
+				B10000000000000000000043 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B10000000000000000000041 /* Build configuration list for PBXNativeTarget "FinderBrowserApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000044 /* Debug */,
+				B10000000000000000000045 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

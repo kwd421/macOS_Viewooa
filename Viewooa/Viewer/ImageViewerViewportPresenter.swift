@@ -29,6 +29,18 @@ final class ImageViewerViewportPresenter {
         NSPoint(x: documentContainerView.bounds.midX, y: documentContainerView.bounds.midY)
     }
 
+    var visibleDocumentCenterPoint: NSPoint {
+        let visibleRect = scrollView.contentView.bounds
+        let visibleDocumentRect = visibleRect.intersection(documentContainerView.bounds)
+        guard !visibleDocumentRect.isNull,
+              visibleDocumentRect.width > 0,
+              visibleDocumentRect.height > 0 else {
+            return containerCenterPoint
+        }
+
+        return NSPoint(x: visibleDocumentRect.midX, y: visibleDocumentRect.midY)
+    }
+
     func displayedContentSize(pageLayout: ViewerPageLayout) -> NSSize {
         ImageViewerNSView.displayedContentSize(
             imageSizes: imageStack.displayedImageSizes,
@@ -85,8 +97,8 @@ final class ImageViewerViewportPresenter {
 
         let scaledWidth = displayedImageSize.width * scrollView.magnification
         let scaledHeight = displayedImageSize.height * scrollView.magnification
-        return scaledWidth <= viewportSize.width + 0.0001
-            && scaledHeight <= viewportSize.height + 0.0001
+        return scaledWidth <= viewportSize.width + ImageViewerNSView.fitVisibilityTolerance
+            && scaledHeight <= viewportSize.height + ImageViewerNSView.fitVisibilityTolerance
     }
 
     func imageScrollability(displayedImageSize: NSSize) -> (horizontal: Bool, vertical: Bool) {

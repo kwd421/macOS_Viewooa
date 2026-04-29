@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct ViewerTopControlBar: View {
-    @ObservedObject var viewerState: ViewerState
+struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
+    @ObservedObject var store: Store
     @Binding var isPinned: Bool
     @Binding var isHoveringRevealArea: Bool
     @Binding var slideshowIntervalDraft: String
@@ -10,17 +10,13 @@ struct ViewerTopControlBar: View {
         HStack(spacing: 12) {
             toolbarInfoButton
 
-            Divider()
-                .frame(height: 24)
-                .overlay(.white.opacity(0.22))
+            ViewerControlSeparator()
 
             toolbarPageLayoutMenu
             toolbarFitMenu
             toolbarSlideshowControl
 
-            Divider()
-                .frame(height: 24)
-                .overlay(.white.opacity(0.22))
+            ViewerControlSeparator()
 
             toolbarPinButton
         }
@@ -39,9 +35,9 @@ struct ViewerTopControlBar: View {
 
     private var toolbarInfoButton: some View {
         Button {
-            viewerState.toggleMetadataVisibility()
+            store.toggleMetadataVisibility()
         } label: {
-            Label("Info", systemImage: viewerState.isMetadataVisible ? "info.circle.fill" : "info.circle")
+            Label("Info", systemImage: store.isMetadataVisible ? "info.circle.fill" : "info.circle")
         }
         .keyboardShortcut(.tab, modifiers: [])
         .accessibilityLabel("Info")
@@ -49,31 +45,31 @@ struct ViewerTopControlBar: View {
 
     private var toolbarPageLayoutMenu: some View {
         Menu {
-            menuSelectionToggle("Single Page", isSelected: viewerState.pageLayout == .single) {
-                viewerState.setPageLayout(.single)
+            menuSelectionToggle("Single Page", isSelected: store.pageLayout == .single) {
+                store.setPageLayout(.single)
             }
 
             Divider()
 
-            menuSelectionToggle("Two Pages: L-R", isSelected: viewerState.pageLayout == .spread && viewerState.spreadDirection == .leftToRight) {
-                viewerState.setSpreadDirection(.leftToRight)
-                viewerState.setPageLayout(.spread)
+            menuSelectionToggle("Two Pages: L-R", isSelected: store.pageLayout == .spread && store.spreadDirection == .leftToRight) {
+                store.setSpreadDirection(.leftToRight)
+                store.setPageLayout(.spread)
             }
 
-            menuSelectionToggle("Two Pages: R-L", isSelected: viewerState.pageLayout == .spread && viewerState.spreadDirection == .rightToLeft) {
-                viewerState.setSpreadDirection(.rightToLeft)
-                viewerState.setPageLayout(.spread)
+            menuSelectionToggle("Two Pages: R-L", isSelected: store.pageLayout == .spread && store.spreadDirection == .rightToLeft) {
+                store.setSpreadDirection(.rightToLeft)
+                store.setPageLayout(.spread)
             }
 
-            menuSelectionToggle("Cover Mode", isSelected: viewerState.isCoverModeEnabled) {
-                viewerState.toggleCoverMode()
+            menuSelectionToggle("Cover Mode", isSelected: store.isCoverModeEnabled) {
+                store.toggleCoverMode()
             }
-            .disabled(viewerState.pageLayout != .spread)
+            .disabled(store.pageLayout != .spread)
 
             Divider()
 
-            menuSelectionToggle("Vertical Strip", isSelected: viewerState.pageLayout == .verticalStrip) {
-                viewerState.setPageLayout(.verticalStrip)
+            menuSelectionToggle("Vertical Strip", isSelected: store.pageLayout == .verticalStrip) {
+                store.setPageLayout(.verticalStrip)
             }
         } label: {
             Label("View: \(pageLayoutTitle)", systemImage: "rectangle.split.2x1")
@@ -83,11 +79,11 @@ struct ViewerTopControlBar: View {
     }
 
     private var pageLayoutTitle: String {
-        switch viewerState.pageLayout {
+        switch store.pageLayout {
         case .single:
             return ViewerPageLayout.single.shortTitle
         case .spread:
-            return "\(ViewerPageLayout.spread.shortTitle) \(viewerState.spreadDirection.shortTitle)"
+            return "\(ViewerPageLayout.spread.shortTitle) \(store.spreadDirection.shortTitle)"
         case .verticalStrip:
             return ViewerPageLayout.verticalStrip.shortTitle
         }
@@ -97,7 +93,7 @@ struct ViewerTopControlBar: View {
         Menu {
             ForEach(FitMode.allCases) { fitMode in
                 menuSelectionToggle(fitMode.title, isSelected: currentFitMode == fitMode) {
-                    viewerState.fitToWindow(fitMode)
+                    store.fitToWindow(fitMode)
                 }
             }
         } label: {
@@ -110,18 +106,18 @@ struct ViewerTopControlBar: View {
     private var toolbarSlideshowControl: some View {
         HStack(spacing: 8) {
             Button {
-                viewerState.toggleSlideshow()
+                store.toggleSlideshow()
             } label: {
                 Label(
-                    viewerState.isSlideshowPlaying ? "Pause" : "Slideshow",
-                    systemImage: viewerState.isSlideshowPlaying ? "pause.circle.fill" : "play.circle"
+                    store.isSlideshowPlaying ? "Pause" : "Slideshow",
+                    systemImage: store.isSlideshowPlaying ? "pause.circle.fill" : "play.circle"
                 )
             }
 
             slideshowIntervalEditor
 
-            if viewerState.pageLayout == .verticalStrip {
-                VerticalSlideshowPreview(intervalSeconds: viewerState.slideshowIntervalSeconds)
+            if store.pageLayout == .verticalStrip {
+                VerticalSlideshowPreview(intervalSeconds: store.slideshowIntervalSeconds)
             }
         }
         .accessibilityLabel("Slideshow")
@@ -164,7 +160,7 @@ struct ViewerTopControlBar: View {
     }
 
     private var currentFitMode: FitMode? {
-        if case let .fit(fitMode) = viewerState.zoomMode {
+        if case let .fit(fitMode) = store.zoomMode {
             return fitMode
         }
 
@@ -172,7 +168,7 @@ struct ViewerTopControlBar: View {
     }
 
     private var slideshowIntervalText: String {
-        "\(ViewerSlideshowIntervalFormatter.string(for: viewerState.slideshowIntervalSeconds))s"
+        "\(ViewerSlideshowIntervalFormatter.string(for: store.slideshowIntervalSeconds))s"
     }
 
     private func menuSelectionToggle(_ title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
@@ -193,42 +189,40 @@ struct ViewerTopControlBar: View {
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         if let seconds = Double(normalizedText) {
-            viewerState.setSlideshowInterval(seconds)
+            store.setSlideshowInterval(seconds)
         }
 
-        slideshowIntervalDraft = ViewerSlideshowIntervalFormatter.string(for: viewerState.slideshowIntervalSeconds)
+        slideshowIntervalDraft = ViewerSlideshowIntervalFormatter.string(for: store.slideshowIntervalSeconds)
     }
 
     private func adjustSlideshowInterval(by delta: Double) {
         commitSlideshowIntervalDraft()
-        viewerState.setSlideshowInterval(viewerState.slideshowIntervalSeconds + delta)
-        slideshowIntervalDraft = ViewerSlideshowIntervalFormatter.string(for: viewerState.slideshowIntervalSeconds)
+        store.setSlideshowInterval(store.slideshowIntervalSeconds + delta)
+        slideshowIntervalDraft = ViewerSlideshowIntervalFormatter.string(for: store.slideshowIntervalSeconds)
     }
 }
 
-struct ViewerBottomControlBar: View {
-    @ObservedObject var viewerState: ViewerState
+struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
+    @ObservedObject var store: Store
     @Binding var isPinned: Bool
+    let onOpen: () -> Void
+    let onZoomOut: () -> Void
 
     var body: some View {
         HStack(spacing: 10) {
-            controlButton("Open", systemImage: "folder", action: viewerState.presentOpenSelectionPanel)
+            controlButton("Open", systemImage: "folder", action: onOpen)
 
-            Divider()
-                .frame(height: 24)
-                .overlay(.white.opacity(0.22))
+            ViewerControlSeparator()
 
-            controlButton("Zoom Out", systemImage: "minus.magnifyingglass", action: viewerState.zoomOut)
+            controlButton("Zoom Out", systemImage: "minus.magnifyingglass", action: onZoomOut)
             actualSizeButton
-            controlButton("Zoom In", systemImage: "plus.magnifyingglass", action: viewerState.zoomIn)
-            controlButton("Rotate Right", systemImage: "rotate.right", action: viewerState.rotateClockwise)
+            controlButton("Zoom In", systemImage: "plus.magnifyingglass", action: store.zoomIn)
+            controlButton("Rotate Right", systemImage: "rotate.right", action: store.rotateClockwise)
 
-            Divider()
-                .frame(height: 24)
-                .overlay(.white.opacity(0.22))
+            ViewerControlSeparator()
 
-            repeatingControlButton("Previous", systemImage: "chevron.left", action: viewerState.showPreviousImageFromNavigationShortcut)
-            repeatingControlButton("Next", systemImage: "chevron.right", action: viewerState.showNextImageFromNavigationShortcut)
+            repeatingControlButton("Previous", systemImage: "chevron.left", action: store.showPreviousImageFromNavigationShortcut)
+            repeatingControlButton("Next", systemImage: "chevron.right", action: store.showNextImageFromNavigationShortcut)
 
             controlButton(
                 isPinned ? "Unpin Controls" : "Pin Controls",
@@ -264,16 +258,16 @@ struct ViewerBottomControlBar: View {
             action: action,
             onHoldChange: { isHolding in
                 if isHolding {
-                    viewerState.beginNavigationHoldIndicator()
+                    store.beginNavigationHoldIndicator()
                 } else {
-                    viewerState.endNavigationHoldIndicator()
+                    store.endNavigationHoldIndicator()
                 }
             }
         )
     }
 
     private var actualSizeButton: some View {
-        Button(action: viewerState.toggleActualSize) {
+        Button(action: store.toggleActualSize) {
             ActualSizeIcon()
                 .frame(width: 30, height: 30)
                 .background(isActualSize ? .white.opacity(0.20) : .white.opacity(0.10), in: Circle())
@@ -285,10 +279,18 @@ struct ViewerBottomControlBar: View {
     }
 
     private var isActualSize: Bool {
-        if case .actualSize = viewerState.zoomMode {
+        if case .actualSize = store.zoomMode {
             return true
         }
 
         return false
+    }
+}
+
+private struct ViewerControlSeparator: View {
+    var body: some View {
+        Rectangle()
+            .fill(.white.opacity(0.22))
+            .frame(width: 1, height: 24)
     }
 }

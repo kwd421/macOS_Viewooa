@@ -23,6 +23,13 @@ extension ImageViewerNSView {
 
         pointerDragCoordinator.reset()
 
+        if zoomAnimator.isApplyingProgrammaticMagnification {
+            zoomAnimator.runAfterCurrentTransition { [weak self] in
+                _ = self?.handleDoubleClick(anchoredAtDocumentPoint: documentPoint)
+            }
+            return true
+        }
+
         let contentOffset = Self.anchoredContentOffset(
             documentPoint: documentPoint,
             contentFrame: currentContentFrame()
@@ -60,7 +67,7 @@ extension ImageViewerNSView {
     }
 
     func centeredDocumentPoint(for imagePoint: NSPoint?) -> NSPoint {
-        guard let imagePoint else { return viewportPresenter.containerCenterPoint }
+        guard let imagePoint else { return viewportPresenter.visibleDocumentCenterPoint }
         return Self.documentPoint(forImagePoint: imagePoint, imageFrame: imageStack.primaryImageFrame)
     }
 

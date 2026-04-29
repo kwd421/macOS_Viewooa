@@ -14,8 +14,6 @@ extension ViewerState {
         lastErrorMessage = nil
         isMetadataVisible = false
         transientNotice = nil
-        isImageBrowserVisible = false
-        isOpenBrowserVisible = false
         if hidesNavigationCount {
             hideNavigationCountImmediately()
         }
@@ -50,8 +48,6 @@ extension ViewerState {
         lastErrorMessage = nil
         isMetadataVisible = false
         transientNotice = nil
-        isImageBrowserVisible = false
-        isOpenBrowserVisible = false
         if hidesNavigationCount {
             hideNavigationCountImmediately()
         }

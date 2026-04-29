@@ -1,6 +1,13 @@
 import AppKit
 
 extension ImageViewerNSView {
+    static let fitVisibilityTolerance: CGFloat = 1.0
+
+    static func documentFitVisibilityTolerance(magnification: CGFloat) -> CGFloat {
+        guard magnification > 0 else { return fitVisibilityTolerance }
+        return fitVisibilityTolerance / magnification
+    }
+
     static func canPanVisibleRect(
         documentSize: NSSize,
         viewportSize: NSSize,
@@ -16,8 +23,9 @@ extension ImageViewerNSView {
 
         let visibleWidth = viewportSize.width / magnification
         let visibleHeight = viewportSize.height / magnification
-        return documentSize.width > visibleWidth + 0.0001
-            || documentSize.height > visibleHeight + 0.0001
+        let documentTolerance = documentFitVisibilityTolerance(magnification: magnification)
+        return documentSize.width > visibleWidth + documentTolerance
+            || documentSize.height > visibleHeight + documentTolerance
     }
 
     static func imageScrollability(
@@ -36,8 +44,8 @@ extension ImageViewerNSView {
         let scaledWidth = imageSize.width * magnification
         let scaledHeight = imageSize.height * magnification
         return (
-            horizontal: scaledWidth > viewportSize.width + 0.0001,
-            vertical: scaledHeight > viewportSize.height + 0.0001
+            horizontal: scaledWidth > viewportSize.width + fitVisibilityTolerance,
+            vertical: scaledHeight > viewportSize.height + fitVisibilityTolerance
         )
     }
 

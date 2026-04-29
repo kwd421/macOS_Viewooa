@@ -64,7 +64,6 @@ final class ImageViewerPointerDragCoordinator {
 final class ImageViewerPointerLockController {
     private var lockedScreenPoint: CGPoint?
     private var isCursorHidden = false
-    private var isMouseCursorAssociationSuspended = false
 
     deinit {
         end()
@@ -78,22 +77,15 @@ final class ImageViewerPointerLockController {
         }
 
         lockedScreenPoint = screenPoint
-        if CGAssociateMouseAndMouseCursorPosition(0) == .success {
-            isMouseCursorAssociationSuspended = true
-        }
         NSCursor.hide()
         isCursorHidden = true
     }
 
     func end() {
-        guard lockedScreenPoint != nil || isCursorHidden || isMouseCursorAssociationSuspended else {
+        guard lockedScreenPoint != nil || isCursorHidden else {
             return
         }
 
-        if isMouseCursorAssociationSuspended {
-            CGAssociateMouseAndMouseCursorPosition(1)
-            isMouseCursorAssociationSuspended = false
-        }
         if let lockedScreenPoint {
             CGWarpMouseCursorPosition(lockedScreenPoint)
         }

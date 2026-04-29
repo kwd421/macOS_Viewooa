@@ -1,18 +1,18 @@
 import AppKit
 
 extension ImageViewerNSView {
-    func applyZoomMode(_ zoomMode: ZoomMode) {
+    func applyZoomMode(_ zoomMode: ZoomMode, animated: Bool = true) {
         switch zoomMode {
         case let .fit(fitMode):
-            applyFitMagnification(fitMode)
+            applyFitMagnification(fitMode, animated: animated)
         case .actualSize:
-            handleMagnificationChange(1.0, isUserInitiated: false)
+            applyImageCenterProgrammaticMagnification(1.0)
         case let .custom(scale):
             handleMagnificationChange(scale, isUserInitiated: false)
         }
     }
 
-    func applyFitMagnification(_ fitMode: FitMode) {
+    func applyFitMagnification(_ fitMode: FitMode, animated: Bool = true) {
         lastFitMode = fitMode
         let imageSize = displayedImageSize
         let viewportSize = viewportSizeForLayout
@@ -44,7 +44,8 @@ extension ImageViewerNSView {
         applyProgrammaticMagnification(
             clampedScale,
             centeredAt: viewportPresenter.containerCenterPoint,
-            finalOrigin: targetOrigin
+            finalOrigin: targetOrigin,
+            animated: animated
         )
     }
 
@@ -81,16 +82,13 @@ extension ImageViewerNSView {
             return
         }
 
-        updateViewportPresentation(for: clampedScale)
-        let targetDocumentPoint = centeredDocumentPoint(for: centeredImagePoint)
-        let targetOrigin = centeredImagePoint.map { _ in
-            Self.visibleRectOrigin(
-                centeredOn: targetDocumentPoint,
-                containerSize: documentContainerView.bounds.size,
-                viewportSize: viewportSizeForLayout,
-                magnification: clampedScale
-            )
+        guard let centeredImagePoint else {
+            applyVisibleCenterProgrammaticMagnification(clampedScale)
+            return
         }
+
+        let targetDocumentPoint = centeredDocumentPoint(for: centeredImagePoint)
+        let targetOrigin = centeredOrigin(for: targetDocumentPoint, magnification: clampedScale)
         applyProgrammaticMagnification(
             clampedScale,
             centeredAt: targetDocumentPoint,
@@ -165,16 +163,8 @@ extension ImageViewerNSView {
             return
         }
 
-        updateViewportPresentation(for: clampedScale)
         let targetDocumentPoint = documentPoint ?? viewportPresenter.containerCenterPoint
-        let targetOrigin = documentPoint.map { _ in
-            Self.visibleRectOrigin(
-                centeredOn: targetDocumentPoint,
-                containerSize: documentContainerView.bounds.size,
-                viewportSize: viewportSizeForLayout,
-                magnification: clampedScale
-            )
-        }
+        let targetOrigin = centeredOrigin(for: targetDocumentPoint, magnification: clampedScale)
         applyProgrammaticMagnification(
             clampedScale,
             centeredAt: targetDocumentPoint,

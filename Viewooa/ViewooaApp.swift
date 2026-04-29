@@ -2,32 +2,32 @@ import SwiftUI
 
 @main
 struct ViewooaApp: App {
-    @StateObject private var viewerState = ViewerState()
+    @StateObject private var bridge = ViewooaBridge()
 
     var body: some Scene {
-        Self.makeViewerScene(viewerState: viewerState)
+        Self.makeViewerScene(bridge: bridge)
     }
 
-    static func makeViewerScene(viewerState: ViewerState) -> some Scene {
+    static func makeViewerScene(bridge: ViewooaBridge) -> some Scene {
         Window("Viewooa", id: "viewer") {
-            ViewerWindowShell(viewerState: viewerState)
+            ViewerWindowShell(bridge: bridge)
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 900, height: 620)
         .windowResizability(.contentMinSize)
         .commands {
             ViewerCommands(
-                openFile: viewerState.presentOpenFilePanel,
-                openFolder: viewerState.presentOpenFolderPanel,
-                showPreviousImage: viewerState.showPreviousImageFromNavigationShortcut,
-                showNextImage: viewerState.showNextImageFromNavigationShortcut,
-                rotateClockwise: viewerState.rotateClockwise,
-                zoomIn: viewerState.zoomIn,
-                zoomOut: viewerState.zoomOut,
-                zoomToActualSize: { viewerState.zoomMode = .actualSize },
-                zoomToFitHeight: { viewerState.fitToWindow(.height) },
-                zoomToFitWidth: { viewerState.fitToWindow(.width) },
-                zoomToFitAll: { viewerState.fitToWindow(.all) }
+                openFile: bridge.presentOpenBrowser,
+                openFolder: bridge.presentOpenBrowser,
+                showPreviousImage: bridge.showPreviousImage,
+                showNextImage: bridge.showNextImage,
+                rotateClockwise: bridge.rotateClockwise,
+                zoomIn: bridge.zoomIn,
+                zoomOut: bridge.zoomOut,
+                zoomToActualSize: bridge.zoomToActualSize,
+                zoomToFitHeight: { bridge.zoomToFit(.height) },
+                zoomToFitWidth: { bridge.zoomToFit(.width) },
+                zoomToFitAll: { bridge.zoomToFit(.all) }
             )
         }
     }

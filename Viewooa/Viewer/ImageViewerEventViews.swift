@@ -10,6 +10,10 @@ enum ImageViewerClickActivation {
     static func isDoubleClickActivation(clickCount: Int) -> Bool {
         clickCount >= 2 && clickCount.isMultiple(of: 2)
     }
+
+    static func isMultiClickContinuation(clickCount: Int) -> Bool {
+        clickCount > 2 && !clickCount.isMultiple(of: 2)
+    }
 }
 
 final class NavigationAwareScrollView: NSScrollView {
@@ -44,6 +48,10 @@ final class NavigationAwareScrollView: NSScrollView {
 
         if ImageViewerClickActivation.isDoubleClickActivation(clickCount: event.clickCount),
            doubleClickHandler?(event) == true {
+            return
+        }
+
+        if ImageViewerClickActivation.isMultiClickContinuation(clickCount: event.clickCount) {
             return
         }
 
@@ -105,6 +113,10 @@ final class DoubleClickAwareView: NSView {
 
         if ImageViewerClickActivation.isDoubleClickActivation(clickCount: event.clickCount),
            doubleClickHandler?(event) == true {
+            return
+        }
+
+        if ImageViewerClickActivation.isMultiClickContinuation(clickCount: event.clickCount) {
             return
         }
 

@@ -1,5 +1,6 @@
 import AppKit
 
+@MainActor
 final class ImageViewerPostProcessingMenuPresenter: NSObject {
     private var onToggle: ((ImagePostProcessingOption) -> Void)?
     private var onClear: (() -> Void)?
