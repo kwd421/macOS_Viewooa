@@ -14,9 +14,9 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
     let onZoomOut: () -> Void
     let onFitZoomOutRequest: () -> Bool
 
-    @State private var isControlBarPinned = true
+    @AppStorage("viewer.bottomControlBarPinned") private var isControlBarPinned = true
     @State private var isHoveringControlRevealArea = false
-    @State private var isTopControlBarPinned = true
+    @AppStorage("viewer.topControlBarPinned") private var isTopControlBarPinned = true
     @State private var isHoveringTopControlRevealArea = false
     @State private var transientNoticeDismissTask: Task<Void, Never>?
     @State private var slideshowIntervalDraft = "3"
