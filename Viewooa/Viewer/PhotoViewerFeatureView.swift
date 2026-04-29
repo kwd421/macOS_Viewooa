@@ -92,12 +92,13 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
                     .frame(height: 112)
                     .visualHoverTracking(isHovering: $isHoveringControlRevealArea, shape: Rectangle())
 
-                if bottomControlsVisible {
-                    bottomControlBar
-                        .padding(.bottom, PhotoViewerOverlayLayout.controlBarEdgePadding)
-                        .transition(.opacity.combined(with: .move(edge: .bottom)))
-                        .visualHoverTracking(isHovering: $isHoveringControlRevealArea, shape: Capsule())
-                }
+                bottomControlBar
+                    .padding(.bottom, PhotoViewerOverlayLayout.controlBarEdgePadding)
+                    .opacity(bottomControlsVisible ? 1 : 0)
+                    .offset(y: bottomControlsVisible ? 0 : 4)
+                    .blur(radius: bottomControlsVisible ? 0 : 0.7)
+                    .allowsHitTesting(bottomControlsVisible)
+                    .visualHoverTracking(isHovering: $isHoveringControlRevealArea, shape: Capsule())
             }
         }
     }
