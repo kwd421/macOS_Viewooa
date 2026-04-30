@@ -133,6 +133,22 @@ struct VisualSelectableIconStyle {
     }
 }
 
+struct VisualSelectableContentStyle {
+    let backgroundColor: VisualInteractionColorStyle
+    let borderColor: VisualInteractionColorStyle?
+    let borderLineWidth: CGFloat
+
+    init(
+        backgroundColor: VisualInteractionColorStyle,
+        borderColor: VisualInteractionColorStyle? = nil,
+        borderLineWidth: CGFloat = 1
+    ) {
+        self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
+        self.borderLineWidth = borderLineWidth
+    }
+}
+
 struct VisualToolbarSurfaceStyle<BackgroundStyle: ShapeStyle> {
     let backgroundStyle: BackgroundStyle
     let borderColor: Color
@@ -597,6 +613,26 @@ struct VisualSelectableContentButton<ShapeType: InsettableShape, Label: View>: V
     let borderLineWidth: CGFloat
     let action: () -> Void
     let label: (Bool) -> Label
+
+    init(
+        accessibilityLabel: String,
+        isSelected: Bool,
+        shape: ShapeType,
+        style: VisualSelectableContentStyle,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping (Bool) -> Label
+    ) {
+        self.init(
+            accessibilityLabel: accessibilityLabel,
+            isSelected: isSelected,
+            shape: shape,
+            backgroundColor: style.backgroundColor,
+            borderColor: style.borderColor,
+            borderLineWidth: style.borderLineWidth,
+            action: action,
+            label: label
+        )
+    }
 
     init(
         accessibilityLabel: String,

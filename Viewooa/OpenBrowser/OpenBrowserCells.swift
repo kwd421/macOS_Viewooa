@@ -22,8 +22,7 @@ struct OpenBrowserThumbnailCell: View {
             accessibilityLabel: entry.name,
             isSelected: isSelected,
             shape: shape,
-            backgroundColor: Self.thumbnailBackground,
-            borderColor: Self.thumbnailBorder
+            style: Self.thumbnailStyle
         ) {
             onClick(entry)
         } label: { _ in
@@ -79,8 +78,10 @@ struct OpenBrowserThumbnailCell: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let thumbnailBackground = VisualInteractionPalette.openBrowserThumbnailBackground
-    private static let thumbnailBorder = VisualInteractionPalette.openBrowserThumbnailBorder
+    private static let thumbnailStyle = VisualSelectableContentStyle(
+        backgroundColor: VisualInteractionPalette.openBrowserThumbnailBackground,
+        borderColor: VisualInteractionPalette.openBrowserThumbnailBorder
+    )
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
@@ -127,8 +128,7 @@ struct OpenBrowserListRow: View {
             accessibilityLabel: entry.name,
             isSelected: isSelected,
             shape: shape,
-            backgroundColor: Self.listBackground,
-            borderColor: Self.listBorder
+            style: Self.listStyle
         ) {
             onClick(entry)
         } label: { _ in
@@ -186,8 +186,10 @@ struct OpenBrowserListRow: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let listBackground = VisualInteractionPalette.openBrowserListBackground
-    private static let listBorder = VisualInteractionPalette.openBrowserListBorder
+    private static let listStyle = VisualSelectableContentStyle(
+        backgroundColor: VisualInteractionPalette.openBrowserListBackground,
+        borderColor: VisualInteractionPalette.openBrowserListBorder
+    )
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }

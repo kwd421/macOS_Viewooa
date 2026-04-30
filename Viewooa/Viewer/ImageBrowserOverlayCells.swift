@@ -16,7 +16,7 @@ struct ImageBrowserThumbnailCell: View {
             accessibilityLabel: url.lastPathComponent,
             isSelected: isSelected,
             shape: shape,
-            backgroundColor: Self.thumbnailBackground
+            style: Self.thumbnailStyle
         ) {
             onSelect(index)
         } label: { _ in
@@ -46,7 +46,9 @@ struct ImageBrowserThumbnailCell: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let thumbnailBackground = VisualInteractionPalette.darkOverlayThumbnailBackground
+    private static let thumbnailStyle = VisualSelectableContentStyle(
+        backgroundColor: VisualInteractionPalette.darkOverlayThumbnailBackground
+    )
 
     private static func previewBorder(isSelected: Bool) -> Color {
         isSelected ? .white : VisualInteractionPalette.imageBrowserPreviewBorder
@@ -82,8 +84,7 @@ struct ImageBrowserListRow: View {
             accessibilityLabel: url.lastPathComponent,
             isSelected: isSelected,
             shape: shape,
-            backgroundColor: Self.listBackground,
-            borderColor: Self.listBorder
+            style: Self.listStyle
         ) {
             onSelect(index)
         } label: { _ in
@@ -122,8 +123,10 @@ struct ImageBrowserListRow: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let listBackground = VisualInteractionPalette.darkOverlayListBackground
-    private static let listBorder = VisualInteractionPalette.darkOverlayListBorder
+    private static let listStyle = VisualSelectableContentStyle(
+        backgroundColor: VisualInteractionPalette.darkOverlayListBackground,
+        borderColor: VisualInteractionPalette.darkOverlayListBorder
+    )
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
