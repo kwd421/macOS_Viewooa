@@ -70,19 +70,16 @@ struct OpenBrowserSidebar: View {
     private var addCurrentFolderButton: some View {
         VisualHoverContentButton(
             accessibilityLabel: "Add Current Folder",
-            shape: RoundedRectangle(cornerRadius: 6, style: .continuous)
+            shape: RoundedRectangle(cornerRadius: 6, style: .continuous),
+            style: Self.addButtonStyle
         ) {
             onAddCurrentFolder()
-        } label: { isHovering in
+        } label: { _ in
             Label("Add Current Folder", systemImage: "plus")
                 .font(.system(size: 12, weight: .medium))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 8)
                 .frame(height: 26)
-                .background(
-                    VisualInteractionPalette.subtleToolbarHover.color(isHovering: isHovering),
-                    in: RoundedRectangle(cornerRadius: 6, style: .continuous)
-                )
         }
         .foregroundStyle(.secondary)
     }
@@ -94,7 +91,7 @@ struct OpenBrowserSidebar: View {
             accessibilityLabel: item.title,
             isSelected: isSelected,
             shape: RoundedRectangle(cornerRadius: 6, style: .continuous),
-            backgroundColor: VisualInteractionPalette.openBrowserSidebarRowBackground
+            style: Self.sidebarRowStyle
         ) {
             onNavigate(item.url)
         } label: { _ in
@@ -125,4 +122,12 @@ struct OpenBrowserSidebar: View {
         .accessibilityLabel(item.title)
         .accessibilityAddTraits(.isButton)
     }
+
+    private static let addButtonStyle = VisualHoverContentStyle(
+        backgroundColor: VisualInteractionPalette.subtleToolbarHover
+    )
+
+    private static let sidebarRowStyle = VisualSelectableContentStyle(
+        backgroundColor: VisualInteractionPalette.openBrowserSidebarRowBackground
+    )
 }

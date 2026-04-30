@@ -149,6 +149,19 @@ struct VisualSelectableContentStyle {
     }
 }
 
+struct VisualHoverContentStyle {
+    let backgroundColor: VisualHoverColorStyle
+    let hoverEmphasis: VisualHoverEmphasisStyle
+
+    init(
+        backgroundColor: VisualHoverColorStyle = VisualHoverColorStyle(normal: .clear, hover: .clear),
+        hoverEmphasis: VisualHoverEmphasisStyle = .none
+    ) {
+        self.backgroundColor = backgroundColor
+        self.hoverEmphasis = hoverEmphasis
+    }
+}
+
 struct VisualToolbarSurfaceStyle<BackgroundStyle: ShapeStyle> {
     let backgroundStyle: BackgroundStyle
     let borderColor: Color
@@ -680,6 +693,7 @@ struct VisualSelectableContentButton<ShapeType: InsettableShape, Label: View>: V
 struct VisualHoverContentButton<ShapeType: Shape, Label: View>: View {
     let accessibilityLabel: String
     let shape: ShapeType
+    let backgroundColor: VisualHoverColorStyle
     let hoverEmphasis: VisualHoverEmphasisStyle
     let action: () -> Void
     let label: (Bool) -> Label
@@ -687,12 +701,31 @@ struct VisualHoverContentButton<ShapeType: Shape, Label: View>: View {
     init(
         accessibilityLabel: String,
         shape: ShapeType,
+        style: VisualHoverContentStyle,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping (Bool) -> Label
+    ) {
+        self.init(
+            accessibilityLabel: accessibilityLabel,
+            shape: shape,
+            backgroundColor: style.backgroundColor,
+            hoverEmphasis: style.hoverEmphasis,
+            action: action,
+            label: label
+        )
+    }
+
+    init(
+        accessibilityLabel: String,
+        shape: ShapeType,
+        backgroundColor: VisualHoverColorStyle = VisualHoverColorStyle(normal: .clear, hover: .clear),
         hoverEmphasis: VisualHoverEmphasisStyle = .none,
         action: @escaping () -> Void,
         @ViewBuilder label: @escaping (Bool) -> Label
     ) {
         self.accessibilityLabel = accessibilityLabel
         self.shape = shape
+        self.backgroundColor = backgroundColor
         self.hoverEmphasis = hoverEmphasis
         self.action = action
         self.label = label
@@ -702,6 +735,7 @@ struct VisualHoverContentButton<ShapeType: Shape, Label: View>: View {
         VisualHoverState(shape: shape) { isHovering in
             Button(action: action) {
                 label(isHovering)
+                    .background(backgroundColor.color(isHovering: isHovering), in: shape)
                     .overlay {
                         shape.stroke(hoverEmphasis.strokeColor(isHovering: isHovering), lineWidth: 1)
                     }

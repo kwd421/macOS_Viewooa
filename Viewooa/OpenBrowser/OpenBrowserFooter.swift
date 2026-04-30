@@ -109,22 +109,21 @@ private struct PathComponentButton: View {
 
         VisualHoverContentButton(
             accessibilityLabel: component.title,
-            shape: shape
+            shape: shape,
+            style: Self.style
         ) {
                 onNavigate(component.url)
-        } label: { isHovering in
+        } label: { _ in
             Text(component.title)
                 .font(.system(size: 12, weight: .regular))
                 .lineLimit(1)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 5)
                 .frame(height: 20)
-                .background(
-                    Self.backgroundColor.color(isHovering: isHovering),
-                    in: shape
-                )
         }
     }
 
-    private static let backgroundColor = VisualInteractionPalette.subtleToolbarHover
+    private static let style = VisualHoverContentStyle(
+        backgroundColor: VisualInteractionPalette.subtleToolbarHover
+    )
 }
