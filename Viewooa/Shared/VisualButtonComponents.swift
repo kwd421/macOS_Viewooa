@@ -436,6 +436,38 @@ struct VisualSelectableContentButton<ShapeType: InsettableShape, Label: View>: V
     }
 }
 
+struct VisualHoverContentButton<ShapeType: Shape, Label: View>: View {
+    let accessibilityLabel: String
+    let shape: ShapeType
+    let action: () -> Void
+    let label: (Bool) -> Label
+
+    init(
+        accessibilityLabel: String,
+        shape: ShapeType,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping (Bool) -> Label
+    ) {
+        self.accessibilityLabel = accessibilityLabel
+        self.shape = shape
+        self.action = action
+        self.label = label
+    }
+
+    var body: some View {
+        VisualHoverState(shape: shape) { isHovering in
+            Button(action: action) {
+                label(isHovering)
+                    .visualHitArea(shape)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(accessibilityLabel)
+            .visualHitArea(shape)
+        }
+        .visualHitArea(shape)
+    }
+}
+
 struct VisualCapsuleIconTextLabel: View {
     let systemImage: String
     let title: String

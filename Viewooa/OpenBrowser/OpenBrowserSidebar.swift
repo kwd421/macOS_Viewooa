@@ -68,14 +68,21 @@ struct OpenBrowserSidebar: View {
     }
 
     private var addCurrentFolderButton: some View {
-        SidebarHoverButton {
+        VisualHoverContentButton(
+            accessibilityLabel: "Add Current Folder",
+            shape: RoundedRectangle(cornerRadius: 6, style: .continuous)
+        ) {
             onAddCurrentFolder()
-        } label: {
+        } label: { isHovering in
             Label("Add Current Folder", systemImage: "plus")
                 .font(.system(size: 12, weight: .medium))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 8)
                 .frame(height: 26)
+                .background(
+                    VisualInteractionPalette.subtleToolbarHover.color(isHovering: isHovering),
+                    in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+                )
         }
         .foregroundStyle(.secondary)
     }
@@ -83,9 +90,14 @@ struct OpenBrowserSidebar: View {
     private func sidebarRow(_ item: OpenBrowserSidebarItem, allowsRemoval: Bool) -> some View {
         let isSelected = item.url.standardizedFileURL == currentDirectory.standardizedFileURL
 
-        return SidebarHoverButton(isSelected: isSelected) {
+        return VisualSelectableContentButton(
+            accessibilityLabel: item.title,
+            isSelected: isSelected,
+            shape: RoundedRectangle(cornerRadius: 6, style: .continuous),
+            backgroundColor: VisualInteractionPalette.openBrowserSidebarRowBackground
+        ) {
             onNavigate(item.url)
-        } label: {
+        } label: { _ in
             HStack(spacing: 9) {
                 Image(systemName: item.systemImage)
                     .font(.system(size: 13, weight: .regular))
@@ -112,29 +124,5 @@ struct OpenBrowserSidebar: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel(item.title)
         .accessibilityAddTraits(.isButton)
-    }
-}
-
-private struct SidebarHoverButton<Label: View>: View {
-    var isSelected = false
-    let action: () -> Void
-    @ViewBuilder let label: () -> Label
-
-    var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
-
-        VisualHoverState(shape: shape) { isHovering in
-            Button(action: action) {
-                label()
-                    .background(Self.backgroundColor.color(isSelected: isSelected, isHovering: isHovering), in: shape)
-                    .visualHitArea(shape)
-            }
-            .visualHitArea(shape)
-            .buttonStyle(.plain)
-        }
-    }
-
-    private static var backgroundColor: VisualInteractionColorStyle {
-        VisualInteractionPalette.openBrowserSidebarRowBackground
     }
 }

@@ -107,25 +107,22 @@ private struct PathComponentButton: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 5, style: .continuous)
 
-        VisualHoverState(shape: shape) { isHovering in
-            Button {
+        VisualHoverContentButton(
+            accessibilityLabel: component.title,
+            shape: shape
+        ) {
                 onNavigate(component.url)
-            } label: {
-                Text(component.title)
-                    .font(.system(size: 12, weight: .regular))
-                    .lineLimit(1)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 5)
-                    .frame(height: 20)
-                    .background(
-                        Self.backgroundColor.color(isHovering: isHovering),
-                        in: shape
-                    )
-                    .visualHitArea(shape)
-            }
-            .buttonStyle(.plain)
-            .visualHitArea(shape)
-            .accessibilityLabel(component.title)
+        } label: { isHovering in
+            Text(component.title)
+                .font(.system(size: 12, weight: .regular))
+                .lineLimit(1)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 5)
+                .frame(height: 20)
+                .background(
+                    Self.backgroundColor.color(isHovering: isHovering),
+                    in: shape
+                )
         }
     }
 
