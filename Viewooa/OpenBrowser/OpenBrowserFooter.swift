@@ -129,8 +129,5 @@ private struct PathComponentButton: View {
         }
     }
 
-    private static let backgroundColor = VisualHoverColorStyle(
-        normal: .clear,
-        hover: Color.primary.opacity(0.08)
-    )
+    private static let backgroundColor = VisualInteractionPalette.subtleToolbarHover
 }

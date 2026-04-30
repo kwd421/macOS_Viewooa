@@ -85,19 +85,8 @@ struct OpenBrowserThumbnailCell: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let thumbnailBackground = VisualInteractionColorStyle(
-        normal: .clear,
-        hover: Color.primary.opacity(0.055),
-        selected: Color.openBrowserSelection.opacity(0.07),
-        selectedHover: Color.openBrowserSelection.opacity(0.12)
-    )
-
-    private static let thumbnailBorder = VisualInteractionColorStyle(
-        normal: .clear,
-        hover: Color.primary.opacity(0.10),
-        selected: Color.openBrowserSelection.opacity(0.46),
-        selectedHover: Color.openBrowserSelection.opacity(0.62)
-    )
+    private static let thumbnailBackground = VisualInteractionPalette.openBrowserThumbnailBackground
+    private static let thumbnailBorder = VisualInteractionPalette.openBrowserThumbnailBorder
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
@@ -208,19 +197,8 @@ struct OpenBrowserListRow: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let listBackground = VisualInteractionColorStyle(
-        normal: .clear,
-        hover: Color.primary.opacity(0.055),
-        selected: Color.openBrowserSelection.opacity(0.16),
-        selectedHover: Color.openBrowserSelection.opacity(0.22)
-    )
-
-    private static let listBorder = VisualInteractionColorStyle(
-        normal: .clear,
-        hover: Color.primary.opacity(0.08),
-        selected: Color.openBrowserSelection.opacity(0.24),
-        selectedHover: Color.openBrowserSelection.opacity(0.34)
-    )
+    private static let listBackground = VisualInteractionPalette.openBrowserListBackground
+    private static let listBorder = VisualInteractionPalette.openBrowserListBorder
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }

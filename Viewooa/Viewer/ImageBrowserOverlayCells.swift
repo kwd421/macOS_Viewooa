@@ -48,12 +48,7 @@ struct ImageBrowserThumbnailCell: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let thumbnailBackground = VisualInteractionColorStyle(
-        normal: .clear,
-        hover: .white.opacity(0.10),
-        selected: .white.opacity(0.15),
-        selectedHover: .white.opacity(0.26)
-    )
+    private static let thumbnailBackground = VisualInteractionPalette.darkOverlayThumbnailBackground
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
@@ -125,19 +120,8 @@ struct ImageBrowserListRow: View {
         .animation(revealAnimation, value: isRevealed)
     }
 
-    private static let listBackground = VisualInteractionColorStyle(
-        normal: .white.opacity(0.055),
-        hover: .white.opacity(0.12),
-        selected: .white.opacity(0.16),
-        selectedHover: .white.opacity(0.26)
-    )
-
-    private static let listBorder = VisualInteractionColorStyle(
-        normal: .white.opacity(0.08),
-        hover: .white.opacity(0.18),
-        selected: .white.opacity(0.48),
-        selectedHover: .white.opacity(0.62)
-    )
+    private static let listBackground = VisualInteractionPalette.darkOverlayListBackground
+    private static let listBorder = VisualInteractionPalette.darkOverlayListBorder
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }

@@ -56,10 +56,7 @@ struct OpenBrowserIconToolbarSurface: View {
         isActive ? Color.openBrowserSelection : .secondary
     }
 
-    private static let iconBackgroundColor = VisualHoverColorStyle(
-        normal: .clear,
-        hover: Color.primary.opacity(0.08)
-    )
+    private static let iconBackgroundColor = VisualInteractionPalette.subtleToolbarHover
 }
 
 struct OpenBrowserSearchIconButton: View {
@@ -88,10 +85,7 @@ struct OpenBrowserSearchIconButton: View {
         .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
     }
 
-    private static let backgroundColor = VisualHoverColorStyle(
-        normal: .clear,
-        hover: .white.opacity(0.12)
-    )
+    private static let backgroundColor = VisualInteractionPalette.vibrantToolbarHover
 }
 
 struct OpenBrowserSearchField: View {
@@ -152,10 +146,7 @@ private struct OpenBrowserClearSearchButton: View {
         .frame(width: 20, height: 20)
     }
 
-    private static let backgroundColor = VisualHoverColorStyle(
-        normal: .clear,
-        hover: Color.primary.opacity(0.08)
-    )
+    private static let backgroundColor = VisualInteractionPalette.subtleToolbarHover
 }
 
 struct OpenBrowserSortMenu: View {
@@ -268,7 +259,7 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
 
     private static func backgroundColor(isVibrant: Bool) -> VisualHoverColorStyle {
         if isVibrant {
-            return VisualHoverColorStyle(normal: .clear, hover: Color.white.opacity(0.12))
+            return VisualInteractionPalette.vibrantToolbarHover
         }
 
         return VisualHoverColorStyle(
@@ -338,12 +329,7 @@ struct OpenBrowserViewModeControl: View {
 
     private static func modeBackgroundColor(isVibrant: Bool) -> VisualInteractionColorStyle {
         if isVibrant {
-            return VisualInteractionColorStyle(
-                normal: .clear,
-                hover: Color.white.opacity(0.10),
-                selected: Color.white.opacity(0.16),
-                selectedHover: Color.white.opacity(0.22)
-            )
+            return VisualInteractionPalette.vibrantSegmentBackground
         }
 
         return VisualInteractionColorStyle(

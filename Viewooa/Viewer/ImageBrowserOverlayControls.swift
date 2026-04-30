@@ -39,10 +39,5 @@ struct ImageBrowserViewModeControl: View {
         isSelected ? .white : .white.opacity(0.58)
     }
 
-    private static let backgroundColor = VisualInteractionColorStyle(
-        normal: .clear,
-        hover: .white.opacity(0.12),
-        selected: .white.opacity(0.18),
-        selectedHover: .white.opacity(0.28)
-    )
+    private static let backgroundColor = VisualInteractionPalette.darkSegmentBackground
 }

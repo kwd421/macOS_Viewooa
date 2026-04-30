@@ -94,6 +94,7 @@
 		A30000000000000000000002 /* ImageBrowserThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserThumbnail.swift; sourceTree = "<group>"; };
 		A30000000000000000000006 /* ImageBrowserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserDisplayMode.swift; sourceTree = "<group>"; };
 		A30000000000000000000008 /* VisualButtonComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualButtonComponents.swift; sourceTree = "<group>"; };
+		A3000000000000000000000B /* VisualInteractionPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualInteractionPalette.swift; sourceTree = "<group>"; };
 		A10000000000000000000001 /* FolderImageIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndexTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* ViewerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStateTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000026 /* ImagePreloadQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreloadQueueTests.swift; sourceTree = "<group>"; };
@@ -279,6 +280,7 @@
 				A30000000000000000000002 /* ImageBrowserThumbnail.swift */,
 				A30000000000000000000006 /* ImageBrowserDisplayMode.swift */,
 				A30000000000000000000008 /* VisualButtonComponents.swift */,
+				A3000000000000000000000B /* VisualInteractionPalette.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -544,6 +546,7 @@
 				A30000000000000000000004 /* ImageBrowserThumbnail.swift in Sources */,
 				A30000000000000000000007 /* ImageBrowserDisplayMode.swift in Sources */,
 				A30000000000000000000009 /* VisualButtonComponents.swift in Sources */,
+				A3000000000000000000000C /* VisualInteractionPalette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -648,6 +651,7 @@
 				A30000000000000000000004 /* ImageBrowserThumbnail.swift in Sources */,
 				A30000000000000000000007 /* ImageBrowserDisplayMode.swift in Sources */,
 				A3000000000000000000000A /* VisualButtonComponents.swift in Sources */,
+				A3000000000000000000000D /* VisualInteractionPalette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -739,6 +743,8 @@
 		A30000000000000000000007 /* ImageBrowserDisplayMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000006 /* ImageBrowserDisplayMode.swift */; };
 		A30000000000000000000009 /* VisualButtonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000008 /* VisualButtonComponents.swift */; };
 		A3000000000000000000000A /* VisualButtonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000008 /* VisualButtonComponents.swift */; };
+		A3000000000000000000000C /* VisualInteractionPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000000B /* VisualInteractionPalette.swift */; };
+		A3000000000000000000000D /* VisualInteractionPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3000000000000000000000B /* VisualInteractionPalette.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
 		A10000000000000000000017 /* ViewerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ViewerStateTests.swift */; };
 		A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* ImagePreloadQueueTests.swift */; };
