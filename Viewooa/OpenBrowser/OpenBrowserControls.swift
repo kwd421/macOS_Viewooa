@@ -1,5 +1,44 @@
 import SwiftUI
 
+private enum OpenBrowserIconActionStyle {
+    static func toolbarIcon(isActive: Bool) -> VisualIconActionStyle {
+        VisualIconActionStyle(
+            size: OpenBrowserLayout.titlebarButtonSize,
+            fontSize: 12.5,
+            foregroundColor: { _ in isActive ? Color.openBrowserSelection : .secondary },
+            backgroundColor: { isHovering in
+                VisualInteractionPalette.subtleToolbarHover.color(isHovering: isHovering)
+            },
+            hoverEmphasis: VisualInteractionPalette.plainHoverEmphasis
+        )
+    }
+
+    static func search(hasSearchText: Bool) -> VisualIconActionStyle {
+        VisualIconActionStyle(
+            size: OpenBrowserLayout.titlebarControlHeight,
+            fontSize: 14,
+            foregroundColor: { _ in Color.white.opacity(hasSearchText ? 1 : 0.82) },
+            backgroundColor: { isHovering in
+                VisualInteractionPalette.vibrantToolbarHover.color(isHovering: isHovering)
+            },
+            hoverEmphasis: VisualInteractionPalette.vibrantHoverEmphasis,
+            overlay: { _ in AnyView(Circle().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)) }
+        )
+    }
+
+    static var clearSearch: VisualIconActionStyle {
+        VisualIconActionStyle(
+            size: 20,
+            fontSize: 11,
+            foregroundColor: { _ in .secondary },
+            backgroundColor: { isHovering in
+                VisualInteractionPalette.subtleToolbarHover.color(isHovering: isHovering)
+            },
+            hoverEmphasis: VisualInteractionPalette.plainHoverEmphasis
+        )
+    }
+}
+
 struct OpenBrowserToolbarCapsule<Content: View>: View {
     @ViewBuilder var content: () -> Content
 
@@ -22,21 +61,11 @@ struct OpenBrowserIconToolbarButton: View {
         VisualIconActionButton(
             accessibilityLabel: accessibilityLabel,
             systemImage: systemImage,
-            size: OpenBrowserLayout.titlebarButtonSize,
-            fontSize: 12.5,
+            style: OpenBrowserIconActionStyle.toolbarIcon(isActive: isActive),
             shape: Circle(),
-            foregroundColor: { _ in Self.iconColor(isActive: isActive) },
-            backgroundColor: { isHovering in Self.iconBackgroundColor.color(isHovering: isHovering) },
-            hoverEmphasis: VisualInteractionPalette.plainHoverEmphasis,
             action: action
         )
     }
-
-    private static func iconColor(isActive: Bool) -> Color {
-        isActive ? Color.openBrowserSelection : .secondary
-    }
-
-    private static let iconBackgroundColor = VisualInteractionPalette.subtleToolbarHover
 }
 
 struct OpenBrowserSearchIconButton: View {
@@ -47,19 +76,12 @@ struct OpenBrowserSearchIconButton: View {
         VisualIconActionButton(
             accessibilityLabel: "Search",
             systemImage: "magnifyingglass",
-            size: OpenBrowserLayout.titlebarControlHeight,
-            fontSize: 14,
+            style: OpenBrowserIconActionStyle.search(hasSearchText: hasSearchText),
             shape: Circle(),
-            foregroundColor: { _ in Color.white.opacity(hasSearchText ? 1 : 0.82) },
-            backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
-            hoverEmphasis: VisualInteractionPalette.vibrantHoverEmphasis,
-            overlay: { _ in AnyView(Circle().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)) },
             action: action
         )
         .background(.ultraThinMaterial, in: Circle())
     }
-
-    private static let backgroundColor = VisualInteractionPalette.vibrantToolbarHover
 }
 
 struct OpenBrowserSearchField: View {
@@ -105,17 +127,11 @@ private struct OpenBrowserClearSearchButton: View {
         VisualIconActionButton(
             accessibilityLabel: "Clear Search",
             systemImage: "xmark.circle.fill",
-            size: 20,
-            fontSize: 11,
+            style: OpenBrowserIconActionStyle.clearSearch,
             shape: Circle(),
-            foregroundColor: { _ in .secondary },
-            backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
-            hoverEmphasis: VisualInteractionPalette.plainHoverEmphasis,
             action: action
         )
     }
-
-    private static let backgroundColor = VisualInteractionPalette.subtleToolbarHover
 }
 
 struct OpenBrowserSortMenu: View {

@@ -167,15 +167,21 @@ private struct ImageBrowserCloseButton: View {
         VisualIconActionButton(
             accessibilityLabel: "Close Image Browser",
             systemImage: "xmark",
-            size: 28,
-            fontSize: 12,
-            fontWeight: .bold,
+            style: Self.style,
             shape: Circle(),
-            foregroundColor: { _ in .white },
-            backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
             action: action
         )
     }
 
-    private static let backgroundColor = VisualInteractionPalette.imageBrowserCloseButtonBackground
+    private static var style: VisualIconActionStyle {
+        VisualIconActionStyle(
+            size: 28,
+            fontSize: 12,
+            fontWeight: .bold,
+            foregroundColor: { _ in .white },
+            backgroundColor: { isHovering in
+                VisualInteractionPalette.imageBrowserCloseButtonBackground.color(isHovering: isHovering)
+            }
+        )
+    }
 }

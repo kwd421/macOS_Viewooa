@@ -60,6 +60,54 @@ struct VisualHoverEmphasisStyle {
     }
 }
 
+struct VisualIconActionStyle {
+    let size: CGSize
+    let fontSize: CGFloat
+    let fontWeight: Font.Weight
+    let foregroundColor: (Bool) -> Color
+    let backgroundColor: (Bool) -> Color
+    let hoverEmphasis: VisualHoverEmphasisStyle
+    let overlay: ((Bool) -> AnyView)?
+
+    init(
+        size: CGSize,
+        fontSize: CGFloat = 15,
+        fontWeight: Font.Weight = .semibold,
+        foregroundColor: @escaping (Bool) -> Color,
+        backgroundColor: @escaping (Bool) -> Color,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none,
+        overlay: ((Bool) -> AnyView)? = nil
+    ) {
+        self.size = size
+        self.fontSize = fontSize
+        self.fontWeight = fontWeight
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
+        self.hoverEmphasis = hoverEmphasis
+        self.overlay = overlay
+    }
+
+    init(
+        size: CGFloat,
+        fontSize: CGFloat = 15,
+        fontWeight: Font.Weight = .semibold,
+        foregroundColor: @escaping (Bool) -> Color,
+        backgroundColor: @escaping (Bool) -> Color,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none,
+        overlay: ((Bool) -> AnyView)? = nil
+    ) {
+        self.init(
+            size: CGSize(width: size, height: size),
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            foregroundColor: foregroundColor,
+            backgroundColor: backgroundColor,
+            hoverEmphasis: hoverEmphasis,
+            overlay: overlay
+        )
+    }
+}
+
 extension View {
     func visualHitArea<S: Shape>(_ shape: S) -> some View {
         contentShape(shape)
@@ -227,6 +275,28 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
     let hoverEmphasis: VisualHoverEmphasisStyle
     let overlay: ((Bool) -> AnyView)?
     let action: () -> Void
+
+    init(
+        accessibilityLabel: String,
+        systemImage: String,
+        style: VisualIconActionStyle,
+        shape: ShapeType,
+        action: @escaping () -> Void
+    ) {
+        self.init(
+            accessibilityLabel: accessibilityLabel,
+            systemImage: systemImage,
+            size: style.size,
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            shape: shape,
+            foregroundColor: style.foregroundColor,
+            backgroundColor: style.backgroundColor,
+            hoverEmphasis: style.hoverEmphasis,
+            overlay: style.overlay,
+            action: action
+        )
+    }
 
     init(
         accessibilityLabel: String,

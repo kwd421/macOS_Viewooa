@@ -40,6 +40,18 @@ enum ViewerControlVisualStyle {
     static let iconForeground = VisualInteractionPalette.viewerIconForeground
     static let capsuleBackground = VisualInteractionPalette.viewerCapsuleBackground
     static let capsuleBorder = VisualInteractionPalette.viewerCapsuleBorder
+
+    static func iconActionStyle(isActive: Bool) -> VisualIconActionStyle {
+        VisualIconActionStyle(
+            size: iconSize,
+            foregroundColor: { isHovering in
+                iconForeground.color(isSelected: isActive, isHovering: isHovering)
+            },
+            backgroundColor: { isHovering in
+                iconBackground.color(isHovering: isHovering)
+            }
+        )
+    }
 }
 
 struct RepeatingControlButton: View {
@@ -129,14 +141,8 @@ struct ViewerControlIconButton: View {
         VisualIconActionButton(
             accessibilityLabel: accessibilityLabel,
             systemImage: systemImage,
-            size: ViewerControlVisualStyle.iconSize,
+            style: ViewerControlVisualStyle.iconActionStyle(isActive: isActive),
             shape: Circle(),
-            foregroundColor: { isHovering in
-                ViewerControlVisualStyle.iconForeground.color(isSelected: isActive, isHovering: isHovering)
-            },
-            backgroundColor: { isHovering in
-                ViewerControlVisualStyle.iconBackground.color(isHovering: isHovering)
-            },
             action: action
         )
     }
