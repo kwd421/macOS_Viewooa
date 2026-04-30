@@ -332,11 +332,6 @@ struct OpenBrowserViewModeControl: View {
             return VisualInteractionPalette.vibrantSegmentBackground
         }
 
-        return VisualInteractionColorStyle(
-            normal: .clear,
-            hover: Color.primary.opacity(0.07),
-            selected: Color(nsColor: .selectedControlColor).opacity(0.22),
-            selectedHover: Color(nsColor: .selectedControlColor).opacity(0.30)
-        )
+        return VisualInteractionPalette.openBrowserSegmentBackground
     }
 }

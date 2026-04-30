@@ -43,9 +43,15 @@ struct ThumbnailSizeStepperControl: View {
                 Image(systemName: systemImage)
                     .font(.system(size: 12, weight: .semibold))
                     .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
-                    .foregroundStyle(Self.buttonColor(isVibrant: isVibrant).color(isSelected: isDisabled, isHovering: false))
+                    .foregroundStyle(
+                        VisualInteractionPalette.thumbnailStepperIconColor(isVibrant: isVibrant)
+                            .color(isSelected: isDisabled, isHovering: false)
+                    )
                     .background(
-                        isDisabled ? .clear : Self.stepButtonBackground(isVibrant: isVibrant).color(isHovering: isHovering),
+                        isDisabled
+                            ? .clear
+                            : VisualInteractionPalette.thumbnailStepperButtonBackground(isVibrant: isVibrant)
+                                .color(isHovering: isHovering),
                         in: shape
                     )
                     .visualHitArea(shape)
@@ -60,22 +66,6 @@ struct ThumbnailSizeStepperControl: View {
 
     private var separatorColor: Color {
         isVibrant ? Color.white.opacity(0.18) : Color.openBrowserSeparator.opacity(0.65)
-    }
-
-    private static func buttonColor(isVibrant: Bool) -> VisualInteractionColorStyle {
-        VisualInteractionColorStyle(
-            normal: isVibrant ? Color.white.opacity(0.78) : .secondary,
-            hover: isVibrant ? Color.white.opacity(0.78) : .secondary,
-            selected: isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28),
-            selectedHover: isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28)
-        )
-    }
-
-    private static func stepButtonBackground(isVibrant: Bool) -> VisualHoverColorStyle {
-        VisualHoverColorStyle(
-            normal: .clear,
-            hover: isVibrant ? Color.white.opacity(0.12) : Color.primary.opacity(0.07)
-        )
     }
 
     private func nextThumbnailSize(delta: CGFloat) -> CGFloat {

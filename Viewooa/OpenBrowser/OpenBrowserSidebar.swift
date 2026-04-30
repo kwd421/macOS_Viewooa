@@ -135,11 +135,6 @@ private struct SidebarHoverButton<Label: View>: View {
     }
 
     private static var backgroundColor: VisualInteractionColorStyle {
-        VisualInteractionColorStyle(
-            normal: .clear,
-            hover: Color.primary.opacity(0.06),
-            selected: Color.white.opacity(0.09),
-            selectedHover: Color.white.opacity(0.13)
-        )
+        VisualInteractionPalette.openBrowserSidebarRowBackground
     }
 }

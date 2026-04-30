@@ -6,6 +6,11 @@ enum VisualInteractionPalette {
         hover: Color.primary.opacity(0.08)
     )
 
+    static let subtleControlHover = VisualHoverColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.07)
+    )
+
     static let vibrantToolbarHover = VisualHoverColorStyle(
         normal: .clear,
         hover: Color.white.opacity(0.12)
@@ -73,4 +78,31 @@ enum VisualInteractionPalette {
         selected: Color.white.opacity(0.16),
         selectedHover: Color.white.opacity(0.22)
     )
+
+    static let openBrowserSegmentBackground = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.07),
+        selected: Color(nsColor: .selectedControlColor).opacity(0.22),
+        selectedHover: Color(nsColor: .selectedControlColor).opacity(0.30)
+    )
+
+    static let openBrowserSidebarRowBackground = VisualInteractionColorStyle(
+        normal: .clear,
+        hover: Color.primary.opacity(0.06),
+        selected: Color.white.opacity(0.09),
+        selectedHover: Color.white.opacity(0.13)
+    )
+
+    static func thumbnailStepperIconColor(isVibrant: Bool) -> VisualInteractionColorStyle {
+        VisualInteractionColorStyle(
+            normal: isVibrant ? Color.white.opacity(0.78) : .secondary,
+            hover: isVibrant ? Color.white.opacity(0.78) : .secondary,
+            selected: isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28),
+            selectedHover: isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28)
+        )
+    }
+
+    static func thumbnailStepperButtonBackground(isVibrant: Bool) -> VisualHoverColorStyle {
+        isVibrant ? vibrantToolbarHover : subtleControlHover
+    }
 }
