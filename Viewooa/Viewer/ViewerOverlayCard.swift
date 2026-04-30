@@ -62,9 +62,9 @@ struct ViewerOverlayCard: View {
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .strokeBorder(.white.opacity(0.08))
+                .strokeBorder(VisualInteractionPalette.viewerOverlayCardBorder)
         }
         .frame(maxWidth: 360)
-        .shadow(color: .black.opacity(0.28), radius: 18, y: 8)
+        .shadow(color: VisualInteractionPalette.viewerCardShadow, radius: 18, y: 8)
     }
 }

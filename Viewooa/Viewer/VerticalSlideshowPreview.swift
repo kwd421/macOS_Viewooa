@@ -13,14 +13,14 @@ struct VerticalSlideshowPreview: View {
 
             ZStack {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(.white.opacity(0.08))
+                    .fill(VisualInteractionPalette.verticalPreviewBackground)
 
                 ForEach(-2..<5, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 3, style: .continuous)
-                        .fill(.white.opacity(index.isMultiple(of: 2) ? 0.84 : 0.62))
+                        .fill(Self.pageFillColor(for: index))
                         .overlay(alignment: .top) {
                             RoundedRectangle(cornerRadius: 1.5)
-                                .fill(.black.opacity(0.12))
+                                .fill(VisualInteractionPalette.verticalPreviewPageHeader)
                                 .frame(width: pageSize.width - 8, height: 2.5)
                                 .padding(.top, 4)
                         }
@@ -31,7 +31,7 @@ struct VerticalSlideshowPreview: View {
                 VStack {
                     Spacer()
                     LinearGradient(
-                        colors: [.clear, .white.opacity(0.20)],
+                        colors: [.clear, VisualInteractionPalette.verticalPreviewBottomFade],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -42,10 +42,16 @@ struct VerticalSlideshowPreview: View {
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(.white.opacity(0.14))
+                    .strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
             }
             .accessibilityLabel("Vertical slideshow motion preview")
         }
+    }
+
+    private static func pageFillColor(for index: Int) -> Color {
+        index.isMultiple(of: 2)
+            ? VisualInteractionPalette.verticalPreviewPrimaryPage
+            : VisualInteractionPalette.verticalPreviewSecondaryPage
     }
 
     private func animationPhase(at date: Date) -> CGFloat {

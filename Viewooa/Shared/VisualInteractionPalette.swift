@@ -175,4 +175,11 @@ enum VisualInteractionPalette {
         normal: Color.white.opacity(0.12),
         hover: Color.white.opacity(0.28)
     )
+
+    static let viewerOverlayCardBorder = Color.white.opacity(0.08)
+    static let verticalPreviewBackground = Color.white.opacity(0.08)
+    static let verticalPreviewPrimaryPage = Color.white.opacity(0.84)
+    static let verticalPreviewSecondaryPage = Color.white.opacity(0.62)
+    static let verticalPreviewPageHeader = Color.black.opacity(0.12)
+    static let verticalPreviewBottomFade = Color.white.opacity(0.20)
 }
