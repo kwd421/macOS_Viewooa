@@ -18,34 +18,28 @@ struct OpenBrowserThumbnailCell: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
 
-        VisualHoverState(shape: shape) { isHovering in
-            Button {
-                onClick(entry)
-            } label: {
-                VStack(spacing: 9) {
-                    thumbnailPreview
+        VisualSelectableContentButton(
+            accessibilityLabel: entry.name,
+            isSelected: isSelected,
+            shape: shape,
+            backgroundColor: Self.thumbnailBackground,
+            borderColor: Self.thumbnailBorder
+        ) {
+            onClick(entry)
+        } label: { _ in
+            VStack(spacing: 9) {
+                thumbnailPreview
 
-                    Text(entry.name)
-                        .font(.system(size: 11, weight: .semibold))
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.primary)
-                        .frame(width: thumbnailSize, height: 28, alignment: .top)
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 10)
-                .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57, alignment: .top)
-                .background(Self.thumbnailBackground.color(isSelected: isSelected, isHovering: isHovering), in: shape)
-                .overlay {
-                    shape
-                        .strokeBorder(Self.thumbnailBorder.color(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
-                }
-                .visualHitArea(shape)
+                Text(entry.name)
+                    .font(.system(size: 11, weight: .semibold))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.primary)
+                    .frame(width: thumbnailSize, height: 28, alignment: .top)
             }
-            .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57)
-            .visualHitArea(shape)
-            .buttonStyle(.plain)
-            .accessibilityLabel(entry.name)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 10)
+            .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57, alignment: .top)
         }
         .frame(width: thumbnailSize + 16, height: thumbnailSize * 0.72 + 57)
         .simultaneousGesture(TapGesture(count: 2).onEnded {
@@ -129,43 +123,38 @@ struct OpenBrowserListRow: View {
     var body: some View {
         let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
 
-        VisualHoverState(shape: shape) { isHovering in
-            Button {
-                onClick(entry)
-            } label: {
-                HStack(spacing: 12) {
-                    listPreview
+        VisualSelectableContentButton(
+            accessibilityLabel: entry.name,
+            isSelected: isSelected,
+            shape: shape,
+            backgroundColor: Self.listBackground,
+            borderColor: Self.listBorder
+        ) {
+            onClick(entry)
+        } label: { _ in
+            HStack(spacing: 12) {
+                listPreview
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(entry.name)
-                            .font(.system(size: 13, weight: .regular))
-                            .lineLimit(1)
-                        Text(entry.isDirectory ? "Folder" : entry.url.pathExtension.uppercased())
-                            .font(.system(size: 11, weight: .regular))
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-
-                    Spacer()
-
-                    if isFavorite && !entry.isDirectory {
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(.red)
-                    }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(entry.name)
+                        .font(.system(size: 13, weight: .regular))
+                        .lineLimit(1)
+                    Text(entry.isDirectory ? "Folder" : entry.url.pathExtension.uppercased())
+                        .font(.system(size: 11, weight: .regular))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
-                .padding(.horizontal, 9)
-                .frame(height: 40)
-                .background(Self.listBackground.color(isSelected: isSelected, isHovering: isHovering), in: shape)
-                .overlay {
-                    shape
-                        .strokeBorder(Self.listBorder.color(isSelected: isSelected, isHovering: isHovering), lineWidth: 1)
+
+                Spacer()
+
+                if isFavorite && !entry.isDirectory {
+                    Image(systemName: "heart.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.red)
                 }
-                .visualHitArea(shape)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(entry.name)
-            .visualHitArea(shape)
+            .padding(.horizontal, 9)
+            .frame(height: 40)
         }
         .visualHitArea(shape)
         .simultaneousGesture(TapGesture(count: 2).onEnded {

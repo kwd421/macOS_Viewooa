@@ -383,6 +383,59 @@ struct VisualSelectableIconButton<ShapeType: Shape>: View {
     }
 }
 
+struct VisualSelectableContentButton<ShapeType: InsettableShape, Label: View>: View {
+    let accessibilityLabel: String
+    let isSelected: Bool
+    let shape: ShapeType
+    let backgroundColor: VisualInteractionColorStyle
+    let borderColor: VisualInteractionColorStyle?
+    let borderLineWidth: CGFloat
+    let action: () -> Void
+    let label: (Bool) -> Label
+
+    init(
+        accessibilityLabel: String,
+        isSelected: Bool,
+        shape: ShapeType,
+        backgroundColor: VisualInteractionColorStyle,
+        borderColor: VisualInteractionColorStyle? = nil,
+        borderLineWidth: CGFloat = 1,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping (Bool) -> Label
+    ) {
+        self.accessibilityLabel = accessibilityLabel
+        self.isSelected = isSelected
+        self.shape = shape
+        self.backgroundColor = backgroundColor
+        self.borderColor = borderColor
+        self.borderLineWidth = borderLineWidth
+        self.action = action
+        self.label = label
+    }
+
+    var body: some View {
+        VisualHoverState(shape: shape) { isHovering in
+            Button(action: action) {
+                label(isHovering)
+                    .background(backgroundColor.color(isSelected: isSelected, isHovering: isHovering), in: shape)
+                    .overlay {
+                        if let borderColor {
+                            shape.strokeBorder(
+                                borderColor.color(isSelected: isSelected, isHovering: isHovering),
+                                lineWidth: borderLineWidth
+                            )
+                        }
+                    }
+                    .visualHitArea(shape)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(accessibilityLabel)
+            .visualHitArea(shape)
+        }
+        .visualHitArea(shape)
+    }
+}
+
 struct VisualCapsuleIconTextLabel: View {
     let systemImage: String
     let title: String
