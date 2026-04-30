@@ -12,14 +12,8 @@ struct ImageBrowserViewModeControl: View {
                     accessibilityLabel: mode.title,
                     systemImage: mode.systemImage,
                     isSelected: displayMode == mode,
-                    size: CGSize(width: 32, height: 26),
+                    style: Self.modeButtonStyle,
                     shape: shape,
-                    foregroundColor: { isSelected, _ in
-                        Self.foregroundColor(isSelected: isSelected)
-                    },
-                    backgroundColor: { isSelected, isHovering in
-                        Self.backgroundColor.color(isSelected: isSelected, isHovering: isHovering)
-                    }
                 ) {
                         displayMode = mode
                 }
@@ -30,9 +24,15 @@ struct ImageBrowserViewModeControl: View {
         .visualHitArea(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
-    private static func foregroundColor(isSelected: Bool) -> Color {
-        isSelected ? .white : VisualInteractionPalette.imageBrowserSecondaryText
+    private static var modeButtonStyle: VisualSelectableIconStyle {
+        VisualSelectableIconStyle(
+            size: CGSize(width: 32, height: 26),
+            foregroundColor: { isSelected, _ in
+                isSelected ? .white : VisualInteractionPalette.imageBrowserSecondaryText
+            },
+            backgroundColor: { isSelected, isHovering in
+                VisualInteractionPalette.darkSegmentBackground.color(isSelected: isSelected, isHovering: isHovering)
+            }
+        )
     }
-
-    private static let backgroundColor = VisualInteractionPalette.darkSegmentBackground
 }

@@ -288,29 +288,30 @@ struct OpenBrowserViewModeControl: View {
     }
 
     private func modeButton(for displayModeOption: ImageBrowserDisplayMode) -> some View {
-        let size = Self.modeButtonSize(isVibrant: isVibrant)
         let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
 
         return VisualSelectableIconButton(
             accessibilityLabel: displayModeOption.title,
             systemImage: displayModeOption.systemImage,
             isSelected: displayMode == displayModeOption,
-            size: size,
+            style: Self.modeButtonStyle(isVibrant: isVibrant),
             shape: shape,
-            foregroundColor: { isSelected, _ in
-                Self.modeIconColor(isSelected: isSelected, isVibrant: isVibrant)
-            },
-            backgroundColor: { isSelected, isHovering in
-                Self.modeBackgroundColor(isVibrant: isVibrant).color(isSelected: isSelected, isHovering: isHovering)
-            },
-            hoverEmphasis: isVibrant ? VisualInteractionPalette.vibrantHoverEmphasis : VisualInteractionPalette.plainHoverEmphasis
         ) {
                 displayMode = displayModeOption
         }
     }
 
-    private static func modeButtonSize(isVibrant: Bool) -> CGSize {
-        CGSize(width: isVibrant ? 31 : 32, height: isVibrant ? 30 : 26)
+    private static func modeButtonStyle(isVibrant: Bool) -> VisualSelectableIconStyle {
+        VisualSelectableIconStyle(
+            size: CGSize(width: isVibrant ? 31 : 32, height: isVibrant ? 30 : 26),
+            foregroundColor: { isSelected, _ in
+                modeIconColor(isSelected: isSelected, isVibrant: isVibrant)
+            },
+            backgroundColor: { isSelected, isHovering in
+                modeBackgroundColor(isVibrant: isVibrant).color(isSelected: isSelected, isHovering: isHovering)
+            },
+            hoverEmphasis: isVibrant ? VisualInteractionPalette.vibrantHoverEmphasis : VisualInteractionPalette.plainHoverEmphasis
+        )
     }
 
     private static func modeIconColor(isSelected: Bool, isVibrant: Bool) -> Color {

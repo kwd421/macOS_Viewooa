@@ -108,6 +108,31 @@ struct VisualIconActionStyle {
     }
 }
 
+struct VisualSelectableIconStyle {
+    let size: CGSize
+    let fontSize: CGFloat
+    let fontWeight: Font.Weight
+    let foregroundColor: (Bool, Bool) -> Color
+    let backgroundColor: (Bool, Bool) -> Color
+    let hoverEmphasis: VisualHoverEmphasisStyle
+
+    init(
+        size: CGSize,
+        fontSize: CGFloat = 13,
+        fontWeight: Font.Weight = .semibold,
+        foregroundColor: @escaping (Bool, Bool) -> Color,
+        backgroundColor: @escaping (Bool, Bool) -> Color,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none
+    ) {
+        self.size = size
+        self.fontSize = fontSize
+        self.fontWeight = fontWeight
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
+        self.hoverEmphasis = hoverEmphasis
+    }
+}
+
 struct VisualToolbarSurfaceStyle<BackgroundStyle: ShapeStyle> {
     let backgroundStyle: BackgroundStyle
     let borderColor: Color
@@ -486,6 +511,29 @@ struct VisualSelectableIconButton<ShapeType: Shape>: View {
     let backgroundColor: (Bool, Bool) -> Color
     let hoverEmphasis: VisualHoverEmphasisStyle
     let action: () -> Void
+
+    init(
+        accessibilityLabel: String,
+        systemImage: String,
+        isSelected: Bool,
+        style: VisualSelectableIconStyle,
+        shape: ShapeType,
+        action: @escaping () -> Void
+    ) {
+        self.init(
+            accessibilityLabel: accessibilityLabel,
+            systemImage: systemImage,
+            isSelected: isSelected,
+            size: style.size,
+            fontSize: style.fontSize,
+            fontWeight: style.fontWeight,
+            shape: shape,
+            foregroundColor: style.foregroundColor,
+            backgroundColor: style.backgroundColor,
+            hoverEmphasis: style.hoverEmphasis,
+            action: action
+        )
+    }
 
     init(
         accessibilityLabel: String,
