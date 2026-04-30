@@ -126,13 +126,19 @@ struct ViewerControlIconButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            ViewerControlIconSurface(systemImage: systemImage, isActive: isActive)
-        }
-        .buttonStyle(.plain)
-        .visualHitArea(Circle())
-        .foregroundStyle(.white)
-        .accessibilityLabel(accessibilityLabel)
+        VisualIconActionButton(
+            accessibilityLabel: accessibilityLabel,
+            systemImage: systemImage,
+            size: ViewerControlVisualStyle.iconSize,
+            shape: Circle(),
+            foregroundColor: { isHovering in
+                ViewerControlVisualStyle.iconForeground.color(isSelected: isActive, isHovering: isHovering)
+            },
+            backgroundColor: { isHovering in
+                ViewerControlVisualStyle.iconBackground.color(isHovering: isHovering)
+            },
+            action: action
+        )
     }
 }
 

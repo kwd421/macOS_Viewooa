@@ -164,20 +164,17 @@ private struct ImageBrowserCloseButton: View {
     let action: () -> Void
 
     var body: some View {
-        VisualHoverState(shape: Circle()) { isHovering in
-            Button(action: action) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 12, weight: .bold))
-                    .frame(width: 28, height: 28)
-                    .background(Self.backgroundColor.color(isHovering: isHovering), in: Circle())
-                    .visualHitArea(Circle())
-            }
-            .frame(width: 28, height: 28)
-            .visualHitArea(Circle())
-            .buttonStyle(.plain)
-            .accessibilityLabel("Close Image Browser")
-        }
-        .frame(width: 28, height: 28)
+        VisualIconActionButton(
+            accessibilityLabel: "Close Image Browser",
+            systemImage: "xmark",
+            size: 28,
+            fontSize: 12,
+            fontWeight: .bold,
+            shape: Circle(),
+            foregroundColor: { _ in .white },
+            backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
+            action: action
+        )
     }
 
     private static let backgroundColor = VisualInteractionPalette.imageBrowserCloseButtonBackground

@@ -198,6 +198,90 @@ struct VisualIconButtonLabel: View {
     }
 }
 
+struct VisualIconActionButton<ShapeType: Shape>: View {
+    let accessibilityLabel: String
+    let systemImage: String
+    let size: CGSize
+    let fontSize: CGFloat
+    let fontWeight: Font.Weight
+    let shape: ShapeType
+    let foregroundColor: (Bool) -> Color
+    let backgroundColor: (Bool) -> Color
+    let overlay: ((Bool) -> AnyView)?
+    let action: () -> Void
+
+    init(
+        accessibilityLabel: String,
+        systemImage: String,
+        size: CGSize,
+        fontSize: CGFloat = 15,
+        fontWeight: Font.Weight = .semibold,
+        shape: ShapeType,
+        foregroundColor: @escaping (Bool) -> Color,
+        backgroundColor: @escaping (Bool) -> Color,
+        overlay: ((Bool) -> AnyView)? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.accessibilityLabel = accessibilityLabel
+        self.systemImage = systemImage
+        self.size = size
+        self.fontSize = fontSize
+        self.fontWeight = fontWeight
+        self.shape = shape
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
+        self.overlay = overlay
+        self.action = action
+    }
+
+    init(
+        accessibilityLabel: String,
+        systemImage: String,
+        size: CGFloat,
+        fontSize: CGFloat = 15,
+        fontWeight: Font.Weight = .semibold,
+        shape: ShapeType,
+        foregroundColor: @escaping (Bool) -> Color,
+        backgroundColor: @escaping (Bool) -> Color,
+        overlay: ((Bool) -> AnyView)? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.init(
+            accessibilityLabel: accessibilityLabel,
+            systemImage: systemImage,
+            size: CGSize(width: size, height: size),
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            shape: shape,
+            foregroundColor: foregroundColor,
+            backgroundColor: backgroundColor,
+            overlay: overlay,
+            action: action
+        )
+    }
+
+    var body: some View {
+        VisualHoverState(shape: shape) { isHovering in
+            Button(action: action) {
+                Image(systemName: systemImage)
+                    .font(.system(size: fontSize, weight: fontWeight))
+                    .foregroundStyle(foregroundColor(isHovering))
+                    .frame(width: size.width, height: size.height)
+                    .background(backgroundColor(isHovering), in: shape)
+                    .overlay {
+                        overlay?(isHovering)
+                    }
+                    .visualHitArea(shape)
+            }
+            .frame(width: size.width, height: size.height)
+            .visualHitArea(shape)
+            .buttonStyle(.plain)
+            .accessibilityLabel(accessibilityLabel)
+        }
+        .frame(width: size.width, height: size.height)
+    }
+}
+
 struct VisualCapsuleIconTextLabel: View {
     let systemImage: String
     let title: String

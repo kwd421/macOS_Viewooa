@@ -25,31 +25,16 @@ struct OpenBrowserIconToolbarButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            OpenBrowserIconToolbarSurface(systemImage: systemImage, isActive: isActive)
-        }
-        .frame(width: OpenBrowserLayout.titlebarButtonSize, height: OpenBrowserLayout.titlebarButtonSize)
-        .buttonStyle(.plain)
-        .visualHitArea(Circle())
-        .accessibilityLabel(accessibilityLabel)
-    }
-}
-
-struct OpenBrowserIconToolbarSurface: View {
-    let systemImage: String
-    var isActive = false
-
-    var body: some View {
-        VisualHoverState(shape: Circle()) { isHovering in
-            VisualIconButtonLabel(
-                systemImage: systemImage,
-                size: OpenBrowserLayout.titlebarButtonSize,
-                fontSize: 12.5,
-                foregroundColor: Self.iconColor(isActive: isActive),
-                backgroundColor: Self.iconBackgroundColor.color(isHovering: isHovering)
-            )
-        }
-        .frame(width: OpenBrowserLayout.titlebarButtonSize, height: OpenBrowserLayout.titlebarButtonSize)
+        VisualIconActionButton(
+            accessibilityLabel: accessibilityLabel,
+            systemImage: systemImage,
+            size: OpenBrowserLayout.titlebarButtonSize,
+            fontSize: 12.5,
+            shape: Circle(),
+            foregroundColor: { _ in Self.iconColor(isActive: isActive) },
+            backgroundColor: { isHovering in Self.iconBackgroundColor.color(isHovering: isHovering) },
+            action: action
+        )
     }
 
     private static func iconColor(isActive: Bool) -> Color {
@@ -64,25 +49,18 @@ struct OpenBrowserSearchIconButton: View {
     let action: () -> Void
 
     var body: some View {
-        VisualHoverState(shape: Circle()) { isHovering in
-            Button(action: action) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color.white.opacity(hasSearchText ? 1 : 0.82))
-                    .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
-                    .background(.ultraThinMaterial, in: Circle())
-                    .background(Self.backgroundColor.color(isHovering: isHovering), in: Circle())
-                    .overlay {
-                        Circle().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
-                    }
-                    .visualHitArea(Circle())
-            }
-            .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
-            .visualHitArea(Circle())
-            .buttonStyle(.plain)
-            .accessibilityLabel("Search")
-        }
-        .frame(width: OpenBrowserLayout.titlebarControlHeight, height: OpenBrowserLayout.titlebarControlHeight)
+        VisualIconActionButton(
+            accessibilityLabel: "Search",
+            systemImage: "magnifyingglass",
+            size: OpenBrowserLayout.titlebarControlHeight,
+            fontSize: 14,
+            shape: Circle(),
+            foregroundColor: { _ in Color.white.opacity(hasSearchText ? 1 : 0.82) },
+            backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
+            overlay: { _ in AnyView(Circle().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)) },
+            action: action
+        )
+        .background(.ultraThinMaterial, in: Circle())
     }
 
     private static let backgroundColor = VisualInteractionPalette.vibrantToolbarHover
@@ -128,22 +106,16 @@ private struct OpenBrowserClearSearchButton: View {
     let action: () -> Void
 
     var body: some View {
-        VisualHoverState(shape: Circle()) { isHovering in
-            Button(action: action) {
-                VisualIconButtonLabel(
-                    systemImage: "xmark.circle.fill",
-                    size: 20,
-                    fontSize: 11,
-                    foregroundColor: .secondary,
-                    backgroundColor: Self.backgroundColor.color(isHovering: isHovering)
-                )
-            }
-            .frame(width: 20, height: 20)
-            .visualHitArea(Circle())
-            .buttonStyle(.plain)
-            .accessibilityLabel("Clear Search")
-        }
-        .frame(width: 20, height: 20)
+        VisualIconActionButton(
+            accessibilityLabel: "Clear Search",
+            systemImage: "xmark.circle.fill",
+            size: 20,
+            fontSize: 11,
+            shape: Circle(),
+            foregroundColor: { _ in .secondary },
+            backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
+            action: action
+        )
     }
 
     private static let backgroundColor = VisualInteractionPalette.subtleToolbarHover
