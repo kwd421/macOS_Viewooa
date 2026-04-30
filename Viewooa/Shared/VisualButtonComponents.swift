@@ -108,6 +108,34 @@ struct VisualIconActionStyle {
     }
 }
 
+struct VisualToolbarSurfaceStyle<BackgroundStyle: ShapeStyle> {
+    let backgroundStyle: BackgroundStyle
+    let borderColor: Color
+    let shadowColor: Color
+    let shadowRadius: CGFloat
+    let shadowYOffset: CGFloat
+    let horizontalPadding: CGFloat
+    let verticalPadding: CGFloat
+
+    init(
+        backgroundStyle: BackgroundStyle,
+        borderColor: Color,
+        shadowColor: Color,
+        shadowRadius: CGFloat,
+        shadowYOffset: CGFloat,
+        horizontalPadding: CGFloat,
+        verticalPadding: CGFloat
+    ) {
+        self.backgroundStyle = backgroundStyle
+        self.borderColor = borderColor
+        self.shadowColor = shadowColor
+        self.shadowRadius = shadowRadius
+        self.shadowYOffset = shadowYOffset
+        self.horizontalPadding = horizontalPadding
+        self.verticalPadding = verticalPadding
+    }
+}
+
 extension View {
     func visualHitArea<S: Shape>(_ shape: S) -> some View {
         contentShape(shape)
@@ -392,6 +420,24 @@ struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeSt
     let horizontalPadding: CGFloat
     let verticalPadding: CGFloat
     let content: () -> Content
+
+    init(
+        shape: ShapeType,
+        style: VisualToolbarSurfaceStyle<BackgroundStyle>,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.init(
+            shape: shape,
+            backgroundStyle: style.backgroundStyle,
+            borderColor: style.borderColor,
+            shadowColor: style.shadowColor,
+            shadowRadius: style.shadowRadius,
+            shadowYOffset: style.shadowYOffset,
+            horizontalPadding: style.horizontalPadding,
+            verticalPadding: style.verticalPadding,
+            content: content
+        )
+    }
 
     init(
         shape: ShapeType,

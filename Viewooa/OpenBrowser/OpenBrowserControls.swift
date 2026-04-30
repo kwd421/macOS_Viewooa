@@ -338,6 +338,19 @@ extension View {
     ) -> some View {
         VisualToolbarSurface(
             shape: shape,
+            style: OpenBrowserToolbarSurfaceStyle.toolbar(
+                horizontalPadding: horizontalPadding,
+                verticalPadding: verticalPadding
+            )
+        ) {
+            self
+        }
+    }
+}
+
+private enum OpenBrowserToolbarSurfaceStyle {
+    static func toolbar(horizontalPadding: CGFloat, verticalPadding: CGFloat) -> VisualToolbarSurfaceStyle<Material> {
+        VisualToolbarSurfaceStyle(
             backgroundStyle: .ultraThinMaterial,
             borderColor: VisualInteractionPalette.openBrowserToolbarBorder,
             shadowColor: VisualInteractionPalette.openBrowserToolbarShadow,
@@ -345,8 +358,6 @@ extension View {
             shadowYOffset: 2,
             horizontalPadding: horizontalPadding,
             verticalPadding: verticalPadding
-        ) {
-            self
-        }
+        )
     }
 }

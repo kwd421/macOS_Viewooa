@@ -304,6 +304,19 @@ private extension View {
     func viewerToolbarSurface(horizontalPadding: CGFloat, verticalPadding: CGFloat) -> some View {
         VisualToolbarSurface(
             shape: Capsule(),
+            style: ViewerToolbarSurfaceStyle.toolbar(
+                horizontalPadding: horizontalPadding,
+                verticalPadding: verticalPadding
+            )
+        ) {
+            self
+        }
+    }
+}
+
+private enum ViewerToolbarSurfaceStyle {
+    static func toolbar(horizontalPadding: CGFloat, verticalPadding: CGFloat) -> VisualToolbarSurfaceStyle<Material> {
+        VisualToolbarSurfaceStyle(
             backgroundStyle: .ultraThinMaterial,
             borderColor: VisualInteractionPalette.viewerSurfaceBorder,
             shadowColor: VisualInteractionPalette.viewerToolbarShadow,
@@ -311,8 +324,6 @@ private extension View {
             shadowYOffset: 10,
             horizontalPadding: horizontalPadding,
             verticalPadding: verticalPadding
-        ) {
-            self
-        }
+        )
     }
 }
