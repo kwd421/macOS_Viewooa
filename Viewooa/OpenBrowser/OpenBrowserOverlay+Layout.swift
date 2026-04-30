@@ -108,7 +108,7 @@ extension OpenBrowserOverlay {
             .frame(width: Self.sidebarHandleWidth)
             .overlay(alignment: .trailing) {
                 Rectangle()
-                    .fill(Color.openBrowserSeparator.opacity(0.55))
+                    .fill(VisualInteractionPalette.openBrowserContentDivider)
                     .frame(width: 1)
             }
             .visualHitArea(Rectangle())

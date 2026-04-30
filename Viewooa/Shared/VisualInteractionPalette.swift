@@ -136,4 +136,22 @@ enum VisualInteractionPalette {
     static let viewerSeparator = Color.white.opacity(0.22)
     static let viewerToolbarShadow = Color.black.opacity(0.34)
     static let viewerCardShadow = Color.black.opacity(0.28)
+
+    static let openBrowserToolbarBorder = Color.openBrowserSeparator.opacity(0.18)
+    static let openBrowserToolbarDivider = Color.openBrowserSeparator.opacity(0.42)
+    static let openBrowserContentDivider = Color.openBrowserSeparator.opacity(0.55)
+    static let openBrowserStrongDivider = Color.openBrowserSeparator.opacity(0.65)
+    static let openBrowserToolbarShadow = Color.black.opacity(0.06)
+    static let openBrowserTitleShadow = Color.openBrowserContentBackground.opacity(0.75)
+    static let openBrowserVibrantControlFill = Color.white.opacity(0.10)
+    static let openBrowserVibrantDivider = Color.white.opacity(0.18)
+    static let openBrowserVibrantSearchFill = Color.white.opacity(0.08)
+    static let openBrowserVibrantIcon = Color.white.opacity(0.82)
+    static let openBrowserVibrantSecondaryIcon = Color.white.opacity(0.62)
+    static let openBrowserVibrantSearchIcon = Color.white.opacity(0.76)
+
+    static let openBrowserPlainControlHover = VisualHoverColorStyle(
+        normal: Color.openBrowserControlFill,
+        hover: Color.openBrowserControlFill.opacity(1.25)
+    )
 }

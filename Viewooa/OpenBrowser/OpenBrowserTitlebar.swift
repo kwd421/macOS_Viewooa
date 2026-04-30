@@ -71,10 +71,10 @@ struct OpenBrowserTitlebar: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 17, style: .continuous)
-                .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+                .strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
         }
         .visualHitArea(RoundedRectangle(cornerRadius: 17, style: .continuous))
-        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
         .padding(.trailing, 9)
     }
 
@@ -92,7 +92,7 @@ struct OpenBrowserTitlebar: View {
 
             Divider()
                 .frame(height: 22)
-                .overlay(Color.openBrowserSeparator.opacity(0.42))
+                .overlay(VisualInteractionPalette.openBrowserToolbarDivider)
 
             historyButtons
         }
@@ -100,10 +100,10 @@ struct OpenBrowserTitlebar: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 19, style: .continuous)
-                .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+                .strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
         }
         .visualHitArea(RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
     }
 
     private var historyToolbarGroup: some View {
@@ -114,10 +114,10 @@ struct OpenBrowserTitlebar: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 19, style: .continuous)
-                .strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+                .strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
         }
         .visualHitArea(RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
     }
 
     private var historyButtons: some View {
@@ -144,7 +144,7 @@ struct OpenBrowserTitlebar: View {
                 .lineLimit(1)
         }
         .padding(.top, 3)
-        .shadow(color: Color.openBrowserContentBackground.opacity(0.75), radius: 6)
+        .shadow(color: VisualInteractionPalette.openBrowserTitleShadow, radius: 6)
     }
 
     private func trailingToolbarGroup(availableWidth: CGFloat) -> some View {

@@ -23,7 +23,7 @@ struct ThumbnailSizeStepperControl: View {
         .frame(height: isVibrant ? 30 : 34)
         .background {
             RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous)
-                .fill(isVibrant ? Color.white.opacity(0.10) : Color.openBrowserControlFill)
+                .fill(isVibrant ? VisualInteractionPalette.openBrowserVibrantControlFill : Color.openBrowserControlFill)
         }
         .visualHitArea(RoundedRectangle(cornerRadius: isVibrant ? 15 : 17, style: .continuous))
         .accessibilityElement(children: .contain)
@@ -65,7 +65,7 @@ struct ThumbnailSizeStepperControl: View {
     }
 
     private var separatorColor: Color {
-        isVibrant ? Color.white.opacity(0.18) : Color.openBrowserSeparator.opacity(0.65)
+        isVibrant ? VisualInteractionPalette.openBrowserVibrantDivider : VisualInteractionPalette.openBrowserStrongDivider
     }
 
     private func nextThumbnailSize(delta: CGFloat) -> CGFloat {

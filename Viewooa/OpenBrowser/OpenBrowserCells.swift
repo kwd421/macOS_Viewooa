@@ -217,7 +217,7 @@ struct OpenBrowserListRow: View {
                 .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .strokeBorder(Color.openBrowserSeparator.opacity(0.65))
+                        .strokeBorder(VisualInteractionPalette.openBrowserStrongDivider)
                 }
         }
     }

@@ -36,7 +36,7 @@ struct OpenBrowserFooter: View {
         .frame(height: 42)
         .background(Color.openBrowserContentBackground)
         .overlay(alignment: .top) {
-            Divider().overlay(.white.opacity(0.10))
+            Divider().overlay(VisualInteractionPalette.openBrowserContentDivider)
         }
     }
 

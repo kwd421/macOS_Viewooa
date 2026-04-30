@@ -11,10 +11,10 @@ struct OpenBrowserToolbarCapsule<Content: View>: View {
         .frame(height: OpenBrowserLayout.titlebarControlHeight)
         .background(.ultraThinMaterial, in: Capsule())
         .overlay {
-            Capsule().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+            Capsule().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
         }
         .visualHitArea(Capsule())
-        .shadow(color: .black.opacity(0.06), radius: 6, y: 2)
+        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
     }
 }
 
@@ -73,7 +73,7 @@ struct OpenBrowserSearchIconButton: View {
                     .background(.ultraThinMaterial, in: Circle())
                     .background(Self.backgroundColor.color(isHovering: isHovering), in: Circle())
                     .overlay {
-                        Circle().strokeBorder(Color.openBrowserSeparator.opacity(0.18))
+                        Circle().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
                     }
                     .visualHitArea(Circle())
             }
@@ -99,7 +99,7 @@ struct OpenBrowserSearchField: View {
         HStack(spacing: 6) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(isVibrant ? Color.white.opacity(0.76) : .secondary)
+                .foregroundStyle(isVibrant ? VisualInteractionPalette.openBrowserVibrantSearchIcon : .secondary)
 
             TextField("Search", text: $searchText)
                 .textFieldStyle(.plain)
@@ -117,7 +117,7 @@ struct OpenBrowserSearchField: View {
         .padding(.horizontal, 9)
         .frame(height: isVibrant ? 32 : 28)
         .background(
-            isVibrant ? Color.white.opacity(0.08) : Color.openBrowserControlFill,
+            isVibrant ? VisualInteractionPalette.openBrowserVibrantSearchFill : Color.openBrowserControlFill,
             in: RoundedRectangle(cornerRadius: isVibrant ? 16 : 7, style: .continuous)
         )
         .visualHitArea(RoundedRectangle(cornerRadius: isVibrant ? 16 : 7, style: .continuous))
@@ -254,7 +254,7 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
     }
 
     private static func iconColor(isVibrant: Bool) -> Color {
-        isVibrant ? Color.white.opacity(0.82) : .secondary
+        isVibrant ? VisualInteractionPalette.openBrowserVibrantIcon : .secondary
     }
 
     private static func backgroundColor(isVibrant: Bool) -> VisualHoverColorStyle {
@@ -262,10 +262,7 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
             return VisualInteractionPalette.vibrantToolbarHover
         }
 
-        return VisualHoverColorStyle(
-            normal: Color.openBrowserControlFill,
-            hover: Color.openBrowserControlFill.opacity(1.25)
-        )
+        return VisualInteractionPalette.openBrowserPlainControlHover
     }
 }
 
@@ -321,7 +318,7 @@ struct OpenBrowserViewModeControl: View {
 
     private static func modeIconColor(isSelected: Bool, isVibrant: Bool) -> Color {
         if isVibrant {
-            return isSelected ? .white : Color.white.opacity(0.62)
+            return isSelected ? .white : VisualInteractionPalette.openBrowserVibrantSecondaryIcon
         }
 
         return isSelected ? .primary : .secondary
