@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 @main
@@ -25,6 +26,8 @@ struct FinderBrowserStandaloneApp: App {
     private func handleOpen(_ url: URL) {
         if FileManager.default.directoryExists(at: url) {
             initialDirectory = url
+        } else {
+            NSWorkspace.shared.open(url)
         }
     }
 }

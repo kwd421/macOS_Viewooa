@@ -20,6 +20,12 @@ struct OpenBrowserSelectionState {
         anchorEntryID = nil
     }
 
+    mutating func select(entryIDs: [String]) {
+        selectedEntryIDs = Set(entryIDs)
+        focusedEntryID = entryIDs.last
+        anchorEntryID = entryIDs.first
+    }
+
     mutating func select(_ entry: OpenBrowserEntry, visibleEntries: [OpenBrowserEntry], modifiers: NSEvent.ModifierFlags) {
         let visibleIDs = visibleEntries.map(\.id)
 

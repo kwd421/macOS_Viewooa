@@ -27,8 +27,11 @@ struct OpenBrowserOverlay: View {
     @State var navigationHistory = OpenBrowserNavigationHistory()
     @State var isSearchExpanded = false
     @State var searchExpansionExtra: CGFloat = 0
+    @State var searchAnimationGeneration = 0
     @State var scrollCoordinator = OpenBrowserScrollCoordinator()
     @State var openBrowserScrollView: NSScrollView?
+    @State var selectionDragStart: CGPoint?
+    @State var selectionDragCurrent: CGPoint?
     @State var isPathEditing = false
     @State var editablePath = ""
     @FocusState var isPathEditorFocused: Bool

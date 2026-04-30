@@ -71,16 +71,27 @@ extension OpenBrowserOverlay {
         GeometryReader { viewportProxy in
             ScrollViewReader { proxy in
                 ScrollView {
-                    content
-                        .background {
-                            OpenBrowserScrollViewResolver { scrollView in
-                                openBrowserScrollView = scrollView
+                    ZStack(alignment: .topLeading) {
+                        Color.clear
+                            .contentShape(Rectangle())
+                            .onTapGesture(perform: clearSelection)
+                            .gesture(selectionDragGesture)
+
+                        content
+                            .allowsHitTesting(selectionDragStart == nil)
+                            .background {
+                                OpenBrowserScrollViewResolver { scrollView in
+                                    openBrowserScrollView = scrollView
+                                }
+                                .frame(width: 0, height: 0)
                             }
-                            .frame(width: 0, height: 0)
-                        }
-                        .padding(.horizontal, Self.contentHorizontalPadding(for: availableWidth - sidebarTotalWidth, isSidebarVisible: false))
-                        .padding(.top, Self.contentTopInset)
-                        .padding(.bottom, 24)
+                            .padding(.horizontal, Self.contentHorizontalPadding(for: availableWidth - sidebarTotalWidth, isSidebarVisible: false))
+                            .padding(.top, Self.contentTopInset)
+                            .padding(.bottom, 24)
+
+                        selectionDragOverlay
+                    }
+                    .frame(maxWidth: .infinity, minHeight: viewportProxy.size.height, alignment: .topLeading)
                 }
                 .coordinateSpace(name: OpenBrowserScrollCoordinateSpace.name)
                 .scrollIndicators(.hidden)
@@ -100,6 +111,34 @@ extension OpenBrowserOverlay {
             }
         }
         .background(Color.openBrowserContentBackground)
+    }
+
+    var selectionDragGesture: some Gesture {
+        DragGesture(minimumDistance: 4, coordinateSpace: .named(OpenBrowserScrollCoordinateSpace.name))
+            .onChanged { value in
+                if selectionDragStart == nil {
+                    beginSelectionDrag(at: value.startLocation)
+                }
+                updateSelectionDrag(to: value.location)
+            }
+            .onEnded { _ in
+                endSelectionDrag()
+            }
+    }
+
+    @ViewBuilder
+    var selectionDragOverlay: some View {
+        if let rect = currentSelectionDragRect {
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .fill(Color.accentColor.opacity(0.16))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .strokeBorder(Color.accentColor.opacity(0.55), lineWidth: 1)
+                }
+                .frame(width: rect.width, height: rect.height)
+                .offset(x: rect.minX, y: rect.minY)
+                .allowsHitTesting(false)
+        }
     }
 
     var sidebarResizeHandle: some View {
@@ -235,4 +274,16 @@ extension OpenBrowserOverlay {
     static let searchOpenAnimation = Animation.timingCurve(0.16, 1.0, 0.30, 1.0, duration: 0.24)
     static let searchSettleAnimation = Animation.timingCurve(0.18, 0.92, 0.22, 1.0, duration: 0.22)
     static let searchCloseAnimation = Animation.timingCurve(0.18, 0.88, 0.20, 1.0, duration: 0.24)
+}
+
+extension OpenBrowserOverlay {
+    var currentSelectionDragRect: CGRect? {
+        guard let selectionDragStart, let selectionDragCurrent else { return nil }
+        return CGRect(
+            x: min(selectionDragStart.x, selectionDragCurrent.x),
+            y: min(selectionDragStart.y, selectionDragCurrent.y),
+            width: abs(selectionDragStart.x - selectionDragCurrent.x),
+            height: abs(selectionDragStart.y - selectionDragCurrent.y)
+        )
+    }
 }

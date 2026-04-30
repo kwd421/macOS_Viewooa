@@ -49,6 +49,27 @@ final class OpenBrowserScrollCoordinatorTests: XCTestCase {
         XCTAssertNil(coordinator.thumbnailScrollAnchorID)
     }
 
+    func testDragSelectionEntryIDsSetFocusAndAnchor() {
+        var selection = OpenBrowserSelectionState()
+
+        selection.select(entryIDs: ["a", "b", "c"])
+
+        XCTAssertEqual(selection.selectedEntryIDs, ["a", "b", "c"])
+        XCTAssertEqual(selection.focusedEntryID, "c")
+        XCTAssertEqual(selection.anchorEntryID, "a")
+    }
+
+    func testEmptyDragSelectionClearsFocusAndAnchor() {
+        var selection = OpenBrowserSelectionState()
+        selection.select(entryIDs: ["a", "b"])
+
+        selection.select(entryIDs: [])
+
+        XCTAssertTrue(selection.isEmpty)
+        XCTAssertNil(selection.focusedEntryID)
+        XCTAssertNil(selection.anchorEntryID)
+    }
+
     private func entry(_ name: String) -> OpenBrowserEntry {
         OpenBrowserEntry(
             url: URL(fileURLWithPath: "/tmp/\(name).jpg"),

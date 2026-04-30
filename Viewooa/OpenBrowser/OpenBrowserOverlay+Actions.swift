@@ -49,13 +49,15 @@ extension OpenBrowserOverlay {
     func openSearch() {
         guard !isSearchExpanded else { return }
 
+        searchAnimationGeneration += 1
+        let generation = searchAnimationGeneration
         searchExpansionExtra = Self.searchExpansionOvershoot
         withAnimation(Self.searchOpenAnimation) {
             isSearchExpanded = true
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.searchOvershootDuration) {
-            guard isSearchExpanded else { return }
+            guard isSearchExpanded, searchAnimationGeneration == generation else { return }
             withAnimation(Self.searchSettleAnimation) {
                 searchExpansionExtra = 0
             }
@@ -63,6 +65,7 @@ extension OpenBrowserOverlay {
     }
 
     func closeSearch() {
+        searchAnimationGeneration += 1
         withAnimation(Self.searchCloseAnimation) {
             searchExpansionExtra = 0
             isSearchExpanded = false
@@ -82,7 +85,9 @@ extension OpenBrowserOverlay {
             return
         }
 
-        onDismiss()
+        if !selection.isEmpty {
+            selection.clear()
+        }
     }
 
     func handleSortOptionChange(_ value: OpenBrowserSortOption) {
@@ -123,8 +128,49 @@ extension OpenBrowserOverlay {
         selection.select(entry, visibleEntries: visibleEntries, modifiers: NSEvent.modifierFlags)
     }
 
+    func clearSelection() {
+        selection.clear()
+    }
+
     func selectAllVisibleEntries() {
         selection.selectAll(visibleEntries)
+    }
+
+    func beginSelectionDrag(at point: CGPoint) {
+        selectionDragStart = point
+        selectionDragCurrent = point
+        selection.clear()
+    }
+
+    func updateSelectionDrag(to point: CGPoint) {
+        guard selectionDragStart != nil else {
+            beginSelectionDrag(at: point)
+            return
+        }
+
+        selectionDragCurrent = point
+        selection.select(entryIDs: entryIDs(in: currentSelectionDragRect))
+    }
+
+    func endSelectionDrag() {
+        selectionDragStart = nil
+        selectionDragCurrent = nil
+    }
+
+    private func entryIDs(in rect: CGRect?) -> [String] {
+        guard let rect, rect.width > 2 || rect.height > 2 else { return [] }
+        let visibleIDs = Set(visibleEntries.map(\.id))
+        return scrollCoordinator.visibleEntryFrames
+            .filter { id, frame in
+                visibleIDs.contains(id) && frame.intersects(rect)
+            }
+            .sorted { lhs, rhs in
+                if abs(lhs.value.minY - rhs.value.minY) > 1 {
+                    return lhs.value.minY < rhs.value.minY
+                }
+                return lhs.value.minX < rhs.value.minX
+            }
+            .map(\.key)
     }
 
     func openFocusedOrFirstSelectedEntry() {
