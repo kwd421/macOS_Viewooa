@@ -102,6 +102,10 @@
 		A30000000000000000000013 /* VisualLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualLabels.swift; sourceTree = "<group>"; };
 		A10000000000000000000001 /* FolderImageIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderImageIndexTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* ViewerStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerStateTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000096 /* ViewerFeatureBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerFeatureBoundaryTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000090 /* ImageViewerNSViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSViewTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000092 /* ImageViewerNSViewInputLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSViewInputLayoutTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000094 /* ImageViewerNSViewGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerNSViewGeometryTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000026 /* ImagePreloadQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePreloadQueueTests.swift; sourceTree = "<group>"; };
 		A10000000000000000000028 /* OpenBrowserPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserPreferencesTests.swift; sourceTree = "<group>"; };
 		A1000000000000000000002A /* OpenBrowserSidebarStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenBrowserSidebarStoreTests.swift; sourceTree = "<group>"; };
@@ -309,6 +313,10 @@
 			children = (
 				A10000000000000000000001 /* FolderImageIndexTests.swift */,
 				A10000000000000000000016 /* ViewerStateTests.swift */,
+				A10000000000000000000096 /* ViewerFeatureBoundaryTests.swift */,
+				A10000000000000000000090 /* ImageViewerNSViewTests.swift */,
+				A10000000000000000000092 /* ImageViewerNSViewInputLayoutTests.swift */,
+				A10000000000000000000094 /* ImageViewerNSViewGeometryTests.swift */,
 				A10000000000000000000026 /* ImagePreloadQueueTests.swift */,
 				A10000000000000000000028 /* OpenBrowserPreferencesTests.swift */,
 				A1000000000000000000002A /* OpenBrowserSidebarStoreTests.swift */,
@@ -571,6 +579,10 @@
 			files = (
 				A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */,
 				A10000000000000000000017 /* ViewerStateTests.swift in Sources */,
+				A10000000000000000000097 /* ViewerFeatureBoundaryTests.swift in Sources */,
+				A10000000000000000000091 /* ImageViewerNSViewTests.swift in Sources */,
+				A10000000000000000000093 /* ImageViewerNSViewInputLayoutTests.swift in Sources */,
+				A10000000000000000000095 /* ImageViewerNSViewGeometryTests.swift in Sources */,
 				A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */,
 				A10000000000000000000029 /* OpenBrowserPreferencesTests.swift in Sources */,
 				A1000000000000000000002B /* OpenBrowserSidebarStoreTests.swift in Sources */,
@@ -784,6 +796,10 @@
 		A3000000000000000000001F /* VisualLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30000000000000000000013 /* VisualLabels.swift */; };
 		A10000000000000000000002 /* FolderImageIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* FolderImageIndexTests.swift */; };
 		A10000000000000000000017 /* ViewerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* ViewerStateTests.swift */; };
+		A10000000000000000000097 /* ViewerFeatureBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000096 /* ViewerFeatureBoundaryTests.swift */; };
+		A10000000000000000000091 /* ImageViewerNSViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000090 /* ImageViewerNSViewTests.swift */; };
+		A10000000000000000000093 /* ImageViewerNSViewInputLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000092 /* ImageViewerNSViewInputLayoutTests.swift */; };
+		A10000000000000000000095 /* ImageViewerNSViewGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000094 /* ImageViewerNSViewGeometryTests.swift */; };
 		A10000000000000000000027 /* ImagePreloadQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* ImagePreloadQueueTests.swift */; };
 		A10000000000000000000029 /* OpenBrowserPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000028 /* OpenBrowserPreferencesTests.swift */; };
 		A1000000000000000000002B /* OpenBrowserSidebarStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000002A /* OpenBrowserSidebarStoreTests.swift */; };
