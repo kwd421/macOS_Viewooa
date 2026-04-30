@@ -15,7 +15,7 @@ struct ImageBrowserOverlay: View {
     var body: some View {
         ZStack {
             Rectangle()
-                .fill(.black.opacity(0.34))
+                .fill(VisualInteractionPalette.imageBrowserOverlayScrim)
                 .background(.ultraThinMaterial)
                 .ignoresSafeArea()
 
@@ -23,7 +23,7 @@ struct ImageBrowserOverlay: View {
                 header
 
                 Divider()
-                    .overlay(.white.opacity(0.16))
+                    .overlay(VisualInteractionPalette.imageBrowserDivider)
                     .padding(.horizontal, 28)
                     .opacity(isContentRevealed || reduceMotion ? 1 : 0)
 
@@ -64,7 +64,7 @@ struct ImageBrowserOverlay: View {
                     .font(.system(size: 16, weight: .semibold))
                 Text(browserPositionText)
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.58))
+                    .foregroundStyle(VisualInteractionPalette.imageBrowserSecondaryText)
             }
 
             Spacer()
@@ -180,8 +180,5 @@ private struct ImageBrowserCloseButton: View {
         .frame(width: 28, height: 28)
     }
 
-    private static let backgroundColor = VisualHoverColorStyle(
-        normal: .white.opacity(0.12),
-        hover: .white.opacity(0.28)
-    )
+    private static let backgroundColor = VisualInteractionPalette.imageBrowserCloseButtonBackground
 }

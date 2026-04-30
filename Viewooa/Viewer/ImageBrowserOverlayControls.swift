@@ -31,12 +31,12 @@ struct ImageBrowserViewModeControl: View {
             }
         }
         .padding(2)
-        .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .background(VisualInteractionPalette.imageBrowserControlFill, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .visualHitArea(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private static func foregroundColor(isSelected: Bool) -> Color {
-        isSelected ? .white : .white.opacity(0.58)
+        isSelected ? .white : VisualInteractionPalette.imageBrowserSecondaryText
     }
 
     private static let backgroundColor = VisualInteractionPalette.darkSegmentBackground

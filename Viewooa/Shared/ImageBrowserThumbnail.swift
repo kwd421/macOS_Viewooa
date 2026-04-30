@@ -15,7 +15,7 @@ struct ImageBrowserThumbnail: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 7, style: .continuous)
-                .fill(.white.opacity(0.08))
+                .fill(VisualInteractionPalette.imageBrowserPreviewFill)
 
             if let image {
                 Image(nsImage: image)
@@ -24,7 +24,7 @@ struct ImageBrowserThumbnail: View {
             } else {
                 Image(systemName: "photo")
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.36))
+                    .foregroundStyle(VisualInteractionPalette.imageBrowserPreviewPlaceholder)
             }
         }
         .clipped()
@@ -131,4 +131,3 @@ private final class ImageBrowserThumbnailCache: @unchecked Sendable {
         }
     }
 }
-

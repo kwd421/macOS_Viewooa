@@ -22,15 +22,15 @@ struct ImageBrowserThumbnailCell: View {
                         .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
                         .overlay {
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .strokeBorder(isSelected ? .white : .white.opacity(0.14), lineWidth: isSelected ? 2 : 1)
+                                .strokeBorder(Self.previewBorder(isSelected: isSelected), lineWidth: isSelected ? 2 : 1)
                         }
-                        .shadow(color: .black.opacity(isSelected ? 0.42 : 0.24), radius: isSelected ? 18 : 10, y: isSelected ? 9 : 5)
+                        .shadow(color: Self.previewShadow(isSelected: isSelected), radius: isSelected ? 18 : 10, y: isSelected ? 9 : 5)
 
                     Text(url.lastPathComponent)
                         .font(.system(size: 11, weight: isSelected ? .semibold : .medium))
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(isSelected ? .white : .white.opacity(0.74))
+                        .foregroundStyle(isSelected ? .white : VisualInteractionPalette.imageBrowserBodyText)
                         .frame(width: thumbnailSize)
                 }
                 .padding(8)
@@ -49,6 +49,14 @@ struct ImageBrowserThumbnailCell: View {
     }
 
     private static let thumbnailBackground = VisualInteractionPalette.darkOverlayThumbnailBackground
+
+    private static func previewBorder(isSelected: Bool) -> Color {
+        isSelected ? .white : VisualInteractionPalette.imageBrowserPreviewBorder
+    }
+
+    private static func previewShadow(isSelected: Bool) -> Color {
+        isSelected ? VisualInteractionPalette.imageBrowserSelectedPreviewShadow : VisualInteractionPalette.imageBrowserPreviewShadow
+    }
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
@@ -82,7 +90,7 @@ struct ImageBrowserListRow: View {
                         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                         .overlay {
                             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                .strokeBorder(.white.opacity(0.14))
+                                .strokeBorder(VisualInteractionPalette.imageBrowserPreviewBorder)
                         }
 
                     VStack(alignment: .leading, spacing: 3) {
@@ -91,7 +99,7 @@ struct ImageBrowserListRow: View {
                             .lineLimit(1)
                         Text(url.deletingLastPathComponent().lastPathComponent)
                             .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.54))
+                            .foregroundStyle(VisualInteractionPalette.imageBrowserMutedText)
                             .lineLimit(1)
                     }
 
@@ -99,7 +107,7 @@ struct ImageBrowserListRow: View {
 
                     Text("\(index + 1)")
                         .font(.system(size: 12, weight: .semibold, design: .rounded).monospacedDigit())
-                        .foregroundStyle(.white.opacity(0.52))
+                        .foregroundStyle(VisualInteractionPalette.imageBrowserIndexText)
                 }
                 .padding(.horizontal, 12)
                 .frame(height: 58)
