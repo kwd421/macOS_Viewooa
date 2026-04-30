@@ -8,26 +8,21 @@ struct ImageBrowserViewModeControl: View {
             ForEach(ImageBrowserDisplayMode.allCases) { mode in
                 let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
 
-                VisualHoverState(shape: shape) { isHovering in
-                    Button {
-                        displayMode = mode
-                    } label: {
-                        Image(systemName: mode.systemImage)
-                            .font(.system(size: 13, weight: .semibold))
-                            .frame(width: 32, height: 26)
-                            .foregroundStyle(Self.foregroundColor(isSelected: displayMode == mode))
-                            .background(
-                                Self.backgroundColor.color(isSelected: displayMode == mode, isHovering: isHovering),
-                                in: RoundedRectangle(cornerRadius: 6, style: .continuous)
-                            )
-                            .visualHitArea(shape)
+                VisualSelectableIconButton(
+                    accessibilityLabel: mode.title,
+                    systemImage: mode.systemImage,
+                    isSelected: displayMode == mode,
+                    size: CGSize(width: 32, height: 26),
+                    shape: shape,
+                    foregroundColor: { isSelected, _ in
+                        Self.foregroundColor(isSelected: isSelected)
+                    },
+                    backgroundColor: { isSelected, isHovering in
+                        Self.backgroundColor.color(isSelected: isSelected, isHovering: isHovering)
                     }
-                    .frame(width: 32, height: 26)
-                    .visualHitArea(shape)
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(mode.title)
+                ) {
+                        displayMode = mode
                 }
-                .frame(width: 32, height: 26)
             }
         }
         .padding(2)

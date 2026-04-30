@@ -235,7 +235,6 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
 struct OpenBrowserViewModeControl: View {
     @Binding var displayMode: ImageBrowserDisplayMode
     var isVibrant = false
-    @State private var hoveredDisplayMode: ImageBrowserDisplayMode?
 
     var body: some View {
         HStack(spacing: 0) {
@@ -253,28 +252,22 @@ struct OpenBrowserViewModeControl: View {
 
     private func modeButton(for displayModeOption: ImageBrowserDisplayMode) -> some View {
         let size = Self.modeButtonSize(isVibrant: isVibrant)
-
         let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
 
-        return VisualHoveredSelection(id: displayModeOption, hoveredID: $hoveredDisplayMode, shape: shape) { isHovering in
-            Button {
-                displayMode = displayModeOption
-            } label: {
-                Image(systemName: displayModeOption.systemImage)
-                    .font(.system(size: 13, weight: .semibold))
-                    .frame(width: size.width, height: size.height)
-                    .foregroundStyle(Self.modeIconColor(isSelected: displayMode == displayModeOption, isVibrant: isVibrant))
-                    .background(
-                        Self.modeBackgroundColor(isVibrant: isVibrant)
-                            .color(isSelected: displayMode == displayModeOption, isHovering: isHovering),
-                        in: RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
-                    )
-                    .visualHitArea(shape)
+        return VisualSelectableIconButton(
+            accessibilityLabel: displayModeOption.title,
+            systemImage: displayModeOption.systemImage,
+            isSelected: displayMode == displayModeOption,
+            size: size,
+            shape: shape,
+            foregroundColor: { isSelected, _ in
+                Self.modeIconColor(isSelected: isSelected, isVibrant: isVibrant)
+            },
+            backgroundColor: { isSelected, isHovering in
+                Self.modeBackgroundColor(isVibrant: isVibrant).color(isSelected: isSelected, isHovering: isHovering)
             }
-            .frame(width: size.width, height: size.height)
-            .visualHitArea(shape)
-            .buttonStyle(.plain)
-            .accessibilityLabel(displayModeOption.title)
+        ) {
+                displayMode = displayModeOption
         }
     }
 

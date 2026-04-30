@@ -328,6 +328,61 @@ struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeSt
     }
 }
 
+struct VisualSelectableIconButton<ShapeType: Shape>: View {
+    let accessibilityLabel: String
+    let systemImage: String
+    let isSelected: Bool
+    let size: CGSize
+    let fontSize: CGFloat
+    let fontWeight: Font.Weight
+    let shape: ShapeType
+    let foregroundColor: (Bool, Bool) -> Color
+    let backgroundColor: (Bool, Bool) -> Color
+    let action: () -> Void
+
+    init(
+        accessibilityLabel: String,
+        systemImage: String,
+        isSelected: Bool,
+        size: CGSize,
+        fontSize: CGFloat = 13,
+        fontWeight: Font.Weight = .semibold,
+        shape: ShapeType,
+        foregroundColor: @escaping (Bool, Bool) -> Color,
+        backgroundColor: @escaping (Bool, Bool) -> Color,
+        action: @escaping () -> Void
+    ) {
+        self.accessibilityLabel = accessibilityLabel
+        self.systemImage = systemImage
+        self.isSelected = isSelected
+        self.size = size
+        self.fontSize = fontSize
+        self.fontWeight = fontWeight
+        self.shape = shape
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
+        self.action = action
+    }
+
+    var body: some View {
+        VisualHoverState(shape: shape) { isHovering in
+            Button(action: action) {
+                Image(systemName: systemImage)
+                    .font(.system(size: fontSize, weight: fontWeight))
+                    .frame(width: size.width, height: size.height)
+                    .foregroundStyle(foregroundColor(isSelected, isHovering))
+                    .background(backgroundColor(isSelected, isHovering), in: shape)
+                    .visualHitArea(shape)
+            }
+            .frame(width: size.width, height: size.height)
+            .visualHitArea(shape)
+            .buttonStyle(.plain)
+            .accessibilityLabel(accessibilityLabel)
+        }
+        .frame(width: size.width, height: size.height)
+    }
+}
+
 struct VisualCapsuleIconTextLabel: View {
     let systemImage: String
     let title: String
