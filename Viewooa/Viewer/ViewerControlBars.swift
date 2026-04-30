@@ -28,10 +28,10 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
         .padding(.vertical, 8)
         .background(.ultraThinMaterial, in: Capsule())
         .overlay {
-            Capsule().strokeBorder(.white.opacity(0.14))
+            Capsule().strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
         }
         .visualHitArea(Capsule())
-        .shadow(color: .black.opacity(0.34), radius: 20, y: 10)
+        .shadow(color: VisualInteractionPalette.viewerToolbarShadow, radius: 20, y: 10)
     }
 
     private var toolbarInfoButton: some View {
@@ -263,10 +263,10 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
         .padding(.vertical, 10)
         .background(.ultraThinMaterial, in: Capsule())
         .overlay {
-            Capsule().strokeBorder(.white.opacity(0.14))
+            Capsule().strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
         }
         .visualHitArea(Capsule())
-        .shadow(color: .black.opacity(0.34), radius: 20, y: 10)
+        .shadow(color: VisualInteractionPalette.viewerToolbarShadow, radius: 20, y: 10)
     }
 
     private func controlButton(_ accessibilityLabel: String, systemImage: String, action: @escaping () -> Void) -> some View {
@@ -309,7 +309,7 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
 private struct ViewerControlSeparator: View {
     var body: some View {
         Rectangle()
-            .fill(.white.opacity(0.22))
+            .fill(VisualInteractionPalette.viewerSeparator)
             .frame(width: 1, height: 24)
     }
 }

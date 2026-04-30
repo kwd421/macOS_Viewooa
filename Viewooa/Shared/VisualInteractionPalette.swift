@@ -1,6 +1,9 @@
 import SwiftUI
+import AppKit
 
 enum VisualInteractionPalette {
+    private static let platformSelection = Color(nsColor: .selectedContentBackgroundColor)
+
     static let subtleToolbarHover = VisualHoverColorStyle(
         normal: .clear,
         hover: Color.primary.opacity(0.08)
@@ -19,29 +22,29 @@ enum VisualInteractionPalette {
     static let openBrowserThumbnailBackground = VisualInteractionColorStyle(
         normal: .clear,
         hover: Color.primary.opacity(0.055),
-        selected: Color.openBrowserSelection.opacity(0.07),
-        selectedHover: Color.openBrowserSelection.opacity(0.12)
+        selected: platformSelection.opacity(0.07),
+        selectedHover: platformSelection.opacity(0.12)
     )
 
     static let openBrowserThumbnailBorder = VisualInteractionColorStyle(
         normal: .clear,
         hover: Color.primary.opacity(0.10),
-        selected: Color.openBrowserSelection.opacity(0.46),
-        selectedHover: Color.openBrowserSelection.opacity(0.62)
+        selected: platformSelection.opacity(0.46),
+        selectedHover: platformSelection.opacity(0.62)
     )
 
     static let openBrowserListBackground = VisualInteractionColorStyle(
         normal: .clear,
         hover: Color.primary.opacity(0.055),
-        selected: Color.openBrowserSelection.opacity(0.16),
-        selectedHover: Color.openBrowserSelection.opacity(0.22)
+        selected: platformSelection.opacity(0.16),
+        selectedHover: platformSelection.opacity(0.22)
     )
 
     static let openBrowserListBorder = VisualInteractionColorStyle(
         normal: .clear,
         hover: Color.primary.opacity(0.08),
-        selected: Color.openBrowserSelection.opacity(0.24),
-        selectedHover: Color.openBrowserSelection.opacity(0.34)
+        selected: platformSelection.opacity(0.24),
+        selectedHover: platformSelection.opacity(0.34)
     )
 
     static let darkOverlayThumbnailBackground = VisualInteractionColorStyle(
@@ -105,4 +108,32 @@ enum VisualInteractionPalette {
     static func thumbnailStepperButtonBackground(isVibrant: Bool) -> VisualHoverColorStyle {
         isVibrant ? vibrantToolbarHover : subtleControlHover
     }
+
+    static let viewerIconBackground = VisualPressColorStyle(
+        normal: Color.white.opacity(0.10),
+        hover: Color.white.opacity(0.28),
+        pressed: Color.white.opacity(0.32)
+    )
+
+    static let viewerIconForeground = VisualInteractionColorStyle(
+        normal: Color.white.opacity(0.82),
+        hover: Color.white.opacity(0.82),
+        selected: .white,
+        selectedHover: .white
+    )
+
+    static let viewerCapsuleBackground = VisualHoverColorStyle(
+        normal: Color.white.opacity(0.10),
+        hover: Color.white.opacity(0.26)
+    )
+
+    static let viewerCapsuleBorder = VisualHoverColorStyle(
+        normal: Color.white.opacity(0.10),
+        hover: Color.white.opacity(0.28)
+    )
+
+    static let viewerSurfaceBorder = Color.white.opacity(0.14)
+    static let viewerSeparator = Color.white.opacity(0.22)
+    static let viewerToolbarShadow = Color.black.opacity(0.34)
+    static let viewerCardShadow = Color.black.opacity(0.28)
 }

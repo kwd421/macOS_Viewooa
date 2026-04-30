@@ -618,6 +618,8 @@
 				A1000000000000000000003D /* ViewerControlBars.swift in Sources */,
 				A1000000000000000000003F /* ViewerSlideshowIntervalFormatter.swift in Sources */,
 				A10000000000000000000025 /* ImagePreloadQueue.swift in Sources */,
+				A3000000000000000000000A /* VisualButtonComponents.swift in Sources */,
+				A3000000000000000000000D /* VisualInteractionPalette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

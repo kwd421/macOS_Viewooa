@@ -28,33 +28,18 @@ struct ImageMetadataPanel: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .strokeBorder(.white.opacity(0.14))
+                .strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
         }
-        .shadow(color: .black.opacity(0.28), radius: 18, y: 8)
+        .shadow(color: VisualInteractionPalette.viewerCardShadow, radius: 18, y: 8)
     }
 }
 
 enum ViewerControlVisualStyle {
     static let iconSize: CGFloat = 30
-    static let iconBackground = VisualPressColorStyle(
-        normal: .white.opacity(0.10),
-        hover: .white.opacity(0.28),
-        pressed: .white.opacity(0.32)
-    )
-    static let iconForeground = VisualInteractionColorStyle(
-        normal: .white.opacity(0.82),
-        hover: .white.opacity(0.82),
-        selected: .white,
-        selectedHover: .white
-    )
-    static let capsuleBackground = VisualHoverColorStyle(
-        normal: .white.opacity(0.10),
-        hover: .white.opacity(0.26)
-    )
-    static let capsuleBorder = VisualHoverColorStyle(
-        normal: .white.opacity(0.10),
-        hover: .white.opacity(0.28)
-    )
+    static let iconBackground = VisualInteractionPalette.viewerIconBackground
+    static let iconForeground = VisualInteractionPalette.viewerIconForeground
+    static let capsuleBackground = VisualInteractionPalette.viewerCapsuleBackground
+    static let capsuleBorder = VisualInteractionPalette.viewerCapsuleBorder
 }
 
 struct RepeatingControlButton: View {

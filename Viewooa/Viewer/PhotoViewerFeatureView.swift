@@ -160,9 +160,9 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
                 .frame(height: 34)
                 .background(.ultraThinMaterial, in: Capsule())
                 .overlay {
-                    Capsule().strokeBorder(.white.opacity(0.14))
+                    Capsule().strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
                 }
-                .shadow(color: .black.opacity(0.28), radius: 14, y: 7)
+                .shadow(color: VisualInteractionPalette.viewerCardShadow, radius: 14, y: 7)
                 .opacity(store.isNavigationCountVisible ? 1 : 0)
                 .scaleEffect(store.isNavigationCountVisible ? 1 : 0.985, anchor: .topLeading)
                 .offset(y: store.isNavigationCountVisible ? 0 : -5)
@@ -201,9 +201,9 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
                     .frame(height: 34)
                     .background(.ultraThinMaterial, in: Capsule())
                     .overlay {
-                        Capsule().strokeBorder(.white.opacity(0.14))
+                        Capsule().strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
                     }
-                    .shadow(color: .black.opacity(0.28), radius: 14, y: 7)
+                    .shadow(color: VisualInteractionPalette.viewerCardShadow, radius: 14, y: 7)
                     .padding(.top, 18)
                     .transition(.opacity.combined(with: .move(edge: .top)))
 
