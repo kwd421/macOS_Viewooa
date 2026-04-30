@@ -32,36 +32,35 @@ struct ThumbnailSizeStepperControl: View {
 
     private func stepButton(systemImage: String, delta: CGFloat, isDisabled: Bool) -> some View {
         let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous)
+        let size = CGSize(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
 
-        return VisualHoverState(shape: shape) { isHovering in
-            Button {
-                onWillChange?()
-                withAnimation(.smooth(duration: 0.18, extraBounce: 0)) {
-                    thumbnailSize = nextThumbnailSize(delta: delta)
-                }
-            } label: {
-                Image(systemName: systemImage)
-                    .font(.system(size: 12, weight: .semibold))
-                    .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
-                    .foregroundStyle(
-                        VisualInteractionPalette.thumbnailStepperIconColor(isVibrant: isVibrant)
-                            .color(isSelected: isDisabled, isHovering: false)
-                    )
-                    .background(
-                        isDisabled
-                            ? .clear
-                            : VisualInteractionPalette.thumbnailStepperButtonBackground(isVibrant: isVibrant)
-                                .color(isHovering: isHovering),
-                        in: shape
-                    )
-                    .visualHitArea(shape)
+        return VisualHoverContentButton(
+            accessibilityLabel: delta < 0 ? "Smaller Thumbnails" : "Larger Thumbnails",
+            shape: shape
+        ) {
+            guard !isDisabled else { return }
+            onWillChange?()
+            withAnimation(.smooth(duration: 0.18, extraBounce: 0)) {
+                thumbnailSize = nextThumbnailSize(delta: delta)
             }
-            .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
-            .buttonStyle(.plain)
-            .disabled(isDisabled)
-            .accessibilityLabel(delta < 0 ? "Smaller Thumbnails" : "Larger Thumbnails")
+        } label: { isHovering in
+            Image(systemName: systemImage)
+                .font(.system(size: 12, weight: .semibold))
+                .frame(width: size.width, height: size.height)
+                .foregroundStyle(
+                    VisualInteractionPalette.thumbnailStepperIconColor(isVibrant: isVibrant)
+                        .color(isSelected: isDisabled, isHovering: false)
+                )
+                .background(
+                    isDisabled
+                        ? .clear
+                        : VisualInteractionPalette.thumbnailStepperButtonBackground(isVibrant: isVibrant)
+                            .color(isHovering: isHovering),
+                    in: shape
+                )
         }
-        .frame(width: isVibrant ? 32 : 38, height: isVibrant ? 30 : 34)
+        .frame(width: size.width, height: size.height)
+        .disabled(isDisabled)
     }
 
     private var separatorColor: Color {
