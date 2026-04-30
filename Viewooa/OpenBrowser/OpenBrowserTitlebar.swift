@@ -67,14 +67,11 @@ struct OpenBrowserTitlebar: View {
                 }
             }
         }
-        .padding(1)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 17, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 17, style: .continuous)
-                .strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
-        }
-        .visualHitArea(RoundedRectangle(cornerRadius: 17, style: .continuous))
-        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
+        .openBrowserToolbarSurface(
+            shape: RoundedRectangle(cornerRadius: 17, style: .continuous),
+            horizontalPadding: 1,
+            verticalPadding: 1
+        )
         .padding(.trailing, 9)
     }
 
@@ -96,28 +93,22 @@ struct OpenBrowserTitlebar: View {
 
             historyButtons
         }
-        .padding(1)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 19, style: .continuous)
-                .strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
-        }
-        .visualHitArea(RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
+        .openBrowserToolbarSurface(
+            shape: RoundedRectangle(cornerRadius: 19, style: .continuous),
+            horizontalPadding: 1,
+            verticalPadding: 1
+        )
     }
 
     private var historyToolbarGroup: some View {
         HStack(spacing: 2) {
             historyButtons
         }
-        .padding(1)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 19, style: .continuous)
-                .strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
-        }
-        .visualHitArea(RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
+        .openBrowserToolbarSurface(
+            shape: RoundedRectangle(cornerRadius: 19, style: .continuous),
+            horizontalPadding: 1,
+            verticalPadding: 1
+        )
     }
 
     private var historyButtons: some View {

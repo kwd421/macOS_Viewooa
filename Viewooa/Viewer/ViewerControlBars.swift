@@ -24,14 +24,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
         .font(.system(size: 12, weight: .semibold))
         .buttonStyle(.plain)
         .foregroundStyle(.white)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay {
-            Capsule().strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
-        }
-        .visualHitArea(Capsule())
-        .shadow(color: VisualInteractionPalette.viewerToolbarShadow, radius: 20, y: 10)
+        .viewerToolbarSurface(horizontalPadding: 12, verticalPadding: 8)
     }
 
     private var toolbarInfoButton: some View {
@@ -259,14 +252,7 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
                 action: { isPinned.toggle() }
             )
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay {
-            Capsule().strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
-        }
-        .visualHitArea(Capsule())
-        .shadow(color: VisualInteractionPalette.viewerToolbarShadow, radius: 20, y: 10)
+        .viewerToolbarSurface(horizontalPadding: 14, verticalPadding: 10)
     }
 
     private func controlButton(_ accessibilityLabel: String, systemImage: String, action: @escaping () -> Void) -> some View {
@@ -311,5 +297,22 @@ private struct ViewerControlSeparator: View {
         Rectangle()
             .fill(VisualInteractionPalette.viewerSeparator)
             .frame(width: 1, height: 24)
+    }
+}
+
+private extension View {
+    func viewerToolbarSurface(horizontalPadding: CGFloat, verticalPadding: CGFloat) -> some View {
+        VisualToolbarSurface(
+            shape: Capsule(),
+            backgroundStyle: .ultraThinMaterial,
+            borderColor: VisualInteractionPalette.viewerSurfaceBorder,
+            shadowColor: VisualInteractionPalette.viewerToolbarShadow,
+            shadowRadius: 20,
+            shadowYOffset: 10,
+            horizontalPadding: horizontalPadding,
+            verticalPadding: verticalPadding
+        ) {
+            self
+        }
     }
 }

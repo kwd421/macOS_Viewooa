@@ -7,14 +7,8 @@ struct OpenBrowserToolbarCapsule<Content: View>: View {
         HStack(spacing: 0) {
             content()
         }
-        .padding(1)
         .frame(height: OpenBrowserLayout.titlebarControlHeight)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay {
-            Capsule().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)
-        }
-        .visualHitArea(Capsule())
-        .shadow(color: VisualInteractionPalette.openBrowserToolbarShadow, radius: 6, y: 2)
+        .openBrowserToolbarSurface(shape: Capsule(), horizontalPadding: 1, verticalPadding: 1)
     }
 }
 
@@ -302,5 +296,26 @@ struct OpenBrowserViewModeControl: View {
         }
 
         return VisualInteractionPalette.openBrowserSegmentBackground
+    }
+}
+
+extension View {
+    func openBrowserToolbarSurface<ShapeType: InsettableShape>(
+        shape: ShapeType,
+        horizontalPadding: CGFloat,
+        verticalPadding: CGFloat
+    ) -> some View {
+        VisualToolbarSurface(
+            shape: shape,
+            backgroundStyle: .ultraThinMaterial,
+            borderColor: VisualInteractionPalette.openBrowserToolbarBorder,
+            shadowColor: VisualInteractionPalette.openBrowserToolbarShadow,
+            shadowRadius: 6,
+            shadowYOffset: 2,
+            horizontalPadding: horizontalPadding,
+            verticalPadding: verticalPadding
+        ) {
+            self
+        }
     }
 }

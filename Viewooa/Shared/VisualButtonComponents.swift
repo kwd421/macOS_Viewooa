@@ -282,6 +282,52 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
     }
 }
 
+struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeStyle, Content: View>: View {
+    let shape: ShapeType
+    let backgroundStyle: BackgroundStyle
+    let borderColor: Color
+    let shadowColor: Color
+    let shadowRadius: CGFloat
+    let shadowYOffset: CGFloat
+    let horizontalPadding: CGFloat
+    let verticalPadding: CGFloat
+    let content: () -> Content
+
+    init(
+        shape: ShapeType,
+        backgroundStyle: BackgroundStyle,
+        borderColor: Color,
+        shadowColor: Color,
+        shadowRadius: CGFloat,
+        shadowYOffset: CGFloat,
+        horizontalPadding: CGFloat,
+        verticalPadding: CGFloat,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        self.shape = shape
+        self.backgroundStyle = backgroundStyle
+        self.borderColor = borderColor
+        self.shadowColor = shadowColor
+        self.shadowRadius = shadowRadius
+        self.shadowYOffset = shadowYOffset
+        self.horizontalPadding = horizontalPadding
+        self.verticalPadding = verticalPadding
+        self.content = content
+    }
+
+    var body: some View {
+        content()
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
+            .background(backgroundStyle, in: shape)
+            .overlay {
+                shape.strokeBorder(borderColor)
+            }
+            .visualHitArea(shape)
+            .shadow(color: shadowColor, radius: shadowRadius, y: shadowYOffset)
+    }
+}
+
 struct VisualCapsuleIconTextLabel: View {
     let systemImage: String
     let title: String
