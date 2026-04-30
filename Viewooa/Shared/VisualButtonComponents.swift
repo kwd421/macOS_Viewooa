@@ -43,6 +43,23 @@ struct VisualPressColorStyle {
     }
 }
 
+struct VisualHoverEmphasisStyle {
+    let stroke: Color
+    let shadow: Color
+    let shadowRadius: CGFloat
+    let shadowYOffset: CGFloat
+
+    static let none = VisualHoverEmphasisStyle(stroke: .clear, shadow: .clear, shadowRadius: 0, shadowYOffset: 0)
+
+    func strokeColor(isHovering: Bool) -> Color {
+        isHovering ? stroke : .clear
+    }
+
+    func shadowColor(isHovering: Bool) -> Color {
+        isHovering ? shadow : .clear
+    }
+}
+
 extension View {
     func visualHitArea<S: Shape>(_ shape: S) -> some View {
         contentShape(shape)
@@ -207,6 +224,7 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
     let shape: ShapeType
     let foregroundColor: (Bool) -> Color
     let backgroundColor: (Bool) -> Color
+    let hoverEmphasis: VisualHoverEmphasisStyle
     let overlay: ((Bool) -> AnyView)?
     let action: () -> Void
 
@@ -219,6 +237,7 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
         shape: ShapeType,
         foregroundColor: @escaping (Bool) -> Color,
         backgroundColor: @escaping (Bool) -> Color,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none,
         overlay: ((Bool) -> AnyView)? = nil,
         action: @escaping () -> Void
     ) {
@@ -230,6 +249,7 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
         self.shape = shape
         self.foregroundColor = foregroundColor
         self.backgroundColor = backgroundColor
+        self.hoverEmphasis = hoverEmphasis
         self.overlay = overlay
         self.action = action
     }
@@ -243,6 +263,7 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
         shape: ShapeType,
         foregroundColor: @escaping (Bool) -> Color,
         backgroundColor: @escaping (Bool) -> Color,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none,
         overlay: ((Bool) -> AnyView)? = nil,
         action: @escaping () -> Void
     ) {
@@ -255,6 +276,7 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
             shape: shape,
             foregroundColor: foregroundColor,
             backgroundColor: backgroundColor,
+            hoverEmphasis: hoverEmphasis,
             overlay: overlay,
             action: action
         )
@@ -271,6 +293,14 @@ struct VisualIconActionButton<ShapeType: Shape>: View {
                     .overlay {
                         overlay?(isHovering)
                     }
+                    .overlay {
+                        shape.stroke(hoverEmphasis.strokeColor(isHovering: isHovering), lineWidth: 1)
+                    }
+                    .shadow(
+                        color: hoverEmphasis.shadowColor(isHovering: isHovering),
+                        radius: hoverEmphasis.shadowRadius,
+                        y: hoverEmphasis.shadowYOffset
+                    )
                     .visualHitArea(shape)
             }
             .frame(width: size.width, height: size.height)
@@ -338,6 +368,7 @@ struct VisualSelectableIconButton<ShapeType: Shape>: View {
     let shape: ShapeType
     let foregroundColor: (Bool, Bool) -> Color
     let backgroundColor: (Bool, Bool) -> Color
+    let hoverEmphasis: VisualHoverEmphasisStyle
     let action: () -> Void
 
     init(
@@ -350,6 +381,7 @@ struct VisualSelectableIconButton<ShapeType: Shape>: View {
         shape: ShapeType,
         foregroundColor: @escaping (Bool, Bool) -> Color,
         backgroundColor: @escaping (Bool, Bool) -> Color,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none,
         action: @escaping () -> Void
     ) {
         self.accessibilityLabel = accessibilityLabel
@@ -361,6 +393,7 @@ struct VisualSelectableIconButton<ShapeType: Shape>: View {
         self.shape = shape
         self.foregroundColor = foregroundColor
         self.backgroundColor = backgroundColor
+        self.hoverEmphasis = hoverEmphasis
         self.action = action
     }
 
@@ -372,6 +405,14 @@ struct VisualSelectableIconButton<ShapeType: Shape>: View {
                     .frame(width: size.width, height: size.height)
                     .foregroundStyle(foregroundColor(isSelected, isHovering))
                     .background(backgroundColor(isSelected, isHovering), in: shape)
+                    .overlay {
+                        shape.stroke(hoverEmphasis.strokeColor(isHovering: isHovering), lineWidth: 1)
+                    }
+                    .shadow(
+                        color: hoverEmphasis.shadowColor(isHovering: isHovering),
+                        radius: hoverEmphasis.shadowRadius,
+                        y: hoverEmphasis.shadowYOffset
+                    )
                     .visualHitArea(shape)
             }
             .frame(width: size.width, height: size.height)
@@ -439,17 +480,20 @@ struct VisualSelectableContentButton<ShapeType: InsettableShape, Label: View>: V
 struct VisualHoverContentButton<ShapeType: Shape, Label: View>: View {
     let accessibilityLabel: String
     let shape: ShapeType
+    let hoverEmphasis: VisualHoverEmphasisStyle
     let action: () -> Void
     let label: (Bool) -> Label
 
     init(
         accessibilityLabel: String,
         shape: ShapeType,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none,
         action: @escaping () -> Void,
         @ViewBuilder label: @escaping (Bool) -> Label
     ) {
         self.accessibilityLabel = accessibilityLabel
         self.shape = shape
+        self.hoverEmphasis = hoverEmphasis
         self.action = action
         self.label = label
     }
@@ -458,6 +502,14 @@ struct VisualHoverContentButton<ShapeType: Shape, Label: View>: View {
         VisualHoverState(shape: shape) { isHovering in
             Button(action: action) {
                 label(isHovering)
+                    .overlay {
+                        shape.stroke(hoverEmphasis.strokeColor(isHovering: isHovering), lineWidth: 1)
+                    }
+                    .shadow(
+                        color: hoverEmphasis.shadowColor(isHovering: isHovering),
+                        radius: hoverEmphasis.shadowRadius,
+                        y: hoverEmphasis.shadowYOffset
+                    )
                     .visualHitArea(shape)
             }
             .buttonStyle(.plain)

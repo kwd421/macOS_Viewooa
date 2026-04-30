@@ -36,7 +36,8 @@ struct ThumbnailSizeStepperControl: View {
 
         return VisualHoverContentButton(
             accessibilityLabel: delta < 0 ? "Smaller Thumbnails" : "Larger Thumbnails",
-            shape: shape
+            shape: shape,
+            hoverEmphasis: isVibrant ? VisualInteractionPalette.vibrantHoverEmphasis : VisualInteractionPalette.plainHoverEmphasis
         ) {
             guard !isDisabled else { return }
             onWillChange?()

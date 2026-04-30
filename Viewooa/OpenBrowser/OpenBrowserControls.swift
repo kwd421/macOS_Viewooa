@@ -27,6 +27,7 @@ struct OpenBrowserIconToolbarButton: View {
             shape: Circle(),
             foregroundColor: { _ in Self.iconColor(isActive: isActive) },
             backgroundColor: { isHovering in Self.iconBackgroundColor.color(isHovering: isHovering) },
+            hoverEmphasis: VisualInteractionPalette.plainHoverEmphasis,
             action: action
         )
     }
@@ -51,6 +52,7 @@ struct OpenBrowserSearchIconButton: View {
             shape: Circle(),
             foregroundColor: { _ in Color.white.opacity(hasSearchText ? 1 : 0.82) },
             backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
+            hoverEmphasis: VisualInteractionPalette.vibrantHoverEmphasis,
             overlay: { _ in AnyView(Circle().strokeBorder(VisualInteractionPalette.openBrowserToolbarBorder)) },
             action: action
         )
@@ -108,6 +110,7 @@ private struct OpenBrowserClearSearchButton: View {
             shape: Circle(),
             foregroundColor: { _ in .secondary },
             backgroundColor: { isHovering in Self.backgroundColor.color(isHovering: isHovering) },
+            hoverEmphasis: VisualInteractionPalette.plainHoverEmphasis,
             action: action
         )
     }
@@ -197,26 +200,40 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
             Menu {
                 menuContent()
             } label: {
-                Image(systemName: systemImage)
-                    .font(.system(size: iconFontSize, weight: .semibold))
-                    .foregroundStyle(Self.iconColor(isVibrant: isVibrant))
-                    .frame(width: size.width, height: size.height)
-                    .background(
-                        Self.backgroundColor(isVibrant: isVibrant).color(isHovering: isHovering),
-                        in: RoundedRectangle(cornerRadius: 7, style: .continuous)
-                    )
-                    .visualHitArea(shape)
+                HStack(spacing: 3) {
+                    Image(systemName: systemImage)
+                        .font(.system(size: iconFontSize, weight: .semibold))
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 7, weight: .bold))
+                }
+                .foregroundStyle(Self.iconColor(isVibrant: isVibrant))
+                .frame(width: size.width, height: size.height)
+                .background(
+                    Self.backgroundColor(isVibrant: isVibrant).color(isHovering: isHovering),
+                    in: shape
+                )
+                .overlay {
+                    shape.stroke(Self.hoverEmphasis(isVibrant: isVibrant).strokeColor(isHovering: isHovering), lineWidth: 1)
+                }
+                .shadow(
+                    color: Self.hoverEmphasis(isVibrant: isVibrant).shadowColor(isHovering: isHovering),
+                    radius: Self.hoverEmphasis(isVibrant: isVibrant).shadowRadius,
+                    y: Self.hoverEmphasis(isVibrant: isVibrant).shadowYOffset
+                )
+                .visualHitArea(shape)
             }
+            .menuIndicator(.hidden)
             .frame(width: size.width, height: size.height)
             .visualHitArea(shape)
-            .menuStyle(.borderlessButton)
+            .buttonStyle(.plain)
             .accessibilityLabel(accessibilityLabel)
         }
         .frame(width: size.width, height: size.height)
     }
 
     private static func controlSize(isVibrant: Bool) -> CGSize {
-        CGSize(width: isVibrant ? 31 : 28, height: isVibrant ? 30 : 28)
+        CGSize(width: isVibrant ? 43 : 38, height: isVibrant ? 30 : 28)
     }
 
     private static func iconColor(isVibrant: Bool) -> Color {
@@ -229,6 +246,10 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
         }
 
         return VisualInteractionPalette.openBrowserPlainControlHover
+    }
+
+    private static func hoverEmphasis(isVibrant: Bool) -> VisualHoverEmphasisStyle {
+        isVibrant ? VisualInteractionPalette.vibrantHoverEmphasis : VisualInteractionPalette.plainHoverEmphasis
     }
 }
 
@@ -265,7 +286,8 @@ struct OpenBrowserViewModeControl: View {
             },
             backgroundColor: { isSelected, isHovering in
                 Self.modeBackgroundColor(isVibrant: isVibrant).color(isSelected: isSelected, isHovering: isHovering)
-            }
+            },
+            hoverEmphasis: isVibrant ? VisualInteractionPalette.vibrantHoverEmphasis : VisualInteractionPalette.plainHoverEmphasis
         ) {
                 displayMode = displayModeOption
         }

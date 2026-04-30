@@ -19,7 +19,21 @@ enum VisualInteractionPalette {
 
     static let vibrantToolbarHover = VisualHoverColorStyle(
         normal: .clear,
-        hover: Color.white.opacity(0.12)
+        hover: Color.white.opacity(0.18)
+    )
+
+    static let vibrantHoverEmphasis = VisualHoverEmphasisStyle(
+        stroke: Color.white.opacity(0.30),
+        shadow: Color.black.opacity(0.16),
+        shadowRadius: 5,
+        shadowYOffset: 2
+    )
+
+    static let plainHoverEmphasis = VisualHoverEmphasisStyle(
+        stroke: Color.primary.opacity(0.12),
+        shadow: Color.black.opacity(0.08),
+        shadowRadius: 4,
+        shadowYOffset: 1
     )
 
     static let openBrowserThumbnailBackground = VisualInteractionColorStyle(
