@@ -208,64 +208,23 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
     @ViewBuilder let menuContent: () -> MenuContent
 
     var body: some View {
-        let size = Self.controlSize(isVibrant: isVibrant)
-
-        let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous)
-
-        VisualHoverState(shape: shape) { isHovering in
-            Menu {
-                menuContent()
-            } label: {
-                HStack(spacing: 3) {
-                    Image(systemName: systemImage)
-                        .font(.system(size: iconFontSize, weight: .semibold))
-
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 7, weight: .bold))
-                }
-                .foregroundStyle(Self.iconColor(isVibrant: isVibrant))
-                .frame(width: size.width, height: size.height)
-                .background(
-                    Self.backgroundColor(isVibrant: isVibrant).color(isHovering: isHovering),
-                    in: shape
-                )
-                .overlay {
-                    shape.stroke(Self.hoverEmphasis(isVibrant: isVibrant).strokeColor(isHovering: isHovering), lineWidth: 1)
-                }
-                .shadow(
-                    color: Self.hoverEmphasis(isVibrant: isVibrant).shadowColor(isHovering: isHovering),
-                    radius: Self.hoverEmphasis(isVibrant: isVibrant).shadowRadius,
-                    y: Self.hoverEmphasis(isVibrant: isVibrant).shadowYOffset
-                )
-                .visualHitArea(shape)
-            }
-            .menuIndicator(.hidden)
-            .frame(width: size.width, height: size.height)
-            .visualHitArea(shape)
-            .buttonStyle(.plain)
-            .accessibilityLabel(accessibilityLabel)
-        }
-        .frame(width: size.width, height: size.height)
+        VisualIconMenuButton(
+            accessibilityLabel: accessibilityLabel,
+            systemImage: systemImage,
+            style: Self.style(iconFontSize: iconFontSize, isVibrant: isVibrant),
+            shape: RoundedRectangle(cornerRadius: isVibrant ? 15 : 7, style: .continuous),
+            menuContent: menuContent
+        )
     }
 
-    private static func controlSize(isVibrant: Bool) -> CGSize {
-        CGSize(width: isVibrant ? 43 : 38, height: isVibrant ? 30 : 28)
-    }
-
-    private static func iconColor(isVibrant: Bool) -> Color {
-        isVibrant ? VisualInteractionPalette.openBrowserVibrantIcon : .secondary
-    }
-
-    private static func backgroundColor(isVibrant: Bool) -> VisualHoverColorStyle {
-        if isVibrant {
-            return VisualInteractionPalette.vibrantToolbarHover
-        }
-
-        return VisualInteractionPalette.openBrowserPlainControlHover
-    }
-
-    private static func hoverEmphasis(isVibrant: Bool) -> VisualHoverEmphasisStyle {
-        isVibrant ? VisualInteractionPalette.vibrantHoverEmphasis : VisualInteractionPalette.plainHoverEmphasis
+    private static func style(iconFontSize: CGFloat, isVibrant: Bool) -> VisualIconMenuStyle {
+        VisualIconMenuStyle(
+            size: CGSize(width: isVibrant ? 43 : 38, height: isVibrant ? 30 : 28),
+            iconFontSize: iconFontSize,
+            foregroundColor: isVibrant ? VisualInteractionPalette.openBrowserVibrantIcon : .secondary,
+            backgroundColor: isVibrant ? VisualInteractionPalette.vibrantToolbarHover : VisualInteractionPalette.openBrowserPlainControlHover,
+            hoverEmphasis: isVibrant ? VisualInteractionPalette.vibrantHoverEmphasis : VisualInteractionPalette.plainHoverEmphasis
+        )
     }
 }
 

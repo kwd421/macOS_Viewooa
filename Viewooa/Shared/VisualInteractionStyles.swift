@@ -108,6 +108,37 @@ struct VisualIconActionStyle {
     }
 }
 
+struct VisualIconMenuStyle {
+    let size: CGSize
+    let iconFontSize: CGFloat
+    let chevronFontSize: CGFloat
+    let iconSpacing: CGFloat
+    let fontWeight: Font.Weight
+    let foregroundColor: Color
+    let backgroundColor: VisualHoverColorStyle
+    let hoverEmphasis: VisualHoverEmphasisStyle
+
+    init(
+        size: CGSize,
+        iconFontSize: CGFloat,
+        chevronFontSize: CGFloat = 7,
+        iconSpacing: CGFloat = 3,
+        fontWeight: Font.Weight = .semibold,
+        foregroundColor: Color,
+        backgroundColor: VisualHoverColorStyle,
+        hoverEmphasis: VisualHoverEmphasisStyle = .none
+    ) {
+        self.size = size
+        self.iconFontSize = iconFontSize
+        self.chevronFontSize = chevronFontSize
+        self.iconSpacing = iconSpacing
+        self.fontWeight = fontWeight
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
+        self.hoverEmphasis = hoverEmphasis
+    }
+}
+
 struct VisualSelectableIconStyle {
     let size: CGSize
     let fontSize: CGFloat

@@ -238,3 +238,45 @@ struct VisualSelectableIconButton<ShapeType: Shape>: View {
         .frame(width: size.width, height: size.height)
     }
 }
+
+struct VisualIconMenuButton<ShapeType: Shape, MenuContent: View>: View {
+    let accessibilityLabel: String
+    let systemImage: String
+    let style: VisualIconMenuStyle
+    let shape: ShapeType
+    @ViewBuilder let menuContent: () -> MenuContent
+
+    var body: some View {
+        VisualHoverState(shape: shape) { isHovering in
+            Menu {
+                menuContent()
+            } label: {
+                HStack(spacing: style.iconSpacing) {
+                    Image(systemName: systemImage)
+                        .font(.system(size: style.iconFontSize, weight: style.fontWeight))
+
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: style.chevronFontSize, weight: .bold))
+                }
+                .foregroundStyle(style.foregroundColor)
+                .frame(width: style.size.width, height: style.size.height)
+                .background(style.backgroundColor.color(isHovering: isHovering), in: shape)
+                .overlay {
+                    shape.stroke(style.hoverEmphasis.strokeColor(isHovering: isHovering), lineWidth: 1)
+                }
+                .shadow(
+                    color: style.hoverEmphasis.shadowColor(isHovering: isHovering),
+                    radius: style.hoverEmphasis.shadowRadius,
+                    y: style.hoverEmphasis.shadowYOffset
+                )
+                .visualHitArea(shape)
+            }
+            .menuIndicator(.hidden)
+            .frame(width: style.size.width, height: style.size.height)
+            .visualHitArea(shape)
+            .buttonStyle(.plain)
+            .accessibilityLabel(accessibilityLabel)
+        }
+        .frame(width: style.size.width, height: style.size.height)
+    }
+}
