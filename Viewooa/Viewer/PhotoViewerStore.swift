@@ -20,7 +20,7 @@ protocol PhotoViewerControlling: ObservableObject {
     var isSlideshowPlaying: Bool { get }
     var imageViewerConfiguration: ImageViewerContainerConfiguration { get }
 
-    func imageViewerActions(onFitZoomOutRequest: @escaping () -> Bool) -> ImageViewerContainerActions
+    func imageViewerActions() -> ImageViewerContainerActions
     func clearError()
     func clearTransientNotice(id noticeID: ViewerTransientNotice.ID)
     func toggleMetadataVisibility()
@@ -65,17 +65,6 @@ final class PhotoViewerStore: PhotoViewerControlling {
     var isCoverModeEnabled: Bool { viewerState.isCoverModeEnabled }
     var zoomMode: ZoomMode { viewerState.zoomMode }
     var isSlideshowPlaying: Bool { viewerState.isSlideshowPlaying }
-    var canShowImageBrowser: Bool {
-        !viewerState.isViewingPDF && (viewerState.index?.imageURLs.isEmpty == false)
-    }
-    var browserImageURLs: [URL] {
-        guard !viewerState.isViewingPDF, let index = viewerState.index else { return [] }
-        return index.imageURLs
-    }
-    var currentBrowserIndex: Int? {
-        guard !viewerState.isViewingPDF else { return nil }
-        return viewerState.index?.currentIndex
-    }
     var initialOpenBrowserDirectory: URL {
         guard let directory = viewerState.currentImageURL?.deletingLastPathComponent() else {
             return FileManager.default.homeDirectoryForCurrentUser
@@ -105,7 +94,7 @@ final class PhotoViewerStore: PhotoViewerControlling {
         )
     }
 
-    func imageViewerActions(onFitZoomOutRequest: @escaping () -> Bool) -> ImageViewerContainerActions {
+    func imageViewerActions() -> ImageViewerContainerActions {
         ImageViewerContainerActions(
             onZoomModeChange: setZoomMode,
             onViewportMetricsChange: updateViewportMetrics,
@@ -114,8 +103,7 @@ final class PhotoViewerStore: PhotoViewerControlling {
             onNavigationHoldChange: setNavigationHoldIndicatorVisible,
             onPostProcessingToggle: togglePostProcessing,
             onPostProcessingClear: clearPostProcessing,
-            onVerticalSlideshowReachedEnd: stopSlideshow,
-            onFitZoomOutRequest: onFitZoomOutRequest
+            onVerticalSlideshowReachedEnd: stopSlideshow
         )
     }
 
@@ -205,14 +193,6 @@ final class PhotoViewerStore: PhotoViewerControlling {
 
     func toggleActualSize() {
         viewerState.toggleActualSize()
-    }
-
-    func selectImageFromBrowser(at selectedIndex: Int) {
-        guard let index = viewerState.index,
-              !viewerState.isViewingPDF,
-              index.imageURLs.indices.contains(selectedIndex) else { return }
-
-        viewerState.apply(index: FolderImageIndex(imageURLs: index.imageURLs, currentIndex: selectedIndex))
     }
 
     private func setZoomMode(_ zoomMode: ZoomMode) {

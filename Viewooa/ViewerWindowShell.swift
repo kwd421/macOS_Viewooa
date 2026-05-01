@@ -11,16 +11,12 @@ struct ViewerWindowShell: View {
                 store: bridge.photoViewerStore,
                 areBrowserOverlaysVisible: bridge.areBrowserOverlaysVisible,
                 onOpenBrowser: bridge.presentOpenBrowser,
-                onZoomOut: bridge.zoomOut,
-                onFitZoomOutRequest: bridge.showImageBrowser
+                onZoomOut: bridge.zoomOut
             )
             .ignoresSafeArea()
 
             BrowserFeatureHostView(
-                isImageBrowserVisible: bridge.isImageBrowserVisible,
                 isOpenBrowserVisible: bridge.isOpenBrowserVisible,
-                imageURLs: bridge.browserImageURLs,
-                currentIndex: bridge.currentBrowserIndex,
                 initialDirectory: bridge.initialOpenBrowserDirectory,
                 displayMode: Binding(
                     get: { bridge.browserDisplayMode },
@@ -30,9 +26,7 @@ struct ViewerWindowShell: View {
                     get: { bridge.browserThumbnailSize },
                     set: { bridge.setBrowserThumbnailSize($0) }
                 ),
-                onSelectImage: bridge.selectImageFromBrowser,
                 onOpen: bridge.openSelectionFromBrowser,
-                onDismissImageBrowser: bridge.hideImageBrowser,
                 onDismissOpenBrowser: bridge.hideOpenBrowser
             )
         }

@@ -149,17 +149,12 @@ final class ImageViewerNSViewTests: XCTestCase {
     }
 
     @MainActor
-    func testCommandWheelZoomOutFromFitCanOpenImageBrowserInsteadOfZooming() {
+    func testCommandWheelZoomOutFromFitZoomsWithoutOpeningBrowser() {
         let viewer = ImageViewerNSView()
         viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
         let image = NSImage(size: NSSize(width: 200, height: 200))
-        var didRequestBrowser = false
         var reportedZoomMode: ZoomMode?
 
-        viewer.onFitZoomOutRequest = {
-            didRequestBrowser = true
-            return true
-        }
         viewer.onZoomModeChange = { zoomMode in
             reportedZoomMode = zoomMode
         }
@@ -172,22 +167,16 @@ final class ImageViewerNSViewTests: XCTestCase {
         viewer.layoutSubtreeIfNeeded()
 
         XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: -12, horizontalDelta: 0))
-        XCTAssertTrue(didRequestBrowser)
-        XCTAssertNil(reportedZoomMode)
+        XCTAssertNotNil(reportedZoomMode)
     }
 
     @MainActor
-    func testCommandWheelZoomOutStartedAboveFitSnapsBackWithoutOpeningBrowser() async {
+    func testCommandWheelZoomOutStartedAboveFitSnapsBackToFit() async {
         let viewer = ImageViewerNSView()
         viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
         let image = NSImage(size: NSSize(width: 200, height: 200))
-        var didRequestBrowser = false
         var reportedZoomModes: [ZoomMode] = []
 
-        viewer.onFitZoomOutRequest = {
-            didRequestBrowser = true
-            return true
-        }
         viewer.onZoomModeChange = { zoomMode in
             reportedZoomModes.append(zoomMode)
         }
@@ -203,21 +192,15 @@ final class ImageViewerNSViewTests: XCTestCase {
         XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: 0, horizontalDelta: 0, phase: .ended))
         try? await Task.sleep(for: .milliseconds(360))
 
-        XCTAssertFalse(didRequestBrowser)
         XCTAssertEqual(reportedZoomModes.last, .fit(.all))
     }
 
     @MainActor
-    func testCommandWheelZoomGestureStartedByZoomInDoesNotOpenBrowserWhenReversedAtFit() {
+    func testCommandWheelZoomGestureCanReverseAtFitWithoutOverlayRouting() {
         let viewer = ImageViewerNSView()
         viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
         let image = NSImage(size: NSSize(width: 200, height: 200))
-        var didRequestBrowser = false
 
-        viewer.onFitZoomOutRequest = {
-            didRequestBrowser = true
-            return true
-        }
         viewer.apply(
             resolvedImage: image,
             imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
@@ -229,8 +212,6 @@ final class ImageViewerNSViewTests: XCTestCase {
         XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: 12, horizontalDelta: 0, phase: .began))
         XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: -32, horizontalDelta: 0, phase: .changed))
         XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: 0, horizontalDelta: 0, phase: .ended))
-
-        XCTAssertFalse(didRequestBrowser)
     }
 
     @MainActor

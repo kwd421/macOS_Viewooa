@@ -137,10 +137,6 @@ extension ImageViewerNSView {
             currentMagnification: scrollView.magnification,
             minimumMagnification: scrollView.minMagnification,
             maximumMagnification: scrollView.maxMagnification,
-            isCurrentlyFit: viewportState.zoomMode.isFit,
-            requestFitZoomOut: { [weak self] in
-                self?.onFitZoomOutRequest?() == true
-            },
             applyMagnification: { [weak self] magnification, locationInWindow in
                 self?.handleAnchoredMagnificationChange(magnification, locationInWindow: locationInWindow)
             },
@@ -169,10 +165,6 @@ extension ImageViewerNSView {
             currentMagnification: scrollView.magnification,
             minimumMagnification: scrollView.minMagnification,
             maximumMagnification: scrollView.maxMagnification,
-            isCurrentlyFit: viewportState.zoomMode.isFit,
-            requestFitZoomOut: { [weak self] in
-                self?.onFitZoomOutRequest?() == true
-            },
             applyMagnification: { [weak self] magnification, locationInWindow in
                 if let locationInWindow {
                     self?.handleAnchoredMagnificationChange(magnification, locationInWindow: locationInWindow)

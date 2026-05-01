@@ -234,7 +234,7 @@ struct OpenBrowserItemPreview: View {
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .fill(Color.openBrowserControlFill)
 
-                ImageBrowserThumbnail(url: entry.url, targetPixelSize: targetPixelSize)
+                BrowserThumbnail(url: entry.url, targetPixelSize: targetPixelSize)
             }
         }
     }

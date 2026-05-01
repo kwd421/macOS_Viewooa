@@ -14,8 +14,7 @@ struct PhotoViewerStandaloneApp: App {
                     store: store,
                     areBrowserOverlaysVisible: false,
                     onOpenBrowser: openFileOrFolder,
-                    onZoomOut: store.zoomOut,
-                    onFitZoomOutRequest: { false }
+                    onZoomOut: store.zoomOut
                 )
                 .ignoresSafeArea()
             }

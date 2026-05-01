@@ -124,7 +124,7 @@ extension OpenBrowserOverlay {
         preferences.saveThumbnailSize(value)
     }
 
-    func handleDisplayModeChange(_ value: ImageBrowserDisplayMode) {
+    func handleDisplayModeChange(_ value: BrowserDisplayMode) {
         preferences.saveDisplayMode(value)
     }
 

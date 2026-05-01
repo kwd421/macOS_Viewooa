@@ -23,7 +23,6 @@ struct ImageViewerContainerActions {
     let onPostProcessingToggle: (ImagePostProcessingOption) -> Void
     let onPostProcessingClear: () -> Void
     let onVerticalSlideshowReachedEnd: () -> Void
-    let onFitZoomOutRequest: () -> Bool
 }
 
 struct ImageViewerContainerView: NSViewRepresentable {
@@ -62,6 +61,5 @@ struct ImageViewerContainerView: NSViewRepresentable {
         nsView.onPostProcessingToggle = actions.onPostProcessingToggle
         nsView.onPostProcessingClear = actions.onPostProcessingClear
         nsView.onVerticalSlideshowReachedEnd = actions.onVerticalSlideshowReachedEnd
-        nsView.onFitZoomOutRequest = actions.onFitZoomOutRequest
     }
 }

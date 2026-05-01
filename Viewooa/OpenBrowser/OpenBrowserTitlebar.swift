@@ -13,7 +13,7 @@ struct OpenBrowserTitlebar: View {
     let openBrowserGridHorizontalPadding: CGFloat
     @Binding var isSidebarVisible: Bool
     @Binding var thumbnailSize: CGFloat
-    @Binding var displayMode: ImageBrowserDisplayMode
+    @Binding var displayMode: BrowserDisplayMode
     @Binding var sortOption: OpenBrowserSortOption
     @Binding var sortAscending: Bool
     @Binding var searchText: String

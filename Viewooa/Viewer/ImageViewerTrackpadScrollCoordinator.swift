@@ -7,15 +7,10 @@ enum ImageViewerScrollHandlingResult: Equatable {
 }
 
 final class ImageViewerTrackpadScrollCoordinator {
-    private struct MagnifyGesture {
-        let startedAtFit: Bool
-        var firstSignificantDelta: CGFloat?
-    }
-
     private var hasNavigatedDuringCurrentGesture = false
     private var accumulatedHorizontalDelta: CGFloat = 0
     private var accumulatedVerticalDelta: CGFloat = 0
-    private var magnifyGesture: MagnifyGesture?
+    private var isMagnifyGestureActive = false
 
     private static let significantMagnifyDelta: CGFloat = 0.01
 
@@ -30,27 +25,17 @@ final class ImageViewerTrackpadScrollCoordinator {
         currentMagnification: CGFloat,
         minimumMagnification: CGFloat,
         maximumMagnification: CGFloat,
-        isCurrentlyFit: Bool,
-        requestFitZoomOut: () -> Bool,
         applyMagnification: (CGFloat, NSPoint) -> Void,
         finishGesture: () -> Void
     ) -> Bool {
-        beginMagnifyGestureIfNeeded(phase: event.phase, startedAtFit: isCurrentlyFit)
+        beginMagnifyGestureIfNeeded(phase: event.phase)
         let isEndingGesture = ImageViewerNSView.isEndingMagnifyGesture(phase: event.phase)
-        guard abs(event.magnification) >= Self.significantMagnifyDelta else {
+        guard Self.isSignificantMagnifyDelta(event.magnification) else {
             if isEndingGesture {
                 finishGesture()
                 resetMagnifyGesture()
             }
 
-            return true
-        }
-
-        recordFirstSignificantMagnifyDeltaIfNeeded(event.magnification)
-
-        if shouldRouteFitZoomOutToBrowser(magnificationDelta: event.magnification, isCurrentlyFit: isCurrentlyFit),
-           requestFitZoomOut() {
-            resetMagnifyGesture()
             return true
         }
 
@@ -71,36 +56,10 @@ final class ImageViewerTrackpadScrollCoordinator {
         return true
     }
 
-    private func beginMagnifyGestureIfNeeded(phase: NSEvent.Phase, startedAtFit: Bool) {
-        if phase.contains(.began) || phase.contains(.mayBegin) || magnifyGesture == nil {
-            magnifyGesture = MagnifyGesture(startedAtFit: startedAtFit, firstSignificantDelta: nil)
+    private func beginMagnifyGestureIfNeeded(phase: NSEvent.Phase) {
+        if phase.contains(.began) || phase.contains(.mayBegin) || !isMagnifyGestureActive {
+            isMagnifyGestureActive = true
         }
-    }
-
-    private func recordFirstSignificantMagnifyDeltaIfNeeded(_ delta: CGFloat) {
-        guard magnifyGesture?.firstSignificantDelta == nil else { return }
-        magnifyGesture?.firstSignificantDelta = delta
-    }
-
-    private func shouldRouteFitZoomOutToBrowser(magnificationDelta: CGFloat, isCurrentlyFit: Bool) -> Bool {
-        Self.shouldRouteFitZoomOutToBrowser(
-            magnificationDelta: magnificationDelta,
-            startedAtFit: magnifyGesture?.startedAtFit == true,
-            firstSignificantDelta: magnifyGesture?.firstSignificantDelta,
-            isCurrentlyFit: isCurrentlyFit
-        )
-    }
-
-    static func shouldRouteFitZoomOutToBrowser(
-        magnificationDelta: CGFloat,
-        startedAtFit: Bool,
-        firstSignificantDelta: CGFloat?,
-        isCurrentlyFit: Bool
-    ) -> Bool {
-        magnificationDelta < 0
-            && startedAtFit
-            && firstSignificantDelta.map { $0 < 0 } == true
-            && isCurrentlyFit
     }
 
     static func isSignificantMagnifyDelta(_ delta: CGFloat) -> Bool {
@@ -108,7 +67,7 @@ final class ImageViewerTrackpadScrollCoordinator {
     }
 
     private func resetMagnifyGesture() {
-        magnifyGesture = nil
+        isMagnifyGestureActive = false
     }
 
     func handlingResult(

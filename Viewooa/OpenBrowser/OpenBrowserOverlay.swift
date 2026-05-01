@@ -3,7 +3,7 @@ import AppKit
 
 struct OpenBrowserOverlay: View {
     let initialDirectory: URL
-    @Binding var displayMode: ImageBrowserDisplayMode
+    @Binding var displayMode: BrowserDisplayMode
     @Binding var thumbnailSize: CGFloat
     let onOpen: (URL) -> Void
     let onDismiss: () -> Void
@@ -39,7 +39,7 @@ struct OpenBrowserOverlay: View {
 
     init(
         initialDirectory: URL,
-        displayMode: Binding<ImageBrowserDisplayMode>,
+        displayMode: Binding<BrowserDisplayMode>,
         thumbnailSize: Binding<CGFloat>,
         onOpen: @escaping (URL) -> Void,
         onDismiss: @escaping () -> Void

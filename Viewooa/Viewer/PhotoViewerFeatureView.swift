@@ -12,7 +12,6 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
     let areBrowserOverlaysVisible: Bool
     let onOpenBrowser: () -> Void
     let onZoomOut: () -> Void
-    let onFitZoomOutRequest: () -> Bool
 
     @AppStorage("viewer.bottomControlBarPinned") private var isControlBarPinned = true
     @State private var isHoveringControlRevealArea = false
@@ -25,7 +24,7 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
         ZStack {
             ImageViewerContainerView(
                 configuration: store.imageViewerConfiguration,
-                actions: store.imageViewerActions(onFitZoomOutRequest: onFitZoomOutRequest)
+                actions: store.imageViewerActions()
             )
 
             if hasImage, !areBrowserOverlaysVisible {

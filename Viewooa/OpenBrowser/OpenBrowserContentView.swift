@@ -3,7 +3,7 @@ import SwiftUI
 struct OpenBrowserContentView: View {
     let entries: [OpenBrowserEntry]
     let searchText: String
-    let displayMode: ImageBrowserDisplayMode
+    let displayMode: BrowserDisplayMode
     let thumbnailSize: CGFloat
     let selection: OpenBrowserSelectionState
     let favoriteFileIDs: Set<String>

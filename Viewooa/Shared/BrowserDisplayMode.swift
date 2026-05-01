@@ -1,6 +1,6 @@
 import Foundation
 
-enum ImageBrowserDisplayMode: String, CaseIterable, Equatable, Identifiable {
+enum BrowserDisplayMode: String, CaseIterable, Equatable, Identifiable {
     case thumbnails
     case list
 

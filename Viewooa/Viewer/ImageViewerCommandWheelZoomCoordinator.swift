@@ -1,32 +1,15 @@
 import AppKit
 
 final class ImageViewerCommandWheelZoomCoordinator {
-    private struct Gesture {
-        let startedAtFit: Bool
-        var firstSignificantDelta: CGFloat?
-    }
-
-    private var gesture: Gesture?
+    private var isGestureActive = false
     private var endWorkItem: DispatchWorkItem?
     private var endToken = UUID()
 
-    func beginIfNeeded(phase: NSEvent.Phase, startedAtFit: Bool) {
-        if phase.contains(.began) || phase.contains(.mayBegin) || gesture == nil {
+    func beginIfNeeded(phase: NSEvent.Phase) {
+        if phase.contains(.began) || phase.contains(.mayBegin) || !isGestureActive {
             reset()
-            gesture = Gesture(startedAtFit: startedAtFit, firstSignificantDelta: nil)
+            isGestureActive = true
         }
-    }
-
-    func recordFirstSignificantDeltaIfNeeded(_ delta: CGFloat) {
-        guard gesture?.firstSignificantDelta == nil else { return }
-        gesture?.firstSignificantDelta = delta
-    }
-
-    func shouldRouteZoomOutToBrowser(zoomDelta: CGFloat, isCurrentlyFit: Bool) -> Bool {
-        zoomDelta < 0
-            && gesture?.startedAtFit == true
-            && gesture?.firstSignificantDelta.map { $0 < 0 } == true
-            && isCurrentlyFit
     }
 
     @MainActor
@@ -40,12 +23,10 @@ final class ImageViewerCommandWheelZoomCoordinator {
         currentMagnification: CGFloat,
         minimumMagnification: CGFloat,
         maximumMagnification: CGFloat,
-        isCurrentlyFit: Bool,
-        requestFitZoomOut: () -> Bool,
         applyMagnification: (CGFloat, NSPoint?) -> Void,
         finishGesture: @escaping () -> Void
     ) -> Bool {
-        beginIfNeeded(phase: phase, startedAtFit: isCurrentlyFit)
+        beginIfNeeded(phase: phase)
         let isEndingGesture = ImageViewerNSView.isEndingScrollGesture(
             phase: phase,
             momentumPhase: momentumPhase
@@ -55,14 +36,6 @@ final class ImageViewerCommandWheelZoomCoordinator {
             if isEndingGesture {
                 finishGesture()
             }
-            return true
-        }
-
-        recordFirstSignificantDeltaIfNeeded(zoomDelta)
-
-        if shouldRouteZoomOutToBrowser(zoomDelta: zoomDelta, isCurrentlyFit: isCurrentlyFit),
-           requestFitZoomOut() {
-            reset()
             return true
         }
 
@@ -85,7 +58,7 @@ final class ImageViewerCommandWheelZoomCoordinator {
 
     @discardableResult
     func finish() -> Bool {
-        let hadGesture = gesture != nil
+        let hadGesture = isGestureActive
         reset()
         return hadGesture
     }
@@ -106,6 +79,6 @@ final class ImageViewerCommandWheelZoomCoordinator {
         endWorkItem?.cancel()
         endWorkItem = nil
         endToken = UUID()
-        gesture = nil
+        isGestureActive = false
     }
 }

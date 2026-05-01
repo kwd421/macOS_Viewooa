@@ -33,15 +33,15 @@ struct OpenBrowserPreferences {
         Set(defaults.stringArray(forKey: Self.favoriteFilesKey) ?? [])
     }
 
-    var displayMode: ImageBrowserDisplayMode? {
+    var displayMode: BrowserDisplayMode? {
         guard let rawValue = defaults.string(forKey: Self.displayModeKey) else { return nil }
-        return ImageBrowserDisplayMode(rawValue: rawValue)
+        return BrowserDisplayMode(rawValue: rawValue)
     }
 
     var thumbnailSize: CGFloat? {
         let savedSize = defaults.double(forKey: Self.thumbnailSizeKey)
         guard savedSize > 0 else { return nil }
-        return ImageBrowserThumbnailSizing.clamped(CGFloat(savedSize))
+        return BrowserThumbnailSizing.clamped(CGFloat(savedSize))
     }
 
     func sidebarStore() -> OpenBrowserSidebarStore {
@@ -76,7 +76,7 @@ struct OpenBrowserPreferences {
         defaults.set(Array(ids), forKey: Self.favoriteFilesKey)
     }
 
-    func saveDisplayMode(_ mode: ImageBrowserDisplayMode) {
+    func saveDisplayMode(_ mode: BrowserDisplayMode) {
         defaults.set(mode.rawValue, forKey: Self.displayModeKey)
     }
 

@@ -3,19 +3,19 @@ import AppKit
 import ImageIO
 import QuickLookThumbnailing
 
-struct ImageBrowserThumbnail: View {
+struct BrowserThumbnail: View {
     let url: URL
     let targetPixelSize: CGFloat
     @State private var image: NSImage?
 
     private var requestedPixelSize: CGFloat {
-        ImageBrowserThumbnailCache.normalizedPixelSize(targetPixelSize)
+        BrowserThumbnailCache.normalizedPixelSize(targetPixelSize)
     }
 
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 7, style: .continuous)
-                .fill(VisualInteractionPalette.imageBrowserPreviewFill)
+                .fill(VisualInteractionPalette.thumbnailPreviewFill)
 
             if let image {
                 Image(nsImage: image)
@@ -24,12 +24,12 @@ struct ImageBrowserThumbnail: View {
             } else {
                 Image(systemName: "photo")
                     .font(.system(size: 22, weight: .medium))
-                    .foregroundStyle(VisualInteractionPalette.imageBrowserPreviewPlaceholder)
+                    .foregroundStyle(VisualInteractionPalette.thumbnailPreviewPlaceholder)
             }
         }
         .clipped()
         .task(id: "\(url.path)-\(Int(requestedPixelSize))") {
-            image = await ImageBrowserThumbnailCache.shared.image(
+            image = await BrowserThumbnailCache.shared.image(
                 for: url,
                 targetPixelSize: requestedPixelSize
             )
@@ -37,11 +37,11 @@ struct ImageBrowserThumbnail: View {
     }
 }
 
-private final class ImageBrowserThumbnailCache: @unchecked Sendable {
-    static let shared = ImageBrowserThumbnailCache()
+private final class BrowserThumbnailCache: @unchecked Sendable {
+    static let shared = BrowserThumbnailCache()
 
     private let cache = NSCache<NSString, NSImage>()
-    private let renderQueue = DispatchQueue(label: "com.seinel.Viewooa.ImageBrowserThumbnailCache", qos: .utility)
+    private let renderQueue = DispatchQueue(label: "com.seinel.Viewooa.BrowserThumbnailCache", qos: .utility)
     private let renderLimiter = DispatchSemaphore(value: 2)
 
     private init() {

@@ -229,12 +229,12 @@ private struct OpenBrowserToolbarIconMenu<MenuContent: View>: View {
 }
 
 struct OpenBrowserViewModeControl: View {
-    @Binding var displayMode: ImageBrowserDisplayMode
+    @Binding var displayMode: BrowserDisplayMode
     var isVibrant = false
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(ImageBrowserDisplayMode.allCases) { displayModeOption in
+            ForEach(BrowserDisplayMode.allCases) { displayModeOption in
                 modeButton(for: displayModeOption)
             }
         }
@@ -246,7 +246,7 @@ struct OpenBrowserViewModeControl: View {
         .visualHitArea(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
-    private func modeButton(for displayModeOption: ImageBrowserDisplayMode) -> some View {
+    private func modeButton(for displayModeOption: BrowserDisplayMode) -> some View {
         let shape = RoundedRectangle(cornerRadius: isVibrant ? 15 : 6, style: .continuous)
 
         return VisualSelectableIconButton(

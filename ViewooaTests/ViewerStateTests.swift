@@ -387,7 +387,7 @@ final class ViewerStateTests: XCTestCase {
     }
 
     @MainActor
-    func testZoomOutFromFitWithoutImageBrowserUsesDefaultIncrement() {
+    func testZoomOutFromFitUsesDefaultIncrement() {
         let state = ViewerState()
 
         state.zoomOut()
@@ -396,7 +396,7 @@ final class ViewerStateTests: XCTestCase {
     }
 
     @MainActor
-    func testZoomOutFromFitWithoutImageBrowserUsesDisplayedMagnificationAsBase() {
+    func testZoomOutFromFitUsesDisplayedMagnificationAsBase() {
         let state = ViewerState()
         state.updateViewportMetrics(displayedMagnification: 0.4, fitMagnification: 0.4, isEntireImageVisible: true)
 
@@ -406,7 +406,7 @@ final class ViewerStateTests: XCTestCase {
     }
 
     @MainActor
-    func testZoomOutFromFitWithFolderImagesShowsImageBrowser() {
+    func testBridgeZoomOutFromFitWithFolderImagesUsesViewerZoom() {
         let urls = [
             URL(fileURLWithPath: "/tmp/a.jpg"),
             URL(fileURLWithPath: "/tmp/b.jpg")
@@ -416,30 +416,12 @@ final class ViewerStateTests: XCTestCase {
 
         bridge.zoomOut()
 
-        XCTAssertTrue(bridge.isImageBrowserVisible)
-        XCTAssertEqual(state.zoomMode, .fit(.all))
+        XCTAssertFalse(bridge.areBrowserOverlaysVisible)
+        XCTAssertEqual(state.zoomMode, .custom(0.8))
     }
 
     @MainActor
-    func testSelectingImageFromBrowserUpdatesCurrentImageAndHidesBrowser() {
-        let urls = [
-            URL(fileURLWithPath: "/tmp/a.jpg"),
-            URL(fileURLWithPath: "/tmp/b.jpg"),
-            URL(fileURLWithPath: "/tmp/c.jpg")
-        ]
-        let state = ViewerState(index: FolderImageIndex(imageURLs: urls, currentIndex: 0))
-        let bridge = ViewooaBridge(viewerState: state)
-        bridge.showImageBrowser()
-
-        bridge.selectImageFromBrowser(at: 2)
-
-        XCTAssertFalse(bridge.isImageBrowserVisible)
-        XCTAssertEqual(state.index?.currentIndex, 2)
-        XCTAssertEqual(state.currentImageURL, urls[2])
-    }
-
-    @MainActor
-    func testImageBrowserThumbnailSizeClampsToFinderLikeRange() {
+    func testBrowserThumbnailSizeClampsToFinderLikeRange() {
         let bridge = ViewooaBridge()
 
         bridge.setBrowserThumbnailSize(12)

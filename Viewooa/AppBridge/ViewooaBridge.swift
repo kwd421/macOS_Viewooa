@@ -39,11 +39,6 @@ final class ViewooaBridge: ObservableObject {
     }
 
     func zoomOut() {
-        if photoViewerStore.zoomMode.isFit, canShowImageBrowser {
-            showImageBrowser()
-            return
-        }
-
         photoViewerStore.zoomOut()
     }
 
@@ -71,26 +66,7 @@ final class ViewooaBridge: ObservableObject {
         photoViewerStore.zoomToFit(mode)
     }
 
-    @discardableResult
-    func showImageBrowser() -> Bool {
-        guard canShowImageBrowser else { return false }
-        photoViewerStore.stopSlideshow()
-        photoViewerStore.hideMetadata()
-        browserOverlayStore.showImageBrowser()
-        return true
-    }
-
-    func hideImageBrowser() {
-        browserOverlayStore.hideImageBrowser()
-    }
-
-    func selectImageFromBrowser(at selectedIndex: Int) {
-        guard browserImageURLs.indices.contains(selectedIndex) else { return }
-        browserOverlayStore.hideImageBrowser()
-        photoViewerStore.selectImageFromBrowser(at: selectedIndex)
-    }
-
-    func setBrowserDisplayMode(_ mode: ImageBrowserDisplayMode) {
+    func setBrowserDisplayMode(_ mode: BrowserDisplayMode) {
         browserOverlayStore.setDisplayMode(mode)
     }
 
@@ -102,15 +78,11 @@ final class ViewooaBridge: ObservableObject {
         browserOverlayStore.isOpenBrowserVisible
     }
 
-    var isImageBrowserVisible: Bool {
-        browserOverlayStore.isImageBrowserVisible
-    }
-
     var areBrowserOverlaysVisible: Bool {
         browserOverlayStore.areOverlaysVisible
     }
 
-    var browserDisplayMode: ImageBrowserDisplayMode {
+    var browserDisplayMode: BrowserDisplayMode {
         browserOverlayStore.displayMode
     }
 
@@ -120,17 +92,5 @@ final class ViewooaBridge: ObservableObject {
 
     var initialOpenBrowserDirectory: URL {
         photoViewerStore.initialOpenBrowserDirectory
-    }
-
-    var browserImageURLs: [URL] {
-        photoViewerStore.browserImageURLs
-    }
-
-    var currentBrowserIndex: Int? {
-        photoViewerStore.currentBrowserIndex
-    }
-
-    var canShowImageBrowser: Bool {
-        photoViewerStore.canShowImageBrowser
     }
 }

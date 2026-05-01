@@ -3,7 +3,7 @@ import SwiftUI
 
 @main
 struct FinderBrowserStandaloneApp: App {
-    @State private var displayMode: ImageBrowserDisplayMode = .thumbnails
+    @State private var displayMode: BrowserDisplayMode = .thumbnails
     @State private var thumbnailSize: CGFloat = 132
     @State private var initialDirectory = FileManager.default.homeDirectoryForCurrentUser
 

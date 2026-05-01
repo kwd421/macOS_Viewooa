@@ -3,16 +3,14 @@ import Foundation
 @MainActor
 final class BrowserOverlayStore: ObservableObject {
     @Published private(set) var isOpenBrowserVisible = false
-    @Published private(set) var isImageBrowserVisible = false
-    @Published private(set) var displayMode: ImageBrowserDisplayMode = .thumbnails
-    @Published private(set) var thumbnailSize: CGFloat = ImageBrowserThumbnailSizing.defaultSize
+    @Published private(set) var displayMode: BrowserDisplayMode = .thumbnails
+    @Published private(set) var thumbnailSize: CGFloat = BrowserThumbnailSizing.defaultSize
 
     var areOverlaysVisible: Bool {
-        isOpenBrowserVisible || isImageBrowserVisible
+        isOpenBrowserVisible
     }
 
     func showOpenBrowser() {
-        isImageBrowserVisible = false
         isOpenBrowserVisible = true
     }
 
@@ -20,20 +18,11 @@ final class BrowserOverlayStore: ObservableObject {
         isOpenBrowserVisible = false
     }
 
-    func showImageBrowser() {
-        isOpenBrowserVisible = false
-        isImageBrowserVisible = true
-    }
-
-    func hideImageBrowser() {
-        isImageBrowserVisible = false
-    }
-
-    func setDisplayMode(_ mode: ImageBrowserDisplayMode) {
+    func setDisplayMode(_ mode: BrowserDisplayMode) {
         displayMode = mode
     }
 
     func setThumbnailSize(_ size: CGFloat) {
-        thumbnailSize = ImageBrowserThumbnailSizing.clamped(size)
+        thumbnailSize = BrowserThumbnailSizing.clamped(size)
     }
 }

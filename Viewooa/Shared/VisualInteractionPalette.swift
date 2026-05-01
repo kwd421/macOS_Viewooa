@@ -172,23 +172,8 @@ enum VisualInteractionPalette {
         hover: platformControlFill.opacity(1.25)
     )
 
-    static let imageBrowserOverlayScrim = Color.black.opacity(0.34)
-    static let imageBrowserDivider = Color.white.opacity(0.16)
-    static let imageBrowserControlFill = Color.white.opacity(0.10)
-    static let imageBrowserPreviewFill = Color.white.opacity(0.08)
-    static let imageBrowserPreviewPlaceholder = Color.white.opacity(0.36)
-    static let imageBrowserPreviewBorder = Color.white.opacity(0.14)
-    static let imageBrowserSecondaryText = Color.white.opacity(0.58)
-    static let imageBrowserBodyText = Color.white.opacity(0.74)
-    static let imageBrowserMutedText = Color.white.opacity(0.54)
-    static let imageBrowserIndexText = Color.white.opacity(0.52)
-    static let imageBrowserPreviewShadow = Color.black.opacity(0.24)
-    static let imageBrowserSelectedPreviewShadow = Color.black.opacity(0.42)
-
-    static let imageBrowserCloseButtonBackground = VisualHoverColorStyle(
-        normal: Color.white.opacity(0.12),
-        hover: Color.white.opacity(0.28)
-    )
+    static let thumbnailPreviewFill = Color.white.opacity(0.08)
+    static let thumbnailPreviewPlaceholder = Color.white.opacity(0.36)
 
     static let viewerOverlayCardBorder = Color.white.opacity(0.08)
     static let verticalPreviewBackground = Color.white.opacity(0.08)

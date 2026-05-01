@@ -21,14 +21,11 @@ final class ViewerFeatureBoundaryTests: XCTestCase {
 
     @MainActor
     func testBrowserFeatureHostDoesNotRequireBridge() {
-        var displayMode = ImageBrowserDisplayMode.thumbnails
+        var displayMode = BrowserDisplayMode.thumbnails
         var thumbnailSize: CGFloat = 132
 
         _ = BrowserFeatureHostView(
-            isImageBrowserVisible: false,
             isOpenBrowserVisible: false,
-            imageURLs: [],
-            currentIndex: nil,
             initialDirectory: FileManager.default.homeDirectoryForCurrentUser,
             displayMode: Binding(
                 get: { displayMode },
@@ -38,9 +35,7 @@ final class ViewerFeatureBoundaryTests: XCTestCase {
                 get: { thumbnailSize },
                 set: { thumbnailSize = $0 }
             ),
-            onSelectImage: { _ in },
             onOpen: { _ in },
-            onDismissImageBrowser: {},
             onDismissOpenBrowser: {}
         )
     }
@@ -68,8 +63,7 @@ final class ViewerFeatureBoundaryTests: XCTestCase {
                 onNavigationHoldChange: { _ in },
                 onPostProcessingToggle: { _ in },
                 onPostProcessingClear: {},
-                onVerticalSlideshowReachedEnd: {},
-                onFitZoomOutRequest: { false }
+                onVerticalSlideshowReachedEnd: {}
             )
         )
     }
@@ -82,8 +76,7 @@ final class ViewerFeatureBoundaryTests: XCTestCase {
             store: store,
             areBrowserOverlaysVisible: false,
             onOpenBrowser: {},
-            onZoomOut: {},
-            onFitZoomOutRequest: { false }
+            onZoomOut: {}
         )
     }
 
@@ -109,11 +102,6 @@ final class ViewerFeatureBoundaryTests: XCTestCase {
 
         store.showOpenBrowser()
         XCTAssertTrue(store.isOpenBrowserVisible)
-        XCTAssertFalse(store.isImageBrowserVisible)
-
-        store.showImageBrowser()
-        XCTAssertFalse(store.isOpenBrowserVisible)
-        XCTAssertTrue(store.isImageBrowserVisible)
 
         store.setThumbnailSize(12)
         XCTAssertEqual(store.thumbnailSize, 72)

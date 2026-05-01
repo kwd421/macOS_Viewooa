@@ -328,45 +328,9 @@ final class ImageViewerNSViewInputLayoutTests: XCTestCase {
     }
 
     @MainActor
-    func testTinyPinchNoiseDoesNotCountAsSignificantFitZoomOut() {
+    func testTinyPinchNoiseDoesNotCountAsSignificantMagnifyDelta() {
         XCTAssertFalse(ImageViewerTrackpadScrollCoordinator.isSignificantMagnifyDelta(-0.001))
         XCTAssertTrue(ImageViewerTrackpadScrollCoordinator.isSignificantMagnifyDelta(-0.02))
-        XCTAssertFalse(
-            ImageViewerTrackpadScrollCoordinator.shouldRouteFitZoomOutToBrowser(
-                magnificationDelta: -0.001,
-                startedAtFit: true,
-                firstSignificantDelta: nil,
-                isCurrentlyFit: true
-            )
-        )
-    }
-
-    @MainActor
-    func testPinchZoomOutRoutesToBrowserOnlyWhenGestureStartsAtFit() {
-        XCTAssertTrue(
-            ImageViewerTrackpadScrollCoordinator.shouldRouteFitZoomOutToBrowser(
-                magnificationDelta: -0.02,
-                startedAtFit: true,
-                firstSignificantDelta: -0.02,
-                isCurrentlyFit: true
-            )
-        )
-        XCTAssertFalse(
-            ImageViewerTrackpadScrollCoordinator.shouldRouteFitZoomOutToBrowser(
-                magnificationDelta: -0.02,
-                startedAtFit: false,
-                firstSignificantDelta: -0.02,
-                isCurrentlyFit: true
-            )
-        )
-        XCTAssertFalse(
-            ImageViewerTrackpadScrollCoordinator.shouldRouteFitZoomOutToBrowser(
-                magnificationDelta: -0.02,
-                startedAtFit: true,
-                firstSignificantDelta: 0.02,
-                isCurrentlyFit: true
-            )
-        )
     }
 
     @MainActor

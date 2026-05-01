@@ -23,7 +23,7 @@ final class OpenBrowserPreferencesTests: XCTestCase {
         XCTAssertFalse(preferences.sortAscending)
         XCTAssertEqual(preferences.favoriteFileIDs, ["/tmp/a.jpg", "/tmp/b.jpg"])
         XCTAssertEqual(preferences.displayMode, .list)
-        XCTAssertEqual(preferences.thumbnailSize, ImageBrowserThumbnailSizing.maximumSize)
+        XCTAssertEqual(preferences.thumbnailSize, BrowserThumbnailSizing.maximumSize)
     }
 
     func testSidebarWidthMigratesPreviousDefaultToCurrentDefault() {

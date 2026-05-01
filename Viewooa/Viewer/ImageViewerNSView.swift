@@ -40,7 +40,6 @@ final class ImageViewerNSView: NSView {
     var onPostProcessingToggle: ((ImagePostProcessingOption) -> Void)?
     var onPostProcessingClear: (() -> Void)?
     var onVerticalSlideshowReachedEnd: (() -> Void)?
-    var onFitZoomOutRequest: (() -> Bool)?
     var displayedImage: NSImage? { imageStack.displayedImage }
     var displayedImageSize: NSSize {
         viewportPresenter.displayedContentSize(pageLayout: viewportState.pageLayout)
