@@ -1,5 +1,7 @@
 # Viewooa
 
+[한국어 README](README.ko.md)
+
 Viewooa is a native macOS image viewer with a built-in visual file browser. It is designed for fast photo viewing, quiet controls, and an Apple-like browsing experience that keeps the image first.
 
 ![Viewooa viewer](docs/assets/viewooa-viewer.png)
