@@ -1,24 +1,37 @@
 import SwiftUI
 
+enum ImageBrowserThumbnailSizing {
+    static let minimumSize: CGFloat = 72
+    static let defaultSize: CGFloat = 132
+    static let maximumSize: CGFloat = 220
+    static let step: CGFloat = 18
+    static let gridSpacing: CGFloat = 18
+    static let minimumMeaningfulStep: CGFloat = 18
+
+    static var range: ClosedRange<CGFloat> {
+        minimumSize...maximumSize
+    }
+
+    static func clamped(_ size: CGFloat) -> CGFloat {
+        min(max(size, minimumSize), maximumSize)
+    }
+}
+
 struct ThumbnailSizeStepperControl: View {
     @Binding var thumbnailSize: CGFloat
     let isVibrant: Bool
     var availableWidth: CGFloat? = nil
     var onWillChange: (() -> Void)? = nil
 
-    private let range: ClosedRange<CGFloat> = 72...220
-    private let step: CGFloat = 18
-    private let gridSpacing: CGFloat = 18
-    private let minimumMeaningfulStep: CGFloat = 18
     var body: some View {
         HStack(spacing: 0) {
-            stepButton(systemImage: "minus", delta: -step, isDisabled: !canStep(delta: -step))
+            stepButton(systemImage: "minus", delta: -ImageBrowserThumbnailSizing.step, isDisabled: !canStep(delta: -ImageBrowserThumbnailSizing.step))
 
             Rectangle()
                 .fill(separatorColor)
                 .frame(width: 1, height: 15)
 
-            stepButton(systemImage: "plus", delta: step, isDisabled: !canStep(delta: step))
+            stepButton(systemImage: "plus", delta: ImageBrowserThumbnailSizing.step, isDisabled: !canStep(delta: ImageBrowserThumbnailSizing.step))
         }
         .frame(height: isVibrant ? 30 : 34)
         .background {
@@ -69,31 +82,27 @@ struct ThumbnailSizeStepperControl: View {
     }
 
     private func nextThumbnailSize(delta: CGFloat) -> CGFloat {
-        guard let availableWidth, availableWidth > range.lowerBound else {
-            return clamped(thumbnailSize + delta)
+        guard let availableWidth, availableWidth > ImageBrowserThumbnailSizing.minimumSize else {
+            return ImageBrowserThumbnailSizing.clamped(thumbnailSize + delta)
         }
 
         let currentColumns = columnCount(for: thumbnailSize, availableWidth: availableWidth)
         let targetColumns = delta > 0 ? max(1, currentColumns - 1) : currentColumns + 1
-        let targetSize = (availableWidth - gridSpacing * CGFloat(max(targetColumns - 1, 0))) / CGFloat(targetColumns)
-        let clampedTargetSize = clamped(targetSize)
+        let targetSize = (availableWidth - ImageBrowserThumbnailSizing.gridSpacing * CGFloat(max(targetColumns - 1, 0))) / CGFloat(targetColumns)
+        let clampedTargetSize = ImageBrowserThumbnailSizing.clamped(targetSize)
 
-        guard abs(clampedTargetSize - thumbnailSize) >= minimumMeaningfulStep else {
+        guard abs(clampedTargetSize - thumbnailSize) >= ImageBrowserThumbnailSizing.minimumMeaningfulStep else {
             return thumbnailSize
         }
 
-        return clampedTargetSize
+        return ImageBrowserThumbnailSizing.clamped(clampedTargetSize)
     }
 
     private func canStep(delta: CGFloat) -> Bool {
-        abs(nextThumbnailSize(delta: delta) - thumbnailSize) >= minimumMeaningfulStep
+        abs(nextThumbnailSize(delta: delta) - thumbnailSize) >= ImageBrowserThumbnailSizing.minimumMeaningfulStep
     }
 
     private func columnCount(for size: CGFloat, availableWidth: CGFloat) -> Int {
-        max(1, Int(floor((availableWidth + gridSpacing) / (size + gridSpacing))))
-    }
-
-    private func clamped(_ size: CGFloat) -> CGFloat {
-        min(max(size, range.lowerBound), range.upperBound)
+        max(1, Int(floor((availableWidth + ImageBrowserThumbnailSizing.gridSpacing) / (size + ImageBrowserThumbnailSizing.gridSpacing))))
     }
 }

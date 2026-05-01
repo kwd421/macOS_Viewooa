@@ -60,10 +60,10 @@ struct OpenBrowserSelectionState {
         let visibleIDs = Set(entries.map(\.id))
         selectedEntryIDs = selectedEntryIDs.intersection(visibleIDs)
         if let focusedEntryID, !visibleIDs.contains(focusedEntryID) {
-            self.focusedEntryID = selectedEntryIDs.first
+            self.focusedEntryID = entries.last { selectedEntryIDs.contains($0.id) }?.id
         }
         if let anchorEntryID, !visibleIDs.contains(anchorEntryID) {
-            self.anchorEntryID = selectedEntryIDs.first
+            self.anchorEntryID = entries.first { selectedEntryIDs.contains($0.id) }?.id
         }
     }
 

@@ -14,7 +14,7 @@ final class OpenBrowserPreferencesTests: XCTestCase {
         preferences.saveSortAscending(false)
         preferences.saveFavoriteFileIDs(["/tmp/a.jpg", "/tmp/b.jpg"])
         preferences.saveDisplayMode(.list)
-        preferences.saveThumbnailSize(180)
+        preferences.saveThumbnailSize(999)
 
         XCTAssertEqual(preferences.recentDirectoryURL?.path, directory.path)
         XCTAssertFalse(preferences.sidebarVisible)
@@ -23,7 +23,7 @@ final class OpenBrowserPreferencesTests: XCTestCase {
         XCTAssertFalse(preferences.sortAscending)
         XCTAssertEqual(preferences.favoriteFileIDs, ["/tmp/a.jpg", "/tmp/b.jpg"])
         XCTAssertEqual(preferences.displayMode, .list)
-        XCTAssertEqual(preferences.thumbnailSize, 180)
+        XCTAssertEqual(preferences.thumbnailSize, ImageBrowserThumbnailSizing.maximumSize)
     }
 
     func testSidebarWidthMigratesPreviousDefaultToCurrentDefault() {

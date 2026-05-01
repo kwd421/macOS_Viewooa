@@ -70,6 +70,18 @@ final class OpenBrowserScrollCoordinatorTests: XCTestCase {
         XCTAssertNil(selection.anchorEntryID)
     }
 
+    func testTrimSelectionKeepsDeterministicFocusAndAnchor() {
+        let entries = [entry("a"), entry("b"), entry("c"), entry("d")]
+        var selection = OpenBrowserSelectionState()
+        selection.selectAll(entries)
+
+        selection.trim(toVisibleEntries: [entries[1], entries[2]])
+
+        XCTAssertEqual(selection.selectedEntryIDs, [entries[1].id, entries[2].id])
+        XCTAssertEqual(selection.anchorEntryID, entries[1].id)
+        XCTAssertEqual(selection.focusedEntryID, entries[2].id)
+    }
+
     private func entry(_ name: String) -> OpenBrowserEntry {
         OpenBrowserEntry(
             url: URL(fileURLWithPath: "/tmp/\(name).jpg"),

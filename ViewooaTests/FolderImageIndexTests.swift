@@ -29,4 +29,19 @@ final class FolderImageIndexTests: XCTestCase {
 
         XCTAssertEqual(index, 1)
     }
+
+    func testOpenBrowserDirectoryListingExcludesPDFs() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("ViewooaDataSourceTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        try Data().write(to: directory.appendingPathComponent("image.jpg"))
+        try Data().write(to: directory.appendingPathComponent("document.pdf"))
+        try FileManager.default.createDirectory(at: directory.appendingPathComponent("nested", isDirectory: true), withIntermediateDirectories: true)
+
+        let entries = try OpenBrowserDataSource.loadEntries(in: directory, sortOption: .name, ascending: true)
+
+        XCTAssertEqual(entries.map(\.name), ["nested", "image.jpg"])
+    }
 }

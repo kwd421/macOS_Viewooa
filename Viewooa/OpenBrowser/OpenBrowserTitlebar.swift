@@ -184,8 +184,8 @@ struct OpenBrowserTitlebar: View {
                     .transition(.scale(scale: 0.88, anchor: .trailing).combined(with: .opacity))
             }
         }
-        .animation(Self.searchOpenAnimation, value: isSearchExpanded)
-        .animation(Self.searchSettleAnimation, value: searchExpansionExtra)
+        .animation(reduceMotion ? nil : Self.searchOpenAnimation, value: isSearchExpanded)
+        .animation(reduceMotion ? nil : Self.searchSettleAnimation, value: searchExpansionExtra)
     }
 
     private static let searchOpenAnimation = Animation.timingCurve(0.16, 1.0, 0.30, 1.0, duration: 0.24)

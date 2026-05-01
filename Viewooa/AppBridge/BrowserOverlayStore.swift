@@ -2,16 +2,10 @@ import Foundation
 
 @MainActor
 final class BrowserOverlayStore: ObservableObject {
-    private enum Constants {
-        static let defaultThumbnailSize: CGFloat = 132
-        static let minimumThumbnailSize: CGFloat = 72
-        static let maximumThumbnailSize: CGFloat = 220
-    }
-
     @Published private(set) var isOpenBrowserVisible = false
     @Published private(set) var isImageBrowserVisible = false
     @Published private(set) var displayMode: ImageBrowserDisplayMode = .thumbnails
-    @Published private(set) var thumbnailSize: CGFloat = Constants.defaultThumbnailSize
+    @Published private(set) var thumbnailSize: CGFloat = ImageBrowserThumbnailSizing.defaultSize
 
     var areOverlaysVisible: Bool {
         isOpenBrowserVisible || isImageBrowserVisible
@@ -40,6 +34,6 @@ final class BrowserOverlayStore: ObservableObject {
     }
 
     func setThumbnailSize(_ size: CGFloat) {
-        thumbnailSize = min(max(size, Constants.minimumThumbnailSize), Constants.maximumThumbnailSize)
+        thumbnailSize = ImageBrowserThumbnailSizing.clamped(size)
     }
 }

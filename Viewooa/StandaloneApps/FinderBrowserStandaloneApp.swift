@@ -14,7 +14,7 @@ struct FinderBrowserStandaloneApp: App {
                 displayMode: $displayMode,
                 thumbnailSize: $thumbnailSize,
                 onOpen: handleOpen,
-                onDismiss: {}
+                onDismiss: handleDismiss
             )
             .ignoresSafeArea()
         }
@@ -28,6 +28,14 @@ struct FinderBrowserStandaloneApp: App {
             initialDirectory = url
         } else {
             NSWorkspace.shared.open(url)
+        }
+    }
+
+    private func handleDismiss() {
+        if let window = NSApp.keyWindow {
+            window.performClose(nil)
+        } else {
+            NSApp.terminate(nil)
         }
     }
 }

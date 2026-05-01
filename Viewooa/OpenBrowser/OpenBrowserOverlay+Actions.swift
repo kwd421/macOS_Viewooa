@@ -50,6 +50,12 @@ extension OpenBrowserOverlay {
         guard !isSearchExpanded else { return }
 
         searchAnimationGeneration += 1
+        guard !reduceMotion else {
+            searchExpansionExtra = 0
+            isSearchExpanded = true
+            return
+        }
+
         let generation = searchAnimationGeneration
         searchExpansionExtra = Self.searchExpansionOvershoot
         withAnimation(Self.searchOpenAnimation) {
@@ -66,6 +72,12 @@ extension OpenBrowserOverlay {
 
     func closeSearch() {
         searchAnimationGeneration += 1
+        guard !reduceMotion else {
+            searchExpansionExtra = 0
+            isSearchExpanded = false
+            return
+        }
+
         withAnimation(Self.searchCloseAnimation) {
             searchExpansionExtra = 0
             isSearchExpanded = false

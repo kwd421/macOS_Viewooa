@@ -76,7 +76,10 @@ private final class ImageBrowserThumbnailCache: @unchecked Sendable {
     }
 
     private static func cacheKey(for url: URL, pixelSize: CGFloat) -> NSString {
-        "\(url.path)|\(Int(pixelSize))" as NSString
+        let values = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
+        let modificationStamp = values?.contentModificationDate?.timeIntervalSince1970 ?? 0
+        let fileSize = values?.fileSize ?? 0
+        return "\(url.path)|\(Int(pixelSize))|\(Int(modificationStamp))|\(fileSize)" as NSString
     }
 
     private func store(_ image: NSImage, forKey key: NSString) {

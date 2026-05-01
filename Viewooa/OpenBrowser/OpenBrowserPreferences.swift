@@ -41,7 +41,7 @@ struct OpenBrowserPreferences {
     var thumbnailSize: CGFloat? {
         let savedSize = defaults.double(forKey: Self.thumbnailSizeKey)
         guard savedSize > 0 else { return nil }
-        return min(max(CGFloat(savedSize), 72), 220)
+        return ImageBrowserThumbnailSizing.clamped(CGFloat(savedSize))
     }
 
     func sidebarStore() -> OpenBrowserSidebarStore {
