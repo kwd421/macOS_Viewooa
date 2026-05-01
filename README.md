@@ -1,25 +1,56 @@
 # Viewooa
 
-Viewooa is a native macOS photo viewer and visual file browser. The product goal is calm, fast, Apple-like browsing where photos and files stay more important than the app chrome.
+Viewooa is a native macOS image viewer with a built-in visual file browser. It is designed for fast photo viewing, quiet controls, and an Apple-like browsing experience that keeps the image first.
 
-## Product Direction
+![Viewooa viewer](docs/assets/viewooa-viewer.png)
 
-The design source of truth lives in:
+## What You Can Do
 
-- [Product Design Constitution](docs/product/DESIGN.md)
-- [Implementation Map](docs/product/IMPLEMENTATION_MAP.md)
+- Open images, folders, PDFs, and supported camera RAW files.
+- Browse a folder with previous/next buttons, arrow keys, trackpad gestures, or mouse wheel navigation.
+- View images as a single page, L-R spread, R-L spread, cover spread, or vertical webtoon-style strip.
+- Fit images by all, width, or height, then zoom to actual size or custom zoom levels.
+- Zoom with pinch gestures, Command + mouse wheel, toolbar controls, or double-click.
+- Pan oversized images by dragging when the image is larger than the window.
+- Rotate images, show metadata, and toggle lightweight post-processing options.
+- Run a slideshow, including vertical scrolling playback for webtoon-style viewing.
+- Open the built-in browser from the viewer to pick another file or folder without leaving the app.
 
-Before adding major behavior, check that the work fits the design principles: native first, content first, reversible file operations, and quiet AI assistance through explicit app commands.
+## Built-In Browser
 
-## Architecture
+Viewooa includes a Finder-inspired browser for opening folders and images inside the app.
 
-Viewooa is organized into three product areas:
+![Viewooa browser](docs/assets/viewooa-browser.png)
 
-- `Photo Viewer`: image rendering, fit/actual size, zoom, pan, rotate, page layout, slideshow, and viewer overlays.
-- `Browser`: Finder/Photos-inspired browsing, sidebar, path, grid/list display, selection, and open confirmation.
-- `App Bridge`: cross-feature routing between viewer and browser, shared overlay state, and future shared favorites/tags/AI command previews.
+The browser supports:
 
-The photo viewer should remain independently releasable. The browser should remain replaceable by native macOS open panels or a future standalone browser app.
+- Sidebar shortcuts for favorites and locations.
+- Icon and list browsing modes.
+- Back and forward navigation.
+- Search with an expanding search field.
+- Thumbnail size controls.
+- Selection, Select All, Shift range selection, and blank-space drag selection.
+- Path breadcrumbs, editable paths, and Open / Cancel actions.
+- Opening folders inside Viewooa and opening files from the standalone browser app.
+
+## Viewer Controls
+
+The viewer uses floating glass-style controls so the photo stays central.
+
+- Top bar: info, page layout, fit mode, slideshow, and toolbar pinning.
+- Bottom bar: open browser, zoom out, actual size, zoom in, rotate, previous, next, and pinning.
+- Hidden toolbars can appear when the pointer moves near them.
+- Pinned toolbars stay visible and remember their last state.
+
+## Supported Files
+
+Viewooa focuses on common image workflows:
+
+- Standard image formats supported by macOS, such as JPEG, PNG, HEIC, TIFF, GIF, BMP, and WebP where available.
+- PDF files when opened directly.
+- Camera RAW formats supported by macOS Uniform Type Identifiers, including major camera makers such as Canon, Nikon, Sony, Fujifilm, Panasonic, Olympus / OM System, Leica, Pentax, and others supported by the system.
+
+PDF files are opened only when selected directly. They are not mixed into normal folder image browsing.
 
 ## Run
 
@@ -35,36 +66,6 @@ Or run from Terminal:
 ./script/build_and_run.sh
 ```
 
-## Build And Test
+## Notes
 
-Build:
-
-```bash
-xcodebuild -project Viewooa.xcodeproj -scheme Viewooa -configuration Debug -derivedDataPath .build/DerivedData build
-```
-
-Run tests:
-
-```bash
-xcodebuild test -project Viewooa.xcodeproj -scheme Viewooa -configuration Debug -derivedDataPath .build/DerivedData
-```
-
-The app targets macOS 15.0 and Swift 6.
-
-## Current Capabilities
-
-- Open images and folders through the Viewooa browser flow.
-- Browse folder images with previous/next controls and keyboard shortcuts.
-- Fit all, fit width, fit height, actual size, zoom in/out, and pan oversized images.
-- Use single page, two-page spread, cover mode, and vertical strip layouts.
-- Show metadata, navigation count, slideshow controls, and post-processing options.
-- Browse image lists through an Apple-inspired internal browser overlay.
-- Keep viewer/browser communication routed through the app bridge.
-
-## Working Rules
-
-- Keep viewer-only behavior inside viewer stores/views/coordinators.
-- Keep browser-only behavior inside browser stores/views/coordinators.
-- Put cross-feature state in the bridge.
-- Do not add hidden file mutations; risky file operations need preview and undo where possible.
-- AI features must call the same safe command model as the UI.
+Viewooa is still evolving. The current focus is a smooth macOS photo viewer, a pleasant built-in browser, and safe file browsing behavior without hidden destructive actions.

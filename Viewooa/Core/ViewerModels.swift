@@ -68,7 +68,7 @@ enum ViewerPageLayout: CaseIterable, Equatable, Identifiable {
         case .single:
             "Single"
         case .spread:
-            "2-Up"
+            "L-R"
         case .verticalStrip:
             "Webtoon"
         }

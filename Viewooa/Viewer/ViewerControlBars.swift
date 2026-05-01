@@ -45,12 +45,12 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
 
             Divider()
 
-            menuSelectionToggle("Two Pages: L-R", isSelected: store.pageLayout == .spread && store.spreadDirection == .leftToRight) {
+            menuSelectionToggle("L-R", isSelected: store.pageLayout == .spread && store.spreadDirection == .leftToRight) {
                 store.setSpreadDirection(.leftToRight)
                 store.setPageLayout(.spread)
             }
 
-            menuSelectionToggle("Two Pages: R-L", isSelected: store.pageLayout == .spread && store.spreadDirection == .rightToLeft) {
+            menuSelectionToggle("R-L", isSelected: store.pageLayout == .spread && store.spreadDirection == .rightToLeft) {
                 store.setSpreadDirection(.rightToLeft)
                 store.setPageLayout(.spread)
             }
@@ -78,7 +78,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
         case .single:
             return ViewerPageLayout.single.shortTitle
         case .spread:
-            return "\(ViewerPageLayout.spread.shortTitle) \(store.spreadDirection.shortTitle)"
+            return store.spreadDirection.shortTitle
         case .verticalStrip:
             return ViewerPageLayout.verticalStrip.shortTitle
         }
