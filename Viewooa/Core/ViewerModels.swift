@@ -59,7 +59,7 @@ enum ViewerPageLayout: CaseIterable, Equatable, Identifiable {
         case .spread:
             "Two Pages"
         case .verticalStrip:
-            "Vertical Strip"
+            "Webtoon"
         }
     }
 
@@ -68,7 +68,7 @@ enum ViewerPageLayout: CaseIterable, Equatable, Identifiable {
         case .single:
             "Single"
         case .spread:
-            "L-R"
+            "Book"
         case .verticalStrip:
             "Webtoon"
         }
@@ -113,6 +113,10 @@ enum SpreadDirection: CaseIterable, Equatable, Identifiable {
         case .rightToLeft:
             "R-L"
         }
+    }
+
+    var bookTitle: String {
+        "Book \(shortTitle)"
     }
 }
 

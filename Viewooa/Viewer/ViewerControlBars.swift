@@ -45,12 +45,12 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
 
             Divider()
 
-            menuSelectionToggle("L-R", isSelected: store.pageLayout == .spread && store.spreadDirection == .leftToRight) {
+            menuSelectionToggle(SpreadDirection.leftToRight.bookTitle, isSelected: store.pageLayout == .spread && store.spreadDirection == .leftToRight) {
                 store.setSpreadDirection(.leftToRight)
                 store.setPageLayout(.spread)
             }
 
-            menuSelectionToggle("R-L", isSelected: store.pageLayout == .spread && store.spreadDirection == .rightToLeft) {
+            menuSelectionToggle(SpreadDirection.rightToLeft.bookTitle, isSelected: store.pageLayout == .spread && store.spreadDirection == .rightToLeft) {
                 store.setSpreadDirection(.rightToLeft)
                 store.setPageLayout(.spread)
             }
@@ -62,7 +62,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
 
             Divider()
 
-            menuSelectionToggle("Vertical Strip", isSelected: store.pageLayout == .verticalStrip) {
+            menuSelectionToggle(ViewerPageLayout.verticalStrip.title, isSelected: store.pageLayout == .verticalStrip) {
                 store.setPageLayout(.verticalStrip)
             }
         } label: {
@@ -78,7 +78,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
         case .single:
             return ViewerPageLayout.single.shortTitle
         case .spread:
-            return store.spreadDirection.shortTitle
+            return store.spreadDirection.bookTitle
         case .verticalStrip:
             return ViewerPageLayout.verticalStrip.shortTitle
         }
