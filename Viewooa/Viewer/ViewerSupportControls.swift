@@ -41,17 +41,50 @@ enum ViewerControlVisualStyle {
     static let capsuleBackground = VisualInteractionPalette.viewerCapsuleBackground
     static let capsuleBorder = VisualInteractionPalette.viewerCapsuleBorder
 
-    static func iconActionStyle(isActive: Bool) -> VisualIconActionStyle {
-        VisualIconActionStyle(
-            size: iconSize,
-            foregroundColor: { isHovering in
-                iconForeground.color(isSelected: isActive, isHovering: isHovering)
-            },
-            backgroundColor: { isHovering in
-                iconBackground.color(isHovering: isHovering)
-            }
-        )
+    static func iconActionStyle(
+        isActive: Bool,
+        emphasis: ViewerControlButtonEmphasis = .standard
+    ) -> VisualIconActionStyle {
+        switch emphasis {
+        case .standard:
+            VisualIconActionStyle(
+                size: iconSize,
+                foregroundColor: { isHovering in
+                    iconForeground.color(isSelected: isActive, isHovering: isHovering)
+                },
+                backgroundColor: { isHovering in
+                    iconBackground.color(isHovering: isHovering)
+                }
+            )
+        case .prominent:
+            VisualIconActionStyle(
+                size: iconSize,
+                foregroundColor: { isHovering in
+                    iconForeground.color(isSelected: isActive, isHovering: isHovering)
+                },
+                backgroundColor: { isHovering in
+                    VisualInteractionPalette.viewerProminentIconBackground.color(isHovering: isHovering)
+                },
+                overlay: { isHovering in
+                    AnyView(
+                        Circle()
+                            .strokeBorder(
+                                VisualInteractionPalette.viewerProminentIconBorder.color(
+                                    isSelected: isActive,
+                                    isHovering: isHovering
+                                ),
+                                lineWidth: 1
+                            )
+                    )
+                }
+            )
+        }
     }
+}
+
+enum ViewerControlButtonEmphasis {
+    case standard
+    case prominent
 }
 
 struct RepeatingControlButton: View {
@@ -135,13 +168,14 @@ struct ViewerControlIconButton: View {
     let accessibilityLabel: String
     let systemImage: String
     var isActive = false
+    var emphasis: ViewerControlButtonEmphasis = .standard
     let action: () -> Void
 
     var body: some View {
         VisualIconActionButton(
             accessibilityLabel: accessibilityLabel,
             systemImage: systemImage,
-            style: ViewerControlVisualStyle.iconActionStyle(isActive: isActive),
+            style: ViewerControlVisualStyle.iconActionStyle(isActive: isActive, emphasis: emphasis),
             shape: Circle(),
             action: action
         )

@@ -1,5 +1,6 @@
 import XCTest
 import SwiftUI
+import AppKit
 @testable import Viewooa
 
 final class ViewerFeatureBoundaryTests: XCTestCase {
@@ -109,5 +110,38 @@ final class ViewerFeatureBoundaryTests: XCTestCase {
 
         store.setThumbnailSize(500)
         XCTAssertEqual(store.thumbnailSize, 220)
+    }
+
+    @MainActor
+    func testBottomToolbarSeparatorsOnlyFrameOpenAndPinSections() {
+        XCTAssertTrue(ViewerBottomToolbarSection.open.showsTrailingSeparator)
+        XCTAssertFalse(ViewerBottomToolbarSection.open.showsLeadingSeparator)
+
+        XCTAssertFalse(ViewerBottomToolbarSection.zoom.showsLeadingSeparator)
+        XCTAssertFalse(ViewerBottomToolbarSection.zoom.showsTrailingSeparator)
+
+        XCTAssertFalse(ViewerBottomToolbarSection.navigation.showsLeadingSeparator)
+        XCTAssertFalse(ViewerBottomToolbarSection.navigation.showsTrailingSeparator)
+
+        XCTAssertTrue(ViewerBottomToolbarSection.pin.showsLeadingSeparator)
+        XCTAssertFalse(ViewerBottomToolbarSection.pin.showsTrailingSeparator)
+    }
+
+    @MainActor
+    func testProminentViewerToolbarIconStyleAddsContrastAndPersistentBorder() {
+        let standardStyle = ViewerControlVisualStyle.iconActionStyle(isActive: false)
+        let prominentStyle = ViewerControlVisualStyle.iconActionStyle(isActive: false, emphasis: .prominent)
+
+        XCTAssertNil(standardStyle.overlay)
+        XCTAssertNotNil(prominentStyle.overlay)
+
+        XCTAssertGreaterThan(
+            alphaComponent(of: prominentStyle.backgroundColor(false)),
+            alphaComponent(of: standardStyle.backgroundColor(false))
+        )
+    }
+
+    private func alphaComponent(of color: Color) -> CGFloat {
+        NSColor(color).alphaComponent
     }
 }

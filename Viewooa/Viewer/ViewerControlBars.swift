@@ -226,27 +226,46 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            controlButton("Open", systemImage: "folder", action: onOpen)
+            openSection
+            sectionSeparator(after: .open)
 
-            ViewerControlSeparator()
+            zoomSection
+            navigationSection
 
+            sectionSeparator(before: .pin)
+            pinSection
+        }
+        .viewerToolbarSurface(horizontalPadding: 14, verticalPadding: 10)
+    }
+
+    private var openSection: some View {
+        controlButton("Open", systemImage: "folder", action: onOpen)
+    }
+
+    private var zoomSection: some View {
+        Group {
             controlButton("Zoom Out", systemImage: "minus.magnifyingglass", action: onZoomOut)
             actualSizeButton
             controlButton("Zoom In", systemImage: "plus.magnifyingglass", action: store.zoomIn)
             controlButton("Rotate Right", systemImage: "rotate.right", action: store.rotateClockwise)
+        }
+    }
 
-            ViewerControlSeparator()
-
+    private var navigationSection: some View {
+        Group {
             repeatingControlButton("Previous", systemImage: "chevron.left", action: store.showPreviousImageFromNavigationShortcut)
             repeatingControlButton("Next", systemImage: "chevron.right", action: store.showNextImageFromNavigationShortcut)
-
-            controlButton(
-                isPinned ? "Unpin Controls" : "Pin Controls",
-                systemImage: isPinned ? "pin.fill" : "pin",
-                action: { isPinned.toggle() }
-            )
         }
-        .viewerToolbarSurface(horizontalPadding: 14, verticalPadding: 10)
+    }
+
+    private var pinSection: some View {
+        ViewerControlIconButton(
+            accessibilityLabel: isPinned ? "Unpin Controls" : "Pin Controls",
+            systemImage: isPinned ? "pin.fill" : "pin",
+            isActive: isPinned,
+            emphasis: .prominent,
+            action: { isPinned.toggle() }
+        )
     }
 
     private func controlButton(_ accessibilityLabel: String, systemImage: String, action: @escaping () -> Void) -> some View {
@@ -283,6 +302,35 @@ struct ViewerBottomControlBar<Store: PhotoViewerControlling>: View {
         }
 
         return false
+    }
+
+    @ViewBuilder
+    private func sectionSeparator(before section: ViewerBottomToolbarSection) -> some View {
+        if section.showsLeadingSeparator {
+            ViewerControlSeparator()
+        }
+    }
+
+    @ViewBuilder
+    private func sectionSeparator(after section: ViewerBottomToolbarSection) -> some View {
+        if section.showsTrailingSeparator {
+            ViewerControlSeparator()
+        }
+    }
+}
+
+enum ViewerBottomToolbarSection {
+    case open
+    case zoom
+    case navigation
+    case pin
+
+    var showsLeadingSeparator: Bool {
+        self == .pin
+    }
+
+    var showsTrailingSeparator: Bool {
+        self == .open
     }
 }
 

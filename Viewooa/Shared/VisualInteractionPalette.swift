@@ -132,11 +132,24 @@ enum VisualInteractionPalette {
         pressed: Color.white.opacity(0.32)
     )
 
+    static let viewerProminentIconBackground = VisualPressColorStyle(
+        normal: Color.black.opacity(0.22),
+        hover: Color.black.opacity(0.30),
+        pressed: Color.black.opacity(0.36)
+    )
+
     static let viewerIconForeground = VisualInteractionColorStyle(
         normal: Color.white.opacity(0.82),
         hover: Color.white.opacity(0.82),
         selected: .white,
         selectedHover: .white
+    )
+
+    static let viewerProminentIconBorder = VisualInteractionColorStyle(
+        normal: Color.white.opacity(0.14),
+        hover: Color.white.opacity(0.24),
+        selected: Color.white.opacity(0.20),
+        selectedHover: Color.white.opacity(0.28)
     )
 
     static let viewerCapsuleBackground = VisualHoverColorStyle(
