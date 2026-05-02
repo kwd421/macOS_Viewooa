@@ -24,6 +24,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
         .font(.system(size: 12, weight: .semibold))
         .buttonStyle(.plain)
         .foregroundStyle(.white)
+        .shadow(color: .black.opacity(0.42), radius: 1.2, y: 0.6)
         .viewerToolbarSurface(horizontalPadding: 12, verticalPadding: 8)
     }
 
@@ -311,6 +312,7 @@ private enum ViewerToolbarSurfaceStyle {
     static func toolbar(horizontalPadding: CGFloat, verticalPadding: CGFloat) -> VisualToolbarSurfaceStyle<Material> {
         VisualToolbarSurfaceStyle(
             backgroundStyle: .ultraThinMaterial,
+            tintColor: VisualInteractionPalette.viewerSurfaceTint,
             borderColor: VisualInteractionPalette.viewerSurfaceBorder,
             shadowColor: VisualInteractionPalette.viewerToolbarShadow,
             shadowRadius: 20,

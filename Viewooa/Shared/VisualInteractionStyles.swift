@@ -195,6 +195,7 @@ struct VisualHoverContentStyle {
 
 struct VisualToolbarSurfaceStyle<BackgroundStyle: ShapeStyle> {
     let backgroundStyle: BackgroundStyle
+    let tintColor: Color
     let borderColor: Color
     let shadowColor: Color
     let shadowRadius: CGFloat
@@ -204,6 +205,7 @@ struct VisualToolbarSurfaceStyle<BackgroundStyle: ShapeStyle> {
 
     init(
         backgroundStyle: BackgroundStyle,
+        tintColor: Color = .clear,
         borderColor: Color,
         shadowColor: Color,
         shadowRadius: CGFloat,
@@ -212,6 +214,7 @@ struct VisualToolbarSurfaceStyle<BackgroundStyle: ShapeStyle> {
         verticalPadding: CGFloat
     ) {
         self.backgroundStyle = backgroundStyle
+        self.tintColor = tintColor
         self.borderColor = borderColor
         self.shadowColor = shadowColor
         self.shadowRadius = shadowRadius

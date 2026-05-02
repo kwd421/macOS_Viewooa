@@ -313,6 +313,7 @@ private extension View {
             shape: Capsule(),
             style: VisualToolbarSurfaceStyle(
                 backgroundStyle: .ultraThinMaterial,
+                tintColor: VisualInteractionPalette.viewerSurfaceTint,
                 borderColor: VisualInteractionPalette.viewerSurfaceBorder,
                 shadowColor: VisualInteractionPalette.viewerToolbarShadow,
                 shadowRadius: 20,

@@ -149,6 +149,7 @@ enum VisualInteractionPalette {
         hover: Color.white.opacity(0.28)
     )
 
+    static let viewerSurfaceTint = Color.black.opacity(0.22)
     static let viewerSurfaceBorder = Color.white.opacity(0.14)
     static let viewerSeparator = Color.white.opacity(0.22)
     static let viewerToolbarShadow = Color.black.opacity(0.34)

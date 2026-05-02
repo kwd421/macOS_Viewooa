@@ -3,6 +3,7 @@ import SwiftUI
 struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeStyle, Content: View>: View {
     let shape: ShapeType
     let backgroundStyle: BackgroundStyle
+    let tintColor: Color
     let borderColor: Color
     let shadowColor: Color
     let shadowRadius: CGFloat
@@ -19,6 +20,7 @@ struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeSt
         self.init(
             shape: shape,
             backgroundStyle: style.backgroundStyle,
+            tintColor: style.tintColor,
             borderColor: style.borderColor,
             shadowColor: style.shadowColor,
             shadowRadius: style.shadowRadius,
@@ -32,6 +34,7 @@ struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeSt
     init(
         shape: ShapeType,
         backgroundStyle: BackgroundStyle,
+        tintColor: Color = .clear,
         borderColor: Color,
         shadowColor: Color,
         shadowRadius: CGFloat,
@@ -42,6 +45,7 @@ struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeSt
     ) {
         self.shape = shape
         self.backgroundStyle = backgroundStyle
+        self.tintColor = tintColor
         self.borderColor = borderColor
         self.shadowColor = shadowColor
         self.shadowRadius = shadowRadius
@@ -56,6 +60,7 @@ struct VisualToolbarSurface<ShapeType: InsettableShape, BackgroundStyle: ShapeSt
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
             .background(backgroundStyle, in: shape)
+            .background(tintColor, in: shape)
             .overlay {
                 shape.strokeBorder(borderColor)
             }
