@@ -6,17 +6,8 @@ extension ViewerState {
         self.index = index
         currentImageURL = index.imageURLs[index.currentIndex]
         currentResolvedImage = currentImageURL.flatMap { preloadQueue.image(for: $0) }
-        zoomMode = .fit(preferredFitMode)
-        displayedMagnification = 1.0
-        fitMagnification = 1.0
-        isEntireImageVisible = true
-        rotationQuarterTurns = 0
-        lastErrorMessage = nil
-        isMetadataVisible = false
-        transientNotice = nil
-        if hidesNavigationCount {
-            hideNavigationCountImmediately()
-        }
+        resetViewportForNewContent(hidesNavigationCount: hidesNavigationCount)
+        loadAnimatedImageIfNeeded()
         refreshPreloadTargets()
     }
 
@@ -25,6 +16,7 @@ extension ViewerState {
         index = FolderImageIndex(imageURLs: document.pageURLs, currentIndex: 0)
         currentImageURL = document.fileURL
         currentResolvedImage = document.image(at: 0)
+        resetAnimatedImageState()
         resetViewportForNewContent()
     }
 
@@ -36,6 +28,7 @@ extension ViewerState {
         index = FolderImageIndex(imageURLs: pdfDocument.pageURLs, currentIndex: pageIndex)
         currentImageURL = pdfDocument.fileURL
         currentResolvedImage = pageImage
+        resetAnimatedImageState()
         resetViewportForNewContent(hidesNavigationCount: hidesNavigationCount)
     }
 
@@ -48,6 +41,8 @@ extension ViewerState {
         lastErrorMessage = nil
         isMetadataVisible = false
         transientNotice = nil
+        zoomPercentageDismissTask?.cancel()
+        isZoomPercentageVisible = false
         if hidesNavigationCount {
             hideNavigationCountImmediately()
         }

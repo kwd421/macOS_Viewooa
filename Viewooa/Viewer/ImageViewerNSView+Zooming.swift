@@ -8,7 +8,7 @@ extension ImageViewerNSView {
         case .actualSize:
             applyImageCenterProgrammaticMagnification(1.0)
         case let .custom(scale):
-            handleMagnificationChange(scale, isUserInitiated: false)
+            handleMagnificationChange(clampMagnificationToViewerPolicy(scale), isUserInitiated: false)
         }
     }
 
@@ -58,7 +58,7 @@ extension ImageViewerNSView {
         isUserInitiated: Bool,
         centeredImagePoint: NSPoint? = nil
     ) {
-        let clampedScale = min(max(magnification, scrollView.minMagnification), scrollView.maxMagnification)
+        let clampedScale = clampMagnificationToViewerPolicy(magnification)
 
         if isUserInitiated {
             guard !zoomAnimator.isApplyingProgrammaticMagnification else { return }
@@ -104,7 +104,7 @@ extension ImageViewerNSView {
         case .actualSize:
             handleMagnificationChange(1.0, isUserInitiated: false, centeredImagePoint: imagePoint)
         case let .custom(scale):
-            handleMagnificationChange(scale, isUserInitiated: false, centeredImagePoint: imagePoint)
+            handleMagnificationChange(clampMagnificationToViewerPolicy(scale), isUserInitiated: false, centeredImagePoint: imagePoint)
         }
         onZoomModeChange?(zoomMode)
     }
@@ -126,7 +126,7 @@ extension ImageViewerNSView {
             )
         case let .custom(scale):
             applyAnchoredProgrammaticMagnification(
-                scale,
+                clampMagnificationToViewerPolicy(scale),
                 contentOffset: contentOffset,
                 anchorUnitPoint: anchorUnitPoint
             )
@@ -139,7 +139,7 @@ extension ImageViewerNSView {
         isUserInitiated: Bool,
         centeredDocumentPoint documentPoint: NSPoint?
     ) {
-        let clampedScale = min(max(magnification, scrollView.minMagnification), scrollView.maxMagnification)
+        let clampedScale = clampMagnificationToViewerPolicy(magnification)
 
         if isUserInitiated {
             guard !zoomAnimator.isApplyingProgrammaticMagnification else { return }
@@ -179,7 +179,7 @@ extension ImageViewerNSView {
 
     @discardableResult
     func finishTrackpadMagnifyGesture(animated: Bool = true) -> Bool {
-        if snapBackToFitIfNeeded(animated: animated) {
+        if snapBackToMinimumZoomIfNeeded(animated: animated) {
             return true
         }
 
@@ -189,30 +189,34 @@ extension ImageViewerNSView {
 
     @discardableResult
     func snapBackToFitIfNeeded(animated: Bool = true) -> Bool {
+        snapBackToMinimumZoomIfNeeded(animated: animated)
+    }
+
+    func snapBackToMinimumZoomIfNeeded(animated: Bool = true) -> Bool {
         guard displayedImage != nil else { return false }
 
-        let fitScale = currentFitMagnification
-        guard fitScale.isFinite,
-              scrollView.magnification < fitScale - 0.0001 else {
+        let minimumScale = minimumAllowedMagnification
+        guard minimumScale.isFinite,
+              scrollView.magnification < minimumScale - 0.0001 else {
             return false
         }
 
-        let targetZoomMode = ZoomMode.fit(lastFitMode)
+        let targetZoomMode = ZoomMode.custom(minimumScale)
         let targetOrigin = Self.centeredVisibleRectOrigin(
             containerSize: Self.documentContainerSize(
                 imageSize: displayedImageSize,
                 viewportSize: viewportSizeForLayout,
-                magnification: fitScale
+                magnification: minimumScale
             ),
             viewportSize: viewportSizeForLayout,
-            magnification: fitScale
+            magnification: minimumScale
         )
         viewportState.zoomMode = targetZoomMode
 
         guard animated else {
-            updateViewportPresentation(for: fitScale)
+            updateViewportPresentation(for: minimumScale)
             zoomAnimator.applyProgrammaticMagnification(
-                fitScale,
+                minimumScale,
                 centeredAt: viewportPresenter.containerCenterPoint,
                 finalOrigin: targetOrigin,
                 canAnimateInWindow: false,
@@ -225,13 +229,21 @@ extension ImageViewerNSView {
         }
 
         applyProgrammaticMagnification(
-            fitScale,
+            minimumScale,
             centeredAt: viewportPresenter.containerCenterPoint,
             finalOrigin: targetOrigin
         )
         onZoomModeChange?(targetZoomMode)
 
         return true
+    }
+
+    var minimumAllowedMagnification: CGFloat {
+        ViewerZoom.minimumAllowedScale(fitMagnification: currentFitMagnification)
+    }
+
+    func clampMagnificationToViewerPolicy(_ magnification: CGFloat) -> CGFloat {
+        min(max(magnification, minimumAllowedMagnification), scrollView.maxMagnification)
     }
 
 }

@@ -1,6 +1,9 @@
 import AppKit
 
 extension ImageViewerNSView {
+    static let interactiveNavigationPageGap: CGFloat = 28
+    private static let interactiveNavigationAnimationKey = "Viewooa.interactiveNavigation.transform"
+
     func configureViewerInfrastructure() {
         scrollView.drawsBackground = false
         scrollView.hasVerticalScroller = false
@@ -50,7 +53,8 @@ extension ImageViewerNSView {
             self?.presentPostProcessingMenu(event: event) ?? false
         }
 
-        addSubview(scrollView)
+        addSubview(interactiveNavigationStripView)
+        interactiveNavigationStripView.addSubview(scrollView)
 
         NotificationCenter.default.addObserver(
             self,
@@ -81,13 +85,6 @@ extension ImageViewerNSView {
             canPan: canPanVisibleRect,
             onPan: { [weak self] previousLocation, currentLocation in
                 self?.panVisibleRect(from: previousLocation, to: currentLocation)
-            },
-            onPointerLockBegin: { [weak self] startLocation in
-                guard let self else { return }
-                pointerLockController.begin(atWindowLocation: startLocation, in: window)
-            },
-            onPointerLockEnd: { [weak self] in
-                self?.pointerLockController.end()
             }
         )
     }
@@ -121,6 +118,12 @@ extension ImageViewerNSView {
         case .navigate(let direction):
             onNavigateRequest?(direction)
             return true
+        case .interactiveNavigation(let offset):
+            applyInteractiveNavigationOffset(offset)
+            return true
+        case .finishInteractiveNavigation(let direction):
+            finishInteractiveNavigation(direction)
+            return true
         case .consumeGesture:
             return true
         case .scrollContent:
@@ -135,7 +138,7 @@ extension ImageViewerNSView {
         return trackpadScrollCoordinator.handleMagnify(
             event: event,
             currentMagnification: scrollView.magnification,
-            minimumMagnification: scrollView.minMagnification,
+            minimumMagnification: minimumAllowedMagnification,
             maximumMagnification: scrollView.maxMagnification,
             applyMagnification: { [weak self] magnification, locationInWindow in
                 self?.handleAnchoredMagnificationChange(magnification, locationInWindow: locationInWindow)
@@ -163,7 +166,7 @@ extension ImageViewerNSView {
             phase: phase,
             momentumPhase: momentumPhase,
             currentMagnification: scrollView.magnification,
-            minimumMagnification: scrollView.minMagnification,
+            minimumMagnification: minimumAllowedMagnification,
             maximumMagnification: scrollView.maxMagnification,
             applyMagnification: { [weak self] magnification, locationInWindow in
                 if let locationInWindow {
@@ -181,13 +184,13 @@ extension ImageViewerNSView {
     @discardableResult
     func finishCommandWheelZoomGesture(animated: Bool = true) -> Bool {
         let hadGesture = commandWheelZoomCoordinator.finish()
-        return snapBackToFitIfNeeded(animated: animated) || hadGesture
+        return snapBackToMinimumZoomIfNeeded(animated: animated) || hadGesture
     }
 
     func handleAnchoredMagnificationChange(_ magnification: CGFloat, locationInWindow: NSPoint) {
         guard !zoomAnimator.isApplyingProgrammaticMagnification else { return }
 
-        let clampedScale = min(max(magnification, scrollView.minMagnification), scrollView.maxMagnification)
+        let clampedScale = clampMagnificationToViewerPolicy(magnification)
         let currentDocumentPoint = documentPoint(forWindowLocation: locationInWindow)
         let contentFrameBeforeZoom = currentContentFrame()
         let anchoredContentOffset = Self.anchoredContentOffset(
@@ -287,5 +290,278 @@ extension ImageViewerNSView {
             isEntireImageVisible: isEntireImageVisible,
             isVerticallyScrollable: isImageScrollableVertically
         )
+    }
+
+    func applyInteractiveNavigationOffset(_ offset: CGFloat) {
+        guard abs(offset) >= 0.5 else { return }
+
+        if interactiveNavigationPrimaryFrame == nil {
+            interactiveNavigationPrimaryFrame = interactiveNavigationPageFrame
+        }
+        layoutInteractiveNavigationPreview(offset: offset)
+        interactiveNavigationStripView.wantsLayer = true
+        interactiveNavigationAnimationGeneration += 1
+        interactiveNavigationStripView.layer?.removeAnimation(forKey: Self.interactiveNavigationAnimationKey)
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        interactiveNavigationStripView.layer?.transform = CATransform3DMakeTranslation(offset, 0, 0)
+        CATransaction.commit()
+    }
+
+    func finishInteractiveNavigation(_ direction: NavigationDirection?) {
+        let currentOffset = interactiveNavigationStripView.layer?.presentation()?.transform.m41
+            ?? interactiveNavigationStripView.layer?.transform.m41
+            ?? 0
+        let previewDirection = direction ?? (currentOffset < 0 ? .next : .previous)
+        let currentPreviewFrame = interactiveNavigationPreviewFrame(
+            direction: previewDirection,
+            offset: 0
+        )
+        let pageTravel = currentPreviewFrame?.pageTravel ?? interactiveNavigationPageTravel(direction: previewDirection)
+        let targetOffset: CGFloat
+        if let direction {
+            targetOffset = direction == .next ? -pageTravel : pageTravel
+        } else {
+            targetOffset = 0
+        }
+
+        currentPreviewFrame?.view.frame = currentPreviewFrame?.frame ?? .zero
+        currentPreviewFrame?.view.isHidden = false
+        currentPreviewFrame?.oppositeView.isHidden = true
+
+        interactiveNavigationStripView.wantsLayer = true
+        guard let layer = interactiveNavigationStripView.layer else { return }
+
+        interactiveNavigationAnimationGeneration += 1
+        let animationGeneration = interactiveNavigationAnimationGeneration
+        let duration = direction == nil ? 0.26 : 0.24
+        let targetTransform = CATransform3DMakeTranslation(targetOffset, 0, 0)
+        let destinationURL = direction.flatMap(interactiveNavigationDestinationURL)
+        let animation = CABasicAnimation(keyPath: "transform")
+        animation.fromValue = layer.presentation()?.transform ?? layer.transform
+        animation.toValue = targetTransform
+        animation.duration = duration
+        animation.timingFunction = CAMediaTimingFunction(controlPoints: 0.2, 0.9, 0.18, 1.0)
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        layer.transform = targetTransform
+        layer.add(animation, forKey: Self.interactiveNavigationAnimationKey)
+        CATransaction.commit()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
+            guard let self, self.interactiveNavigationAnimationGeneration == animationGeneration else {
+                return
+            }
+            if direction != nil, let destinationURL {
+                self.pendingInteractiveNavigationDestinationURL = destinationURL
+            }
+
+            if let direction {
+                self.onNavigateRequest?(direction)
+            } else if abs(currentOffset) > 0.5 {
+                self.documentContainerView.needsDisplay = true
+            }
+
+            guard direction != nil, destinationURL != nil else {
+                self.completeInteractiveNavigationTransition()
+                return
+            }
+        }
+    }
+
+    func layoutInteractiveNavigationPreview(offset: CGFloat) {
+        let direction: NavigationDirection = offset < 0 ? .next : .previous
+        guard let previewFrame = interactiveNavigationPreviewFrame(
+            direction: direction,
+            offset: 0
+        ) else {
+            hideInteractiveNavigationPreviews()
+            return
+        }
+
+        previewFrame.view.frame = previewFrame.frame
+        previewFrame.view.isHidden = false
+        previewFrame.oppositeView.isHidden = true
+    }
+
+    private struct InteractiveNavigationPreviewFrame {
+        let view: RotatingImageView
+        let oppositeView: RotatingImageView
+        let frame: NSRect
+        let baseFrame: NSRect
+        let pageDelta: CGFloat
+        let pageTravel: CGFloat
+    }
+
+    private func interactiveNavigationPreviewFrame(
+        direction: NavigationDirection,
+        offset: CGFloat
+    ) -> InteractiveNavigationPreviewFrame? {
+        let previewView = direction == .next ? nextPreviewImageView : previousPreviewImageView
+        let oppositeView = direction == .next ? previousPreviewImageView : nextPreviewImageView
+        guard previewView.image != nil else { return nil }
+
+        let primaryFrame = interactiveNavigationPrimaryFrame
+            ?? interactiveNavigationPageFrame
+        let baseFrame = interactiveNavigationPreviewBaseFrame(
+            for: previewView,
+            primaryFrame: primaryFrame
+        )
+        let pageDelta = interactiveNavigationPageDelta(
+            direction: direction,
+            primaryFrame: primaryFrame,
+            previewFrame: baseFrame
+        )
+
+        return interactiveNavigationPreviewFrame(
+            direction: direction,
+            offset: offset,
+            baseFrame: baseFrame,
+            pageDelta: pageDelta,
+            view: previewView,
+            oppositeView: oppositeView
+        )
+    }
+
+    private func interactiveNavigationPreviewFrame(
+        direction: NavigationDirection,
+        offset: CGFloat,
+        baseFrame: NSRect,
+        pageDelta: CGFloat
+    ) -> InteractiveNavigationPreviewFrame {
+        let previewView = direction == .next ? nextPreviewImageView : previousPreviewImageView
+        let oppositeView = direction == .next ? previousPreviewImageView : nextPreviewImageView
+        return interactiveNavigationPreviewFrame(
+            direction: direction,
+            offset: offset,
+            baseFrame: baseFrame,
+            pageDelta: pageDelta,
+            view: previewView,
+            oppositeView: oppositeView
+        )
+    }
+
+    private func interactiveNavigationPreviewFrame(
+        direction: NavigationDirection,
+        offset: CGFloat,
+        baseFrame: NSRect,
+        pageDelta: CGFloat,
+        view: RotatingImageView,
+        oppositeView: RotatingImageView
+    ) -> InteractiveNavigationPreviewFrame {
+        return InteractiveNavigationPreviewFrame(
+            view: view,
+            oppositeView: oppositeView,
+            frame: baseFrame.offsetBy(dx: pageDelta + offset, dy: 0),
+            baseFrame: baseFrame,
+            pageDelta: pageDelta,
+            pageTravel: abs(pageDelta)
+        )
+    }
+
+    private func interactiveNavigationPageDelta(
+        direction: NavigationDirection,
+        primaryFrame: NSRect? = nil,
+        previewFrame: NSRect? = nil
+    ) -> CGFloat {
+        let frame = primaryFrame
+            ?? interactiveNavigationPageFrame
+        let preview = previewFrame ?? .zero
+
+        switch direction {
+        case .next:
+            return frame.maxX + Self.interactiveNavigationPageGap - preview.minX
+        case .previous:
+            return frame.minX - Self.interactiveNavigationPageGap - preview.maxX
+        }
+    }
+
+    private func interactiveNavigationPageTravel(direction: NavigationDirection) -> CGFloat {
+        abs(interactiveNavigationPageDelta(direction: direction))
+    }
+
+    private var interactiveNavigationPageFrame: NSRect {
+        scrollView.frame
+    }
+
+    private func interactiveNavigationPreviewBaseFrame(
+        for previewView: RotatingImageView,
+        primaryFrame: NSRect
+    ) -> NSRect {
+        let previewSize = previewView.displayedImageSize
+        guard previewSize.width > 0,
+              previewSize.height > 0 else {
+            return .zero
+        }
+
+        let magnification = max(interactiveNavigationPreviewMagnification(for: previewSize), 0.0001)
+        let scaledSize = NSSize(
+            width: previewSize.width * magnification,
+            height: previewSize.height * magnification
+        )
+        return NSRect(
+            x: primaryFrame.midX - (scaledSize.width / 2),
+            y: primaryFrame.midY - (scaledSize.height / 2),
+            width: scaledSize.width,
+            height: scaledSize.height
+        )
+    }
+
+    func hideInteractiveNavigationPreviews() {
+        previousPreviewImageView.isHidden = true
+        nextPreviewImageView.isHidden = true
+    }
+
+    func completePendingInteractiveNavigationIfNeeded(appliedImageURL: URL?) {
+        guard let pendingInteractiveNavigationDestinationURL else { return }
+
+        if appliedImageURL == pendingInteractiveNavigationDestinationURL {
+            completeInteractiveNavigationTransition()
+        } else {
+            cancelInteractiveNavigationTransition()
+        }
+    }
+
+    private func interactiveNavigationDestinationURL(for direction: NavigationDirection) -> URL? {
+        switch direction {
+        case .previous:
+            return previousPreviewURL
+        case .next:
+            return nextPreviewURL
+        }
+    }
+
+    private func cancelInteractiveNavigationTransition() {
+        pendingInteractiveNavigationDestinationURL = nil
+        completeInteractiveNavigationTransition()
+    }
+
+    private func completeInteractiveNavigationTransition() {
+        pendingInteractiveNavigationDestinationURL = nil
+        interactiveNavigationStripView.layer?.removeAnimation(forKey: Self.interactiveNavigationAnimationKey)
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        interactiveNavigationStripView.layer?.transform = CATransform3DIdentity
+        CATransaction.commit()
+        hideInteractiveNavigationPreviews()
+        interactiveNavigationPrimaryFrame = nil
+    }
+
+    private func interactiveNavigationPreviewMagnification(for imageSize: NSSize) -> CGFloat {
+        switch viewportState.zoomMode {
+        case .fit(let fitMode):
+            return Self.fitMagnification(
+                imageSize: imageSize,
+                viewportSize: viewportSizeForLayout,
+                fitMode: fitMode,
+                minimumMagnification: scrollView.minMagnification,
+                maximumMagnification: scrollView.maxMagnification
+            )
+        case .custom:
+            return scrollView.magnification
+        case .actualSize:
+            return 1.0
+        }
     }
 }

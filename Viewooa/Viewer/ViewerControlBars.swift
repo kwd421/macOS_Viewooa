@@ -92,14 +92,11 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
                 }
             }
         } label: {
-            toolbarMenuLabel(
-                systemImage: "arrow.up.left.and.down.right.magnifyingglass",
-                title: currentFitMode?.shortTitle ?? "Custom"
-            )
+            ViewerFitModeIconLabel(fitMode: store.selectedFitMode)
         }
         .fixedSize()
         .visualHitArea(Capsule())
-        .accessibilityLabel("Fit Mode")
+        .accessibilityLabel("Fit Mode: \(store.selectedFitMode.title)")
     }
 
     private var toolbarSlideshowControl: some View {
@@ -121,8 +118,8 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
         .accessibilityLabel("Slideshow")
     }
 
-    private func toolbarMenuLabel(systemImage: String, title: String) -> some View {
-        ViewerControlCapsuleLabel(systemImage: systemImage, title: title)
+    private func toolbarMenuLabel(systemImage: String, title: String, titleWidth: CGFloat? = nil) -> some View {
+        ViewerControlCapsuleLabel(systemImage: systemImage, title: title, titleWidth: titleWidth)
     }
 
     private var slideshowIntervalEditor: some View {
@@ -182,11 +179,7 @@ struct ViewerTopControlBar<Store: PhotoViewerControlling>: View {
     }
 
     private var currentFitMode: FitMode? {
-        if case let .fit(fitMode) = store.zoomMode {
-            return fitMode
-        }
-
-        return nil
+        store.selectedFitMode
     }
 
     private var slideshowIntervalText: String {

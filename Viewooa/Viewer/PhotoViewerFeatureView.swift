@@ -30,6 +30,8 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
             if hasImage, !areBrowserOverlaysVisible {
                 topControlRevealArea
                 navigationCountOverlay
+                zoomPercentageOverlay
+                animatedImageControlsOverlay
                 metadataOverlay
                 bottomControlRevealArea
             }
@@ -48,6 +50,7 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
         .animation(.easeOut(duration: 0.16), value: bottomControlsVisible)
         .animation(.easeOut(duration: 0.16), value: store.isMetadataVisible)
         .animation(.smooth(duration: 0.58, extraBounce: 0), value: store.isNavigationCountVisible)
+        .animation(.easeOut(duration: 0.16), value: store.isZoomPercentageVisible)
         .animation(.easeOut(duration: 0.16), value: store.transientNotice)
         .onChange(of: store.transientNotice?.id) { _, noticeID in
             scheduleTransientNoticeDismissal(for: noticeID)
@@ -170,12 +173,80 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
                 Spacer()
             }
             .padding(.leading, 18)
-            .padding(.top, 18)
+            .padding(.top, 62)
 
             Spacer()
         }
         .allowsHitTesting(false)
         .accessibilityHidden(!store.isNavigationCountVisible)
+    }
+
+    private var zoomPercentageOverlay: some View {
+        VStack {
+            HStack {
+                Spacer()
+
+                if store.isZoomPercentageVisible, let zoomPercentageText = store.zoomPercentageText {
+                    Text(zoomPercentageText)
+                        .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 13)
+                        .frame(height: 34)
+                        .background(.ultraThinMaterial, in: Capsule())
+                        .overlay {
+                            Capsule().strokeBorder(VisualInteractionPalette.viewerSurfaceBorder)
+                        }
+                        .shadow(color: VisualInteractionPalette.viewerCardShadow, radius: 14, y: 7)
+                        .transition(.opacity.combined(with: .scale(scale: 0.985, anchor: .topTrailing)))
+                }
+            }
+            .padding(.trailing, 18)
+            .padding(.top, 18)
+
+            Spacer()
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(!store.isZoomPercentageVisible)
+    }
+
+    @ViewBuilder
+    private var animatedImageControlsOverlay: some View {
+        if store.hasAnimatedImageFrames {
+            VStack {
+                Spacer()
+
+                HStack(spacing: 8) {
+                    Text(store.animatedImageFrameText ?? "1 / 1")
+                        .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(.white)
+                        .padding(.leading, 12)
+                        .frame(minWidth: 58, alignment: .leading)
+
+                    ViewerControlIconButton(
+                        accessibilityLabel: "Previous GIF Frame",
+                        systemImage: "minus",
+                        action: store.showPreviousAnimatedImageFrame
+                    )
+
+                    ViewerControlIconButton(
+                        accessibilityLabel: store.isAnimatedImagePlaying ? "Pause GIF" : "Play GIF",
+                        systemImage: store.isAnimatedImagePlaying ? "pause.fill" : "play.fill",
+                        action: store.toggleAnimatedImagePlayback
+                    )
+
+                    ViewerControlIconButton(
+                        accessibilityLabel: "Next GIF Frame",
+                        systemImage: "plus",
+                        action: store.showNextAnimatedImageFrame
+                    )
+                }
+                .frame(height: 46)
+                .animatedImageToolbarSurface()
+                .padding(.leading, 18)
+                .padding(.bottom, 22)
+            }
+            .transition(.opacity.combined(with: .move(edge: .bottom)))
+        }
     }
 
     private var navigationCountSampleText: String {
@@ -235,5 +306,24 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
         guard !areBrowserOverlaysVisible else { return nil }
         guard !hasImage else { return nil }
         return .empty
+    }
+}
+
+private extension View {
+    func animatedImageToolbarSurface() -> some View {
+        VisualToolbarSurface(
+            shape: Capsule(),
+            style: VisualToolbarSurfaceStyle(
+                backgroundStyle: .ultraThinMaterial,
+                borderColor: VisualInteractionPalette.viewerSurfaceBorder,
+                shadowColor: VisualInteractionPalette.viewerToolbarShadow,
+                shadowRadius: 20,
+                shadowYOffset: 10,
+                horizontalPadding: 7,
+                verticalPadding: 0
+            )
+        ) {
+            self
+        }
     }
 }

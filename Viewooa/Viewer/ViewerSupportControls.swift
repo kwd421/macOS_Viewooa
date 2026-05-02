@@ -171,14 +171,48 @@ struct ViewerControlIconSurface: View {
 struct ViewerControlCapsuleLabel: View {
     let systemImage: String
     let title: String
+    var titleWidth: CGFloat?
 
     var body: some View {
         VisualHoverState(shape: Capsule()) { isHovering in
             VisualCapsuleIconTextLabel(
                 systemImage: systemImage,
                 title: title,
+                titleWidth: titleWidth,
                 backgroundColor: ViewerControlVisualStyle.capsuleBackground.color(isHovering: isHovering)
             )
+        }
+    }
+}
+
+struct ViewerFitModeIconLabel: View {
+    let fitMode: FitMode
+
+    var body: some View {
+        VisualHoverState(shape: Capsule()) { isHovering in
+            ZStack {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .strokeBorder(.white.opacity(0.95), lineWidth: 1.7)
+                    .frame(width: 23, height: 16)
+
+                Image(systemName: fitModeIconName)
+                    .font(.system(size: 10.5, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+            .frame(width: 38, height: 28)
+            .background(ViewerControlVisualStyle.capsuleBackground.color(isHovering: isHovering), in: Capsule())
+            .visualHitArea(Capsule())
+        }
+    }
+
+    private var fitModeIconName: String {
+        switch fitMode {
+        case .height:
+            return "arrow.up.and.down"
+        case .width:
+            return "arrow.left.and.right"
+        case .all:
+            return "arrow.up.left.and.arrow.down.right"
         }
     }
 }

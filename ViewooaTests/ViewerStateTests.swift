@@ -1,5 +1,6 @@
 import XCTest
 import PDFKit
+import ImageIO
 @testable import Viewooa
 
 final class ViewerStateTests: XCTestCase {
@@ -373,7 +374,7 @@ final class ViewerStateTests: XCTestCase {
 
         state.zoomIn()
 
-        XCTAssertEqual(state.zoomMode, .custom(1.25))
+        XCTAssertEqual(state.zoomMode, .custom(1.1))
     }
 
     @MainActor
@@ -383,7 +384,7 @@ final class ViewerStateTests: XCTestCase {
 
         state.zoomIn()
 
-        XCTAssertEqual(state.zoomMode, .custom(0.5))
+        XCTAssertEqual(state.zoomMode, .custom(0.44000000000000006))
     }
 
     @MainActor
@@ -392,7 +393,7 @@ final class ViewerStateTests: XCTestCase {
 
         state.zoomOut()
 
-        XCTAssertEqual(state.zoomMode, .custom(0.8))
+        XCTAssertEqual(state.zoomMode, .custom(0.9090909090909091))
     }
 
     @MainActor
@@ -402,7 +403,7 @@ final class ViewerStateTests: XCTestCase {
 
         state.zoomOut()
 
-        XCTAssertEqual(state.zoomMode, .custom(0.32))
+        XCTAssertEqual(state.zoomMode, .custom(0.36363636363636365))
     }
 
     @MainActor
@@ -417,7 +418,7 @@ final class ViewerStateTests: XCTestCase {
         bridge.zoomOut()
 
         XCTAssertFalse(bridge.areBrowserOverlaysVisible)
-        XCTAssertEqual(state.zoomMode, .custom(0.8))
+        XCTAssertEqual(state.zoomMode, .custom(0.9090909090909091))
     }
 
     @MainActor
@@ -438,7 +439,54 @@ final class ViewerStateTests: XCTestCase {
 
         state.zoomOut()
 
-        XCTAssertEqual(state.zoomMode, .custom(0.8))
+        XCTAssertEqual(state.zoomMode, .custom(0.9090909090909091))
+    }
+
+    @MainActor
+    func testZoomOutClampsToHalfOfFitForLargeImages() {
+        let state = ViewerState()
+        state.updateViewportMetrics(displayedMagnification: 0.21, fitMagnification: 0.4, isEntireImageVisible: true)
+
+        state.zoomOut()
+
+        XCTAssertEqual(state.zoomMode, .custom(0.2))
+    }
+
+    @MainActor
+    func testZoomOutClampsToActualSizeWhenActualIsSmallerThanFit() {
+        let state = ViewerState()
+        state.updateViewportMetrics(displayedMagnification: 1.05, fitMagnification: 2.0, isEntireImageVisible: true)
+
+        state.zoomOut()
+
+        XCTAssertEqual(state.zoomMode, .custom(1.0))
+    }
+
+    @MainActor
+    func testZoomActionShowsPercentageOverlay() {
+        let state = ViewerState()
+
+        state.zoomIn()
+
+        XCTAssertTrue(state.isZoomPercentageVisible)
+        XCTAssertEqual(state.zoomPercentageText, "110%")
+    }
+
+    @MainActor
+    func testOpeningGIFEnablesFrameControlsAndFrameSteppingPausesPlayback() throws {
+        let url = try Self.makeTemporaryGIF()
+        let state = ViewerState()
+
+        state.apply(index: FolderImageIndex(imageURLs: [url], currentIndex: 0))
+
+        XCTAssertTrue(state.hasAnimatedImageFrames)
+        XCTAssertEqual(state.animatedImageFrameText, "1 / 2")
+        XCTAssertTrue(state.isAnimatedImagePlaying)
+
+        state.showNextAnimatedImageFrame()
+
+        XCTAssertFalse(state.isAnimatedImagePlaying)
+        XCTAssertEqual(state.animatedImageFrameText, "2 / 2")
     }
 
     @MainActor
@@ -577,4 +625,60 @@ final class ViewerStateTests: XCTestCase {
         return url
     }
 
+}
+
+private extension ViewerStateTests {
+    static func makeTemporaryGIF() throws -> URL {
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension("gif")
+
+        guard let destination = CGImageDestinationCreateWithURL(
+            url as CFURL,
+            "com.compuserve.gif" as CFString,
+            2,
+            nil
+        ) else {
+            throw NSError(domain: "ViewerStateTests", code: 1)
+        }
+
+        for color in [NSColor.red, NSColor.blue] {
+            guard let image = makeCGImage(color: color) else {
+                throw NSError(domain: "ViewerStateTests", code: 2)
+            }
+            let properties: [CFString: Any] = [
+                kCGImagePropertyGIFDictionary: [
+                    kCGImagePropertyGIFDelayTime: 0.1
+                ]
+            ]
+            CGImageDestinationAddImage(destination, image, properties as CFDictionary)
+        }
+
+        guard CGImageDestinationFinalize(destination) else {
+            throw NSError(domain: "ViewerStateTests", code: 3)
+        }
+
+        return url
+    }
+
+    static func makeCGImage(color: NSColor) -> CGImage? {
+        let width = 2
+        let height = 2
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: width * 4,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return nil
+        }
+
+        context.setFillColor(color.cgColor)
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        return context.makeImage()
+    }
 }

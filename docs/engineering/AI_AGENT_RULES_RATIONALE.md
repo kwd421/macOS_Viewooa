@@ -1,5 +1,7 @@
 # Universal AI Engineering Rules
 
+This document is the expanded rationale and review reference for `AI_AGENT_RULES.md`. It is not the primary runtime instruction file. If this document conflicts with `AI_AGENT_RULES.md`, the runtime contract in `AI_AGENT_RULES.md` controls.
+
 These rules are project-agnostic. They are meant to be reusable as an AI coding agent engineering standard for any codebase: app, backend, frontend, automation, data pipeline, library, script, infrastructure, notebook, or tool.
 
 The goal is not to force clever architecture. The goal is to prevent careless implementation: copy-paste logic, scattered hardcoded policy, unsafe side effects, avoidable coupling, and "it works once" code that becomes expensive to change.

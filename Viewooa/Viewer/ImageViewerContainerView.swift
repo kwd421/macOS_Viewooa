@@ -6,12 +6,42 @@ struct ImageViewerContainerConfiguration {
     let resolvedImages: [NSImage]?
     let imageURL: URL?
     let imageURLs: [URL]?
+    let previousPreviewURL: URL?
+    let nextPreviewURL: URL?
     let zoomMode: ZoomMode
     let rotationQuarterTurns: Int
     let pageLayout: ViewerPageLayout
     let fitRequestID: Int
     let postProcessingOptions: Set<ImagePostProcessingOption>
     let verticalAutoScrollScreenSpeed: CGFloat
+
+    init(
+        resolvedImage: NSImage?,
+        resolvedImages: [NSImage]?,
+        imageURL: URL?,
+        imageURLs: [URL]?,
+        previousPreviewURL: URL? = nil,
+        nextPreviewURL: URL? = nil,
+        zoomMode: ZoomMode,
+        rotationQuarterTurns: Int,
+        pageLayout: ViewerPageLayout,
+        fitRequestID: Int,
+        postProcessingOptions: Set<ImagePostProcessingOption>,
+        verticalAutoScrollScreenSpeed: CGFloat
+    ) {
+        self.resolvedImage = resolvedImage
+        self.resolvedImages = resolvedImages
+        self.imageURL = imageURL
+        self.imageURLs = imageURLs
+        self.previousPreviewURL = previousPreviewURL
+        self.nextPreviewURL = nextPreviewURL
+        self.zoomMode = zoomMode
+        self.rotationQuarterTurns = rotationQuarterTurns
+        self.pageLayout = pageLayout
+        self.fitRequestID = fitRequestID
+        self.postProcessingOptions = postProcessingOptions
+        self.verticalAutoScrollScreenSpeed = verticalAutoScrollScreenSpeed
+    }
 }
 
 struct ImageViewerContainerActions {
@@ -43,6 +73,8 @@ struct ImageViewerContainerView: NSViewRepresentable {
             resolvedImages: configuration.resolvedImages,
             imageURL: configuration.imageURL,
             imageURLs: configuration.imageURLs,
+            previousPreviewURL: configuration.previousPreviewURL,
+            nextPreviewURL: configuration.nextPreviewURL,
             zoomMode: configuration.zoomMode,
             rotationQuarterTurns: configuration.rotationQuarterTurns,
             pageLayout: configuration.pageLayout,

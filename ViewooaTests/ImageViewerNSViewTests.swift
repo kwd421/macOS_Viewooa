@@ -171,7 +171,7 @@ final class ImageViewerNSViewTests: XCTestCase {
     }
 
     @MainActor
-    func testCommandWheelZoomOutStartedAboveFitSnapsBackToFit() async {
+    func testCommandWheelZoomOutStartedAboveFitKeepsCustomZoomWhenAboveMinimum() async {
         let viewer = ImageViewerNSView()
         viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
         let image = NSImage(size: NSSize(width: 200, height: 200))
@@ -192,7 +192,10 @@ final class ImageViewerNSViewTests: XCTestCase {
         XCTAssertTrue(viewer.handleCommandWheelZoom(verticalDelta: 0, horizontalDelta: 0, phase: .ended))
         try? await Task.sleep(for: .milliseconds(360))
 
-        XCTAssertEqual(reportedZoomModes.last, .fit(.all))
+        guard case .custom(let scale) = reportedZoomModes.last else {
+            return XCTFail("Expected a custom zoom mode")
+        }
+        XCTAssertGreaterThan(scale, 1.0)
     }
 
     @MainActor
@@ -215,7 +218,7 @@ final class ImageViewerNSViewTests: XCTestCase {
     }
 
     @MainActor
-    func testPinchZoomOutBelowFitSnapsBackToFitWhenGestureEnds() {
+    func testPinchZoomOutBelowMinimumClampsToActualSizeWhenImageIsSmallerThanFit() {
         let viewer = ImageViewerNSView()
         viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
         let image = NSImage(size: NSSize(width: 200, height: 200))
@@ -233,7 +236,7 @@ final class ImageViewerNSViewTests: XCTestCase {
         viewer.layoutSubtreeIfNeeded()
 
         XCTAssertTrue(viewer.snapBackToFitIfNeeded(animated: false))
-        XCTAssertEqual(reportedZoomMode, .fit(.all))
+        XCTAssertEqual(reportedZoomMode, .custom(1.0))
     }
 
     @MainActor

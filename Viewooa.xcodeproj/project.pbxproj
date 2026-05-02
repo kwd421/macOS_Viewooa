@@ -24,6 +24,7 @@
 		A1000000000000000000005E /* ViewerImageMetadataReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerImageMetadataReader.swift; sourceTree = "<group>"; };
 		A10000000000000000000060 /* ViewerDocumentLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerDocumentLoader.swift; sourceTree = "<group>"; };
 		A10000000000000000000062 /* ViewerNavigationResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerNavigationResolver.swift; sourceTree = "<group>"; };
+		A100000000000000000000A0 /* AnimatedImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedImageLoader.swift; sourceTree = "<group>"; };
 		A10000000000000000000019 /* ViewerCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerCommands.swift; sourceTree = "<group>"; };
 		A10000000000000000000074 /* ViewerState+Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Content.swift"; sourceTree = "<group>"; };
 		A10000000000000000000076 /* ViewerState+Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Navigation.swift"; sourceTree = "<group>"; };
@@ -31,6 +32,7 @@
 		A1000000000000000000007A /* ViewerState+Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Display.swift"; sourceTree = "<group>"; };
 		A1000000000000000000007E /* ViewerState+Slideshow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Slideshow.swift"; sourceTree = "<group>"; };
 		A10000000000000000000080 /* ViewerState+Notices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+Notices.swift"; sourceTree = "<group>"; };
+		A100000000000000000000A1 /* ViewerState+AnimatedImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewerState+AnimatedImage.swift"; sourceTree = "<group>"; };
 		A1000000000000000000001D /* ImageViewportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewportState.swift; sourceTree = "<group>"; };
 		A1000000000000000000008A /* PhotoViewerFeatureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewerFeatureView.swift; sourceTree = "<group>"; };
 		A1000000000000000000008C /* PhotoViewerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewerStore.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				A1000000000000000000005E /* ViewerImageMetadataReader.swift */,
 				A10000000000000000000060 /* ViewerDocumentLoader.swift */,
 				A10000000000000000000062 /* ViewerNavigationResolver.swift */,
+				A100000000000000000000A0 /* AnimatedImageLoader.swift */,
 				A10000000000000000000018 /* ViewerState.swift */,
 				A10000000000000000000074 /* ViewerState+Content.swift */,
 				A10000000000000000000076 /* ViewerState+Navigation.swift */,
@@ -184,6 +187,7 @@
 				A1000000000000000000007A /* ViewerState+Display.swift */,
 				A1000000000000000000007E /* ViewerState+Slideshow.swift */,
 				A10000000000000000000080 /* ViewerState+Notices.swift */,
+				A100000000000000000000A1 /* ViewerState+AnimatedImage.swift */,
 				A10000000000000000000024 /* ImagePreloadQueue.swift */,
 			);
 			path = Core;
@@ -485,6 +489,7 @@
 				A1000000000000000000005F /* ViewerImageMetadataReader.swift in Sources */,
 				A10000000000000000000061 /* ViewerDocumentLoader.swift in Sources */,
 				A10000000000000000000063 /* ViewerNavigationResolver.swift in Sources */,
+				A100000000000000000000A2 /* AnimatedImageLoader.swift in Sources */,
 				A1000000000000000000001B /* ViewerState.swift in Sources */,
 				A10000000000000000000075 /* ViewerState+Content.swift in Sources */,
 				A10000000000000000000077 /* ViewerState+Navigation.swift in Sources */,
@@ -492,6 +497,7 @@
 				A1000000000000000000007B /* ViewerState+Display.swift in Sources */,
 				A1000000000000000000007F /* ViewerState+Slideshow.swift in Sources */,
 				A10000000000000000000081 /* ViewerState+Notices.swift in Sources */,
+				A100000000000000000000A4 /* ViewerState+AnimatedImage.swift in Sources */,
 				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
 				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
 				A1000000000000000000008B /* PhotoViewerFeatureView.swift in Sources */,
@@ -591,6 +597,7 @@
 				A1000000000000000000005F /* ViewerImageMetadataReader.swift in Sources */,
 				A10000000000000000000061 /* ViewerDocumentLoader.swift in Sources */,
 				A10000000000000000000063 /* ViewerNavigationResolver.swift in Sources */,
+				A100000000000000000000A3 /* AnimatedImageLoader.swift in Sources */,
 				A1000000000000000000001B /* ViewerState.swift in Sources */,
 				A10000000000000000000075 /* ViewerState+Content.swift in Sources */,
 				A10000000000000000000077 /* ViewerState+Navigation.swift in Sources */,
@@ -598,6 +605,7 @@
 				A1000000000000000000007B /* ViewerState+Display.swift in Sources */,
 				A1000000000000000000007F /* ViewerState+Slideshow.swift in Sources */,
 				A10000000000000000000081 /* ViewerState+Notices.swift in Sources */,
+				A100000000000000000000A5 /* ViewerState+AnimatedImage.swift in Sources */,
 				A1000000000000000000001C /* ViewerCommands.swift in Sources */,
 				A10000000000000000000021 /* ImageViewportState.swift in Sources */,
 				A1000000000000000000008B /* PhotoViewerFeatureView.swift in Sources */,
@@ -740,6 +748,10 @@
 		A1000000000000000000003D /* ViewerControlBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003C /* ViewerControlBars.swift */; };
 		A1000000000000000000003F /* ViewerSlideshowIntervalFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000003E /* ViewerSlideshowIntervalFormatter.swift */; };
 		A10000000000000000000025 /* ImagePreloadQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000024 /* ImagePreloadQueue.swift */; };
+		A100000000000000000000A2 /* AnimatedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A0 /* AnimatedImageLoader.swift */; };
+		A100000000000000000000A3 /* AnimatedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A0 /* AnimatedImageLoader.swift */; };
+		A100000000000000000000A4 /* ViewerState+AnimatedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A1 /* ViewerState+AnimatedImage.swift */; };
+		A100000000000000000000A5 /* ViewerState+AnimatedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A1 /* ViewerState+AnimatedImage.swift */; };
 		A20000000000000000000007 /* OpenBrowserModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* OpenBrowserModels.swift */; };
 		A20000000000000000000008 /* OpenBrowserScrollSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* OpenBrowserScrollSupport.swift */; };
 		A20000000000000000000009 /* OpenBrowserStyling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* OpenBrowserStyling.swift */; };

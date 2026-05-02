@@ -7,12 +7,19 @@ final class ImageViewerNSView: NSView {
     }
 
     let scrollView = NavigationAwareScrollView()
+    let interactiveNavigationStripView = NSView()
     let documentContainerView = DoubleClickAwareView()
+    let previousPreviewImageView = RotatingImageView()
+    let nextPreviewImageView = RotatingImageView()
+    var previousPreviewURL: URL?
+    var nextPreviewURL: URL?
+    var interactiveNavigationPrimaryFrame: NSRect?
+    var interactiveNavigationAnimationGeneration = 0
+    var pendingInteractiveNavigationDestinationURL: URL?
     var viewportState = ImageViewportState()
     let commandWheelZoomCoordinator = ImageViewerCommandWheelZoomCoordinator()
     let trackpadScrollCoordinator = ImageViewerTrackpadScrollCoordinator()
     let pointerDragCoordinator = ImageViewerPointerDragCoordinator()
-    let pointerLockController = ImageViewerPointerLockController()
     var lastAppliedFitRequestID = 0
     var lastFitMode: FitMode = .all
     let keyboardCoordinator = ImageViewerKeyboardCoordinator()
@@ -49,6 +56,7 @@ final class ImageViewerNSView: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         configureViewerInfrastructure()
+        configureNavigationPreviewImageViews()
     }
 
     required init?(coder: NSCoder) {
@@ -61,7 +69,19 @@ final class ImageViewerNSView: NSView {
 
     override func layout() {
         super.layout()
-        scrollView.frame = bounds
+        let pageStep = bounds.width + Self.interactiveNavigationPageGap
+        interactiveNavigationStripView.frame = NSRect(
+            x: -pageStep,
+            y: 0,
+            width: bounds.width + (pageStep * 2),
+            height: bounds.height
+        )
+        scrollView.frame = NSRect(
+            x: pageStep,
+            y: 0,
+            width: bounds.width,
+            height: bounds.height
+        )
 
         if case let .fit(fitMode) = viewportState.zoomMode {
             applyZoomMode(.fit(fitMode), animated: false)
@@ -73,7 +93,6 @@ final class ImageViewerNSView: NSView {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         if window == nil {
-            pointerLockController.end()
             keyboardCoordinator.endHold { onNavigationHoldChange?($0) }
             return
         }
@@ -85,6 +104,8 @@ final class ImageViewerNSView: NSView {
         resolvedImages: [NSImage]? = nil,
         imageURL: URL?,
         imageURLs: [URL]? = nil,
+        previousPreviewURL: URL? = nil,
+        nextPreviewURL: URL? = nil,
         zoomMode: ZoomMode,
         rotationQuarterTurns: Int,
         pageLayout: ViewerPageLayout = .single,
@@ -122,6 +143,12 @@ final class ImageViewerNSView: NSView {
                 imageURLs: displayURLs
             )
         }
+        updateNavigationPreviewImages(
+            previousURL: previousPreviewURL,
+            nextURL: nextPreviewURL,
+            rotationQuarterTurns: rotationQuarterTurns,
+            postProcessingOptions: postProcessingOptions
+        )
 
         if didChangeImage || didChangeRotation {
             imageStack.updateRotation(rotationQuarterTurns)
@@ -140,6 +167,58 @@ final class ImageViewerNSView: NSView {
 
         lastAppliedFitRequestID = fitRequestID
         setVerticalAutoScrollScreenSpeed(verticalAutoScrollScreenSpeed)
+
+        if didChangeImage {
+            completePendingInteractiveNavigationIfNeeded(appliedImageURL: newState.imageURL)
+        }
+    }
+
+    private func configureNavigationPreviewImageViews() {
+        for imageView in [previousPreviewImageView, nextPreviewImageView] {
+            imageView.imageScaling = .scaleNone
+            imageView.isHidden = true
+            configureHandlers(for: imageView)
+            interactiveNavigationStripView.addSubview(imageView, positioned: .above, relativeTo: scrollView)
+        }
+    }
+
+    private func updateNavigationPreviewImages(
+        previousURL: URL?,
+        nextURL: URL?,
+        rotationQuarterTurns: Int,
+        postProcessingOptions: Set<ImagePostProcessingOption>
+    ) {
+        updateNavigationPreviewImageView(
+            previousPreviewImageView,
+            currentURL: &self.previousPreviewURL,
+            nextURL: previousURL,
+            rotationQuarterTurns: rotationQuarterTurns,
+            postProcessingOptions: postProcessingOptions
+        )
+        updateNavigationPreviewImageView(
+            nextPreviewImageView,
+            currentURL: &self.nextPreviewURL,
+            nextURL: nextURL,
+            rotationQuarterTurns: rotationQuarterTurns,
+            postProcessingOptions: postProcessingOptions
+        )
+    }
+
+    private func updateNavigationPreviewImageView(
+        _ imageView: RotatingImageView,
+        currentURL: inout URL?,
+        nextURL: URL?,
+        rotationQuarterTurns: Int,
+        postProcessingOptions: Set<ImagePostProcessingOption>
+    ) {
+        if currentURL != nextURL {
+            currentURL = nextURL
+            imageView.image = nextURL.flatMap { ImageFileLoader.loadDisplayImage(at: $0) }
+        }
+        imageView.rotationQuarterTurns = rotationQuarterTurns
+        imageView.postProcessingOptions = postProcessingOptions
+        imageView.frame = NSRect(origin: .zero, size: imageView.displayedImageSize)
+        imageView.isHidden = true
     }
 
 }

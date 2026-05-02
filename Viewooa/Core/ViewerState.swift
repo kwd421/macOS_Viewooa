@@ -26,6 +26,11 @@ final class ViewerState: ObservableObject {
     @Published var slideshowIntervalSeconds = 3.0
     @Published var postProcessingOptions: Set<ImagePostProcessingOption> = []
     @Published var fitRequestID = 0
+    @Published var zoomPercentageText: String?
+    @Published var isZoomPercentageVisible = false
+    @Published var animatedImageFrameIndex = 0
+    @Published var animatedImageFrameCount = 0
+    @Published var isAnimatedImagePlaying = false
 
     static let minimumSlideshowIntervalSeconds = 0.5
     static let maximumSlideshowIntervalSeconds = 60.0
@@ -40,6 +45,9 @@ final class ViewerState: ObservableObject {
     var pdfDocument: ViewerPDFDocument?
     var navigationCountDismissTask: Task<Void, Never>?
     var slideshowTask: Task<Void, Never>?
+    var zoomPercentageDismissTask: Task<Void, Never>?
+    var animatedImageFrames: [AnimatedImageFrame] = []
+    var animatedImagePlaybackTask: Task<Void, Never>?
 
     init(
         index: FolderImageIndex? = nil,
@@ -56,6 +64,8 @@ final class ViewerState: ObservableObject {
     deinit {
         navigationCountDismissTask?.cancel()
         slideshowTask?.cancel()
+        zoomPercentageDismissTask?.cancel()
+        animatedImagePlaybackTask?.cancel()
     }
 
     func openFile(at fileURL: URL) {

@@ -16,9 +16,7 @@ final class ImageViewerPointerDragCoordinator {
         _ phase: PointerDragPhase,
         event: NSEvent,
         canPan: Bool,
-        onPan: (_ previousLocation: NSPoint, _ currentLocation: NSPoint) -> Void,
-        onPointerLockBegin: (_ startLocation: NSPoint) -> Void = { _ in },
-        onPointerLockEnd: () -> Void = {}
+        onPan: (_ previousLocation: NSPoint, _ currentLocation: NSPoint) -> Void
     ) -> Bool {
         switch phase {
         case .began:
@@ -41,9 +39,6 @@ final class ImageViewerPointerDragCoordinator {
                 return false
             }
 
-            if !hasDraggedVisibleRect {
-                onPointerLockBegin(dragStartLocationInWindow)
-            }
             onPan(lastDragLocationInWindow, currentLocation)
             self.lastDragLocationInWindow = currentLocation
             hasDraggedVisibleRect = true
@@ -53,58 +48,8 @@ final class ImageViewerPointerDragCoordinator {
 
             let didDrag = hasDraggedVisibleRect
             reset()
-            if didDrag {
-                onPointerLockEnd()
-            }
             return didDrag
         }
     }
-}
 
-final class ImageViewerPointerLockController {
-    private var lockedScreenPoint: CGPoint?
-    private var isCursorHidden = false
-
-    deinit {
-        end()
-    }
-
-    @MainActor
-    func begin(atWindowLocation locationInWindow: NSPoint, in window: NSWindow?) {
-        guard lockedScreenPoint == nil,
-              let screenPoint = Self.cursorWarpPoint(forWindowLocation: locationInWindow, in: window) else {
-            return
-        }
-
-        lockedScreenPoint = screenPoint
-        NSCursor.hide()
-        isCursorHidden = true
-    }
-
-    func end() {
-        guard lockedScreenPoint != nil || isCursorHidden else {
-            return
-        }
-
-        if let lockedScreenPoint {
-            CGWarpMouseCursorPosition(lockedScreenPoint)
-        }
-        if isCursorHidden {
-            NSCursor.unhide()
-            isCursorHidden = false
-        }
-        lockedScreenPoint = nil
-    }
-
-    @MainActor
-    private static func cursorWarpPoint(forWindowLocation locationInWindow: NSPoint, in window: NSWindow?) -> CGPoint? {
-        guard let window else { return nil }
-
-        let screenPoint = window.convertPoint(toScreen: locationInWindow)
-        let displayBounds = CGDisplayBounds(CGMainDisplayID())
-        return CGPoint(
-            x: screenPoint.x - displayBounds.minX,
-            y: displayBounds.maxY - screenPoint.y
-        )
-    }
 }

@@ -86,6 +86,26 @@ extension ViewerState {
         ).compactMap { pdfDocument.image(at: $0) }
     }
 
+    var previousPreviewImageURL: URL? {
+        guard pageLayout == .single,
+              !isViewingPDF,
+              let index else { return nil }
+
+        let previousIndex = index.currentIndex - 1
+        guard index.imageURLs.indices.contains(previousIndex) else { return nil }
+        return index.imageURLs[previousIndex]
+    }
+
+    var nextPreviewImageURL: URL? {
+        guard pageLayout == .single,
+              !isViewingPDF,
+              let index else { return nil }
+
+        let nextIndex = index.currentIndex + 1
+        guard index.imageURLs.indices.contains(nextIndex) else { return nil }
+        return index.imageURLs[nextIndex]
+    }
+
     var isViewingPDF: Bool {
         pdfDocument != nil
     }

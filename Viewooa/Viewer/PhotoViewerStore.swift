@@ -17,7 +17,13 @@ protocol PhotoViewerControlling: ObservableObject {
     var spreadDirection: SpreadDirection { get }
     var isCoverModeEnabled: Bool { get }
     var zoomMode: ZoomMode { get }
+    var selectedFitMode: FitMode { get }
+    var zoomPercentageText: String? { get }
+    var isZoomPercentageVisible: Bool { get }
     var isSlideshowPlaying: Bool { get }
+    var hasAnimatedImageFrames: Bool { get }
+    var animatedImageFrameText: String? { get }
+    var isAnimatedImagePlaying: Bool { get }
     var imageViewerConfiguration: ImageViewerContainerConfiguration { get }
 
     func imageViewerActions() -> ImageViewerContainerActions
@@ -37,6 +43,9 @@ protocol PhotoViewerControlling: ObservableObject {
     func beginNavigationHoldIndicator()
     func endNavigationHoldIndicator()
     func toggleActualSize()
+    func showPreviousAnimatedImageFrame()
+    func toggleAnimatedImagePlayback()
+    func showNextAnimatedImageFrame()
 }
 
 @MainActor
@@ -64,7 +73,13 @@ final class PhotoViewerStore: PhotoViewerControlling {
     var spreadDirection: SpreadDirection { viewerState.spreadDirection }
     var isCoverModeEnabled: Bool { viewerState.isCoverModeEnabled }
     var zoomMode: ZoomMode { viewerState.zoomMode }
+    var selectedFitMode: FitMode { viewerState.preferredFitMode }
+    var zoomPercentageText: String? { viewerState.zoomPercentageText }
+    var isZoomPercentageVisible: Bool { viewerState.isZoomPercentageVisible }
     var isSlideshowPlaying: Bool { viewerState.isSlideshowPlaying }
+    var hasAnimatedImageFrames: Bool { viewerState.hasAnimatedImageFrames }
+    var animatedImageFrameText: String? { viewerState.animatedImageFrameText }
+    var isAnimatedImagePlaying: Bool { viewerState.isAnimatedImagePlaying }
     var initialOpenBrowserDirectory: URL {
         guard let directory = viewerState.currentImageURL?.deletingLastPathComponent() else {
             return FileManager.default.homeDirectoryForCurrentUser
@@ -85,6 +100,8 @@ final class PhotoViewerStore: PhotoViewerControlling {
             resolvedImages: viewerState.displayResolvedImages,
             imageURL: viewerState.currentImageURL,
             imageURLs: viewerState.displayImageURLs,
+            previousPreviewURL: viewerState.previousPreviewImageURL,
+            nextPreviewURL: viewerState.nextPreviewImageURL,
             zoomMode: viewerState.zoomMode,
             rotationQuarterTurns: viewerState.rotationQuarterTurns,
             pageLayout: viewerState.pageLayout,
@@ -165,6 +182,7 @@ final class PhotoViewerStore: PhotoViewerControlling {
 
     func zoomToActualSize() {
         viewerState.zoomMode = .actualSize
+        viewerState.showZoomPercentage(for: 1.0)
     }
 
     func zoomToFit(_ mode: FitMode) {
@@ -195,9 +213,21 @@ final class PhotoViewerStore: PhotoViewerControlling {
         viewerState.toggleActualSize()
     }
 
+    func showPreviousAnimatedImageFrame() {
+        viewerState.showPreviousAnimatedImageFrame()
+    }
+
+    func toggleAnimatedImagePlayback() {
+        viewerState.toggleAnimatedImagePlayback()
+    }
+
+    func showNextAnimatedImageFrame() {
+        viewerState.showNextAnimatedImageFrame()
+    }
+
     private func setZoomMode(_ zoomMode: ZoomMode) {
         guard viewerState.zoomMode != zoomMode else { return }
-        viewerState.zoomMode = zoomMode
+        viewerState.setZoomModeFromViewer(zoomMode)
     }
 
     private func updateViewportMetrics(

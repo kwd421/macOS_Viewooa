@@ -26,7 +26,7 @@ enum FitMode: CaseIterable, Equatable, Identifiable {
         case .width:
             "Width"
         case .all:
-            "All"
+            "Fit"
         }
     }
 }
@@ -151,7 +151,19 @@ struct ViewerTransientNotice: Identifiable, Equatable {
 }
 
 enum ViewerZoom {
-    static let step: CGFloat = 1.25
+    static let step: CGFloat = 1.10
     static let minimumScale: CGFloat = 0.05
     static let maximumScale: CGFloat = 8.0
+
+    static func minimumAllowedScale(fitMagnification: CGFloat) -> CGFloat {
+        guard fitMagnification.isFinite, fitMagnification > 0 else {
+            return minimumScale
+        }
+
+        if fitMagnification > 1.0 {
+            return 1.0
+        }
+
+        return max(minimumScale, fitMagnification * 0.5)
+    }
 }
