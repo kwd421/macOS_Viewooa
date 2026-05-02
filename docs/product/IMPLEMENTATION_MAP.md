@@ -29,7 +29,7 @@ Must not own:
 ### Browser
 
 Purpose:
-Browse, select, search, and open files/folders in a Finder/Photos-inspired surface.
+Browse, select, search, and open files/folders in a Finder-class surface.
 
 Primary code:
 - `Viewooa/OpenBrowser/`
@@ -41,11 +41,13 @@ Owns:
 - Sidebar, locations, path, grid/list browsing.
 - Selection model and open confirmation behavior.
 - Thumbnail presentation and browser-specific layout.
+- All-file visibility, system icon fallback, Quick Look routing, and system-open fallback for file types Viewooa does not preview internally.
 
 Must not own:
 - Viewer zoom/pan/rendering internals.
 - Long-term cross-feature favorites or tags directly.
 - File mutation execution without a preview/command layer.
+- Direct custom handling for system-owned file behaviors such as mounting DMGs or launching unrelated document types.
 
 ### App Bridge
 
@@ -93,14 +95,21 @@ Must not own:
 - Keep browser opening replaceable: bottom toolbar open action should remain bridge-routed.
 - Keep menu bar commands in sync with toolbar/context actions.
 - Avoid hidden file mutations until a command model exists.
+- Make Browser behave like a real file browser: show all files, browse folders, open Viewooa-supported media internally, and delegate other files to macOS.
+- Fix thumbnail size stepping so `-` / `+` only disable at true min/max and each step creates a meaningful layout change.
+- Align icon view to Finder-like top-left layout with native-feeling spacing and stable scroll position.
 
 ### P1 Alignment
 
-- Improve browser selection, sorting, and metadata in small slices.
+- Improve browser selection, focus, keyboard navigation, sorting, and metadata in small slices.
+- Add Finder-like shortcuts: arrow navigation, Return/Cmd-Down open, Cmd-F search, type-to-select, and Space for Quick Look.
+- Add Quick Look integration through macOS system APIs instead of custom preview decoding.
+- Add video/audio hover preview with one active inline playback at a time.
 - Add favorites/tags through bridge-owned shared state, not browser-only state.
 - Add thumbnail cache and progressive loading improvements behind the browser data source.
 
 ### P2 Alignment
 
+- Add Finder-style tabs. When asked to implement all remaining Finder work, confirm whether tabs are included before starting.
 - Add a preview-first command model before AI features.
 - Add command palette/App Intents/MCP only after command model boundaries are explicit.

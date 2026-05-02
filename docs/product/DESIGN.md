@@ -724,6 +724,23 @@ The document is intentionally broader than the current implementation, so featur
 Follow-up:
 Use `docs/product/IMPLEMENTATION_MAP.md` to translate this constitution into current code boundaries.
 
+### 2026-05-02 — Move the browser toward Finder-class behavior
+
+Decision:
+The built-in browser should move toward a Finder-class file browser, not remain only an image/PDF picker. It should show every file in the current location. Files Viewooa can preview well, such as images, RAW files, GIFs, and PDFs, should open inside Viewooa. Other files, such as DMGs, archives, documents, apps, video, and audio, should remain visible and be opened through macOS system handling unless Viewooa later adds a dedicated viewer for that type.
+
+Reason:
+The browser looks and feels close enough to Finder that hiding unsupported files makes normal folders feel incomplete or broken. Finder-like behavior is safer and easier to understand: folders are browsed, supported media opens in Viewooa, and everything else is delegated to the system.
+
+Alternatives considered:
+Keeping the browser as a focused image/PDF picker, or showing unsupported files as disabled items. These are simpler, but they conflict with the Finder replacement direction and make Downloads-style folders feel wrong.
+
+Trade-offs:
+Finder-class behavior increases scope. It requires stronger keyboard navigation, clearer selection and focus states, system icon and thumbnail handling, Quick Look integration, and careful lazy loading. The app must avoid becoming heavy by loading only visible content, caching results, limiting concurrent work, and delegating system file behavior to macOS.
+
+Follow-up:
+Prioritize left-aligned Finder-like icon layout, meaningful thumbnail sizing, all-file visibility, system-open fallback, Quick Look on Space, media hover preview, and future Finder-style tabs. If a future task says to implement everything, explicitly confirm whether Finder-style tabs are included before starting.
+
 ### Decision Template
 
 ```md
@@ -749,4 +766,4 @@ Follow-up:
 - Should column view be implemented early or delayed?
 - Should AI features be local-only first, cloud-model optional, or both?
 - Should the app support editing metadata directly or only through tags/notes?
-- How much Finder interoperability is required for v1?
+- Which Finder-class features should ship in v1 versus later, especially tabs, Quick Look, media hover playback, and all-file operations?
