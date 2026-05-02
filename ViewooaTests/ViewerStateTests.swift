@@ -514,6 +514,21 @@ final class ViewerStateTests: XCTestCase {
         XCTAssertFalse(state.isAnimatedImagePlaying)
         XCTAssertEqual(state.animatedImageFrameText, "2 / 2")
         XCTAssertEqual(state.imageRevision, 2)
+
+        state.toggleAnimatedImagePlayback()
+
+        XCTAssertTrue(state.isAnimatedImagePlaying)
+
+        state.showPreviousAnimatedImageFrame()
+
+        XCTAssertFalse(state.isAnimatedImagePlaying)
+        XCTAssertEqual(state.animatedImageFrameText, "1 / 2")
+        XCTAssertEqual(state.imageRevision, 3)
+
+        state.toggleAnimatedImagePlayback()
+        state.toggleAnimatedImagePlayback()
+
+        XCTAssertFalse(state.isAnimatedImagePlaying)
     }
 
     @MainActor

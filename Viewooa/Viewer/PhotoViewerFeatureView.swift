@@ -3,6 +3,7 @@ import SwiftUI
 
 private enum PhotoViewerOverlayLayout {
     static let controlBarEdgePadding: CGFloat = 20
+    static let controlBarHeight = ViewerControlVisualStyle.iconSize + 20
     static let metadataPanelTopPadding: CGFloat = 76
     static let metadataPanelTopPaddingWithNavigationCount: CGFloat = 98
 }
@@ -31,9 +32,9 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
                 topControlRevealArea
                 navigationCountOverlay
                 zoomPercentageOverlay
-                animatedImageControlsOverlay
                 metadataOverlay
                 bottomControlRevealArea
+                animatedImageControlsOverlay
             }
 
             if let overlayKind {
@@ -237,7 +238,7 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
                     action: store.showNextAnimatedImageFrame
                 )
             }
-            .frame(height: 46)
+            .frame(height: PhotoViewerOverlayLayout.controlBarHeight)
             .animatedImageToolbarSurface()
             .padding(.leading, 18)
             .padding(.bottom, bottomControlsVisible ? 84 : 22)
