@@ -241,7 +241,7 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
             .frame(height: PhotoViewerOverlayLayout.controlBarHeight)
             .animatedImageToolbarSurface()
             .padding(.leading, 18)
-            .padding(.bottom, bottomControlsVisible ? 84 : 22)
+            .padding(.bottom, PhotoViewerOverlayLayout.controlBarEdgePadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             .transition(.opacity.combined(with: .move(edge: .bottom)))
         }
