@@ -2,9 +2,14 @@ import Foundation
 
 extension ViewerState {
     func apply(index: FolderImageIndex, hidesNavigationCount: Bool = true) {
+        guard let currentURL = index.currentURL else {
+            setError(message: "Invalid image index.")
+            return
+        }
+
         pdfDocument = nil
         self.index = index
-        currentImageURL = index.imageURLs[index.currentIndex]
+        currentImageURL = currentURL
         currentResolvedImage = currentImageURL.flatMap { preloadQueue.image(for: $0) }
         resetViewportForNewContent(hidesNavigationCount: hidesNavigationCount)
         loadAnimatedImageIfNeeded()

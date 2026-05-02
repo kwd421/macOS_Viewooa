@@ -30,6 +30,30 @@ final class FolderImageIndexTests: XCTestCase {
         XCTAssertEqual(index, 1)
     }
 
+    func testClampsInvalidCurrentIndexToFirstImage() {
+        let urls = [
+            URL(fileURLWithPath: "/tmp/a.jpg"),
+            URL(fileURLWithPath: "/tmp/b.jpg")
+        ]
+
+        let index = FolderImageIndex(imageURLs: urls, currentIndex: 20)
+
+        XCTAssertEqual(index.currentIndex, 0)
+        XCTAssertEqual(index.currentURL, urls[0])
+    }
+
+    @MainActor
+    func testViewerStateHandlesEmptyImageIndexWithoutCrashing() {
+        let state = ViewerState(index: FolderImageIndex(imageURLs: [], currentIndex: 3))
+
+        XCTAssertNil(state.currentImageURL)
+        XCTAssertTrue(state.displayImageURLs.isEmpty)
+
+        state.apply(index: FolderImageIndex(imageURLs: [], currentIndex: 3))
+
+        XCTAssertEqual(state.lastErrorMessage, "Invalid image index.")
+    }
+
     func testOpenBrowserDirectoryListingIncludesPDFs() throws {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("ViewooaDataSourceTests-\(UUID().uuidString)", isDirectory: true)

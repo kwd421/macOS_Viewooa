@@ -47,6 +47,7 @@ extension ViewerState {
 
     var displayImageURLs: [URL] {
         guard let index else { return [] }
+        guard index.isValid else { return [] }
 
         if isViewingPDF {
             return pdfDocument?.pageIndexes(
@@ -59,7 +60,7 @@ extension ViewerState {
 
         switch pageLayout {
         case .single:
-            return [index.imageURLs[index.currentIndex]]
+            return index.currentURL.map { [$0] } ?? []
         case .spread:
             let indexes = Self.spreadIndexes(
                 currentIndex: index.currentIndex,

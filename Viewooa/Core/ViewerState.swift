@@ -56,7 +56,7 @@ final class ViewerState: ObservableObject {
         preloadQueue: ImagePreloadQueue = ImagePreloadQueue()
     ) {
         self.index = index
-        self.currentImageURL = index.map { $0.imageURLs[$0.currentIndex] }
+        self.currentImageURL = index?.currentURL
         self.documentLoader = ViewerDocumentLoader(fileManager: fileManager)
         self.preloadQueue = preloadQueue
         self.currentResolvedImage = currentImageURL.flatMap { preloadQueue.image(for: $0) }
