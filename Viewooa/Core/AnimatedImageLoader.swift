@@ -10,7 +10,6 @@ struct AnimatedImageFrame {
 enum AnimatedImageLoader {
     private enum Limits {
         static let maximumFileByteCount = 100 * 1024 * 1024
-        static let maximumPixelCountPerFrame = 2_500_000
     }
 
     static func isAnimatedGIF(_ url: URL) -> Bool {
@@ -60,12 +59,6 @@ enum AnimatedImageLoader {
             return false
         }
 
-        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
-              let width = properties[kCGImagePropertyPixelWidth] as? Int,
-              let height = properties[kCGImagePropertyPixelHeight] as? Int else {
-            return true
-        }
-
-        return width * height <= Limits.maximumPixelCountPerFrame
+        return true
     }
 }
