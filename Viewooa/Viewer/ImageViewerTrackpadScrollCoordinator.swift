@@ -2,8 +2,6 @@ import AppKit
 
 enum ImageViewerScrollHandlingResult: Equatable {
     case navigate(ImageViewerNSView.NavigationDirection)
-    case interactiveNavigation(offset: CGFloat)
-    case finishInteractiveNavigation(ImageViewerNSView.NavigationDirection?)
     case consumeGesture
     case scrollContent
 }
@@ -18,16 +16,12 @@ final class ImageViewerTrackpadScrollCoordinator {
     private static let horizontalNavigationThreshold: CGFloat = 72
     private static let horizontalNavigationIntentRatio: CGFloat = 1.35
 
-    private var interactiveNavigationOffset: CGFloat {
-        accumulatedHorizontalDelta
-    }
-
-    private var interactiveNavigationDirection: ImageViewerNSView.NavigationDirection? {
-        guard abs(interactiveNavigationOffset) >= Self.horizontalNavigationThreshold else {
+    private var horizontalNavigationDirection: ImageViewerNSView.NavigationDirection? {
+        guard abs(accumulatedHorizontalDelta) >= Self.horizontalNavigationThreshold else {
             return nil
         }
 
-        return interactiveNavigationOffset < 0 ? .next : .previous
+        return accumulatedHorizontalDelta < 0 ? .next : .previous
     }
 
     func consumeCurrentGesture() {
@@ -107,25 +101,20 @@ final class ImageViewerTrackpadScrollCoordinator {
         accumulatedHorizontalDelta += horizontalDelta
         accumulatedVerticalDelta += verticalDelta
 
-        if isEndingGesture(phase: phase, momentumPhase: momentumPhase) {
-            guard isHorizontalNavigationGesture else {
-                resetGesture()
-                return .finishInteractiveNavigation(nil)
-            }
+        if isHorizontalNavigationGesture, let direction = horizontalNavigationDirection {
+            didFinishHorizontalNavigation = true
+            accumulatedHorizontalDelta = 0
+            accumulatedVerticalDelta = 0
+            return .navigate(direction)
+        }
 
-            let direction = interactiveNavigationDirection
-            if direction != nil {
-                didFinishHorizontalNavigation = true
-                accumulatedHorizontalDelta = 0
-                accumulatedVerticalDelta = 0
-            } else {
-                resetGesture()
-            }
-            return .finishInteractiveNavigation(direction)
+        if isEndingGesture(phase: phase, momentumPhase: momentumPhase) {
+            resetGesture()
+            return .consumeGesture
         }
 
         if isHorizontalNavigationGesture {
-            return .interactiveNavigation(offset: interactiveNavigationOffset)
+            return .consumeGesture
         }
 
         if abs(verticalDelta) >= 0.5, !isVerticallyScrollable {

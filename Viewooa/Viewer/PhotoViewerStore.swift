@@ -100,8 +100,6 @@ final class PhotoViewerStore: PhotoViewerControlling {
             resolvedImages: viewerState.displayResolvedImages,
             imageURL: viewerState.currentImageURL,
             imageURLs: viewerState.displayImageURLs,
-            previousPreviewURL: viewerState.previousPreviewImageURL,
-            nextPreviewURL: viewerState.nextPreviewImageURL,
             zoomMode: viewerState.zoomMode,
             rotationQuarterTurns: viewerState.rotationQuarterTurns,
             pageLayout: viewerState.pageLayout,

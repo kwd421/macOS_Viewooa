@@ -182,7 +182,7 @@ final class ImageViewerNSViewInputLayoutTests: XCTestCase {
     }
 
     @MainActor
-    func testTrackpadHorizontalSwipeNavigatesOnGestureEnd() async {
+    func testTrackpadHorizontalSwipeNavigatesWhenThresholdIsCrossed() {
         let viewer = ImageViewerNSView()
         viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
         let image = NSImage(size: NSSize(width: 200, height: 200))
@@ -201,17 +201,14 @@ final class ImageViewerNSViewInputLayoutTests: XCTestCase {
 
         XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: -14, isTrackpad: true, phase: .began))
         XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: -14, isTrackpad: true, phase: .changed))
-        XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: -50, isTrackpad: true, phase: .changed))
         XCTAssertEqual(requestedDirections, [])
-
-        XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: 0, isTrackpad: true, phase: .ended))
-        try? await Task.sleep(for: .milliseconds(260))
+        XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: -50, isTrackpad: true, phase: .changed))
 
         XCTAssertEqual(requestedDirections, [.next])
     }
 
     @MainActor
-    func testTrackpadHorizontalSwipeNavigatesOnlyOncePerGesture() async {
+    func testTrackpadHorizontalSwipeNavigatesOnlyOncePerGesture() {
         let viewer = ImageViewerNSView()
         viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
         let image = NSImage(size: NSSize(width: 200, height: 200))
@@ -229,246 +226,12 @@ final class ImageViewerNSViewInputLayoutTests: XCTestCase {
         viewer.layoutSubtreeIfNeeded()
 
         XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: -90, isTrackpad: true, phase: .began))
+        XCTAssertEqual(requestedDirections, [.next])
         XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: 0, isTrackpad: true, phase: .ended))
         XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: -120, isTrackpad: true, momentumPhase: .changed))
         XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: 0, isTrackpad: true, momentumPhase: .ended))
-        try? await Task.sleep(for: .milliseconds(260))
 
         XCTAssertEqual(requestedDirections, [.next])
-    }
-
-    @MainActor
-    func testTrackpadHorizontalSwipePreviewsEvenWhenImageExceedsViewport() async {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
-        let image = NSImage(size: NSSize(width: 300, height: 300))
-        var requestedDirection: ImageViewerNSView.NavigationDirection?
-
-        viewer.onNavigateRequest = { direction in
-            requestedDirection = direction
-        }
-        viewer.apply(
-            resolvedImage: image,
-            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
-            zoomMode: .custom(1.8),
-            rotationQuarterTurns: 0
-        )
-        viewer.layoutSubtreeIfNeeded()
-
-        let didConsumeScroll = viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: -80, isTrackpad: true, phase: .began)
-
-        XCTAssertTrue(didConsumeScroll)
-        XCTAssertLessThan(viewer.interactiveNavigationStripView.layer?.transform.m41 ?? 0, 0)
-        XCTAssertEqual(viewer.documentContainerView.layer?.transform.m41 ?? 0, 0, accuracy: 0.001)
-        XCTAssertNil(requestedDirection)
-
-        XCTAssertTrue(viewer.handleScrollGesture(verticalDelta: 0, horizontalDelta: 0, isTrackpad: true, phase: .ended))
-        try? await Task.sleep(for: .milliseconds(260))
-
-        XCTAssertEqual(requestedDirection, .next)
-    }
-
-    @MainActor
-    func testTrackpadHorizontalSwipeShowsAdjacentPreviewImage() {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 400)
-        let image = NSImage(size: NSSize(width: 300, height: 300))
-        viewer.nextPreviewImageView.image = image
-        viewer.nextPreviewImageView.frame = NSRect(origin: .zero, size: image.size)
-
-        viewer.apply(
-            resolvedImage: image,
-            imageURL: URL(fileURLWithPath: "/tmp/sample.jpg"),
-            zoomMode: .custom(1.8),
-            rotationQuarterTurns: 0
-        )
-        viewer.layoutSubtreeIfNeeded()
-
-        viewer.applyInteractiveNavigationOffset(-120)
-
-        XCTAssertFalse(viewer.nextPreviewImageView.isHidden)
-        XCTAssertTrue(viewer.previousPreviewImageView.isHidden)
-        XCTAssertGreaterThan(viewer.nextPreviewImageView.frame.minX, viewer.imageStack.primaryImageFrame.minX)
-    }
-
-    @MainActor
-    func testTrackpadHorizontalSwipeKeepsGapForWideImagePreview() {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
-        let image = NSImage(size: NSSize(width: 800, height: 300))
-        viewer.nextPreviewImageView.image = image
-        viewer.nextPreviewImageView.frame = NSRect(origin: .zero, size: image.size)
-
-        viewer.apply(
-            resolvedImage: image,
-            imageURL: URL(fileURLWithPath: "/tmp/wide.jpg"),
-            zoomMode: .custom(1.0),
-            rotationQuarterTurns: 0
-        )
-        viewer.layoutSubtreeIfNeeded()
-
-        viewer.applyInteractiveNavigationOffset(-80)
-
-        let pageFrame = viewer.scrollView.frame
-        let gap = viewer.nextPreviewImageView.frame.minX - pageFrame.maxX
-        XCTAssertEqual(gap, 28, accuracy: 0.001)
-    }
-
-    @MainActor
-    func testTrackpadHorizontalSwipeMovesCurrentAndPreviewBySameDistance() {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
-        let image = NSImage(size: NSSize(width: 800, height: 300))
-        viewer.nextPreviewImageView.image = image
-        viewer.nextPreviewImageView.frame = NSRect(origin: .zero, size: image.size)
-
-        viewer.apply(
-            resolvedImage: image,
-            imageURL: URL(fileURLWithPath: "/tmp/wide.jpg"),
-            zoomMode: .custom(1.0),
-            rotationQuarterTurns: 0
-        )
-        viewer.layoutSubtreeIfNeeded()
-
-        viewer.applyInteractiveNavigationOffset(-80)
-        let offsetAt80 = viewer.interactiveNavigationStripView.layer?.transform.m41 ?? 0
-        let currentVisualMinXAt80 = viewer.imageStack.primaryImageFrame.minX + offsetAt80
-        let previewVisualMinXAt80 = viewer.nextPreviewImageView.frame.minX + offsetAt80
-        viewer.applyInteractiveNavigationOffset(-120)
-        let offsetAt120 = viewer.interactiveNavigationStripView.layer?.transform.m41 ?? 0
-        let currentVisualMinXAt120 = viewer.imageStack.primaryImageFrame.minX + offsetAt120
-        let previewVisualMinXAt120 = viewer.nextPreviewImageView.frame.minX + offsetAt120
-
-        XCTAssertEqual(currentVisualMinXAt120 - currentVisualMinXAt80, -40, accuracy: 0.001)
-        XCTAssertEqual(previewVisualMinXAt120 - previewVisualMinXAt80, -40, accuracy: 0.001)
-    }
-
-    @MainActor
-    func testTrackpadHorizontalSwipeFitsPreviewImageBeforeNavigationCompletes() {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
-        let currentImage = NSImage(size: NSSize(width: 800, height: 300))
-        let nextImage = NSImage(size: NSSize(width: 1000, height: 1000))
-        viewer.nextPreviewImageView.image = nextImage
-        viewer.nextPreviewImageView.frame = NSRect(origin: .zero, size: nextImage.size)
-
-        viewer.apply(
-            resolvedImage: currentImage,
-            imageURL: URL(fileURLWithPath: "/tmp/wide.jpg"),
-            zoomMode: .fit(.all),
-            rotationQuarterTurns: 0
-        )
-        viewer.layoutSubtreeIfNeeded()
-
-        viewer.applyInteractiveNavigationOffset(-80)
-
-        XCTAssertEqual(viewer.nextPreviewImageView.frame.width, 300, accuracy: 0.001)
-        XCTAssertEqual(viewer.nextPreviewImageView.frame.height, 300, accuracy: 0.001)
-    }
-
-    @MainActor
-    func testTrackpadHorizontalSwipeKeepsPreviewVisibleUntilFinishAnimationCompletes() async {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
-        let image = NSImage(size: NSSize(width: 800, height: 300))
-        viewer.nextPreviewImageView.image = image
-        viewer.nextPreviewImageView.frame = NSRect(origin: .zero, size: image.size)
-        var requestedDirection: ImageViewerNSView.NavigationDirection?
-
-        viewer.onNavigateRequest = { direction in
-            requestedDirection = direction
-        }
-        viewer.apply(
-            resolvedImage: image,
-            imageURL: URL(fileURLWithPath: "/tmp/wide.jpg"),
-            zoomMode: .custom(1.0),
-            rotationQuarterTurns: 0
-        )
-        viewer.layoutSubtreeIfNeeded()
-
-        viewer.applyInteractiveNavigationOffset(-80)
-        viewer.finishInteractiveNavigation(.next)
-        try? await Task.sleep(for: .milliseconds(80))
-
-        XCTAssertFalse(viewer.nextPreviewImageView.isHidden)
-        XCTAssertNil(requestedDirection)
-
-        try? await Task.sleep(for: .milliseconds(220))
-
-        XCTAssertTrue(viewer.nextPreviewImageView.isHidden)
-        XCTAssertEqual(requestedDirection, .next)
-    }
-
-    @MainActor
-    func testCommittedTrackpadSwipeKeepsPreviewUntilDestinationImageIsApplied() async {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
-        let currentImage = NSImage(size: NSSize(width: 800, height: 300))
-        let nextImage = NSImage(size: NSSize(width: 800, height: 300))
-        let currentURL = URL(fileURLWithPath: "/tmp/current.jpg")
-        let nextURL = URL(fileURLWithPath: "/tmp/next.jpg")
-        var requestedDirection: ImageViewerNSView.NavigationDirection?
-
-        viewer.onNavigateRequest = { direction in
-            requestedDirection = direction
-        }
-        viewer.apply(
-            resolvedImage: currentImage,
-            imageURL: currentURL,
-            previousPreviewURL: nil,
-            nextPreviewURL: nil,
-            zoomMode: .fit(.all),
-            rotationQuarterTurns: 0
-        )
-        viewer.nextPreviewURL = nextURL
-        viewer.nextPreviewImageView.image = nextImage
-        viewer.nextPreviewImageView.frame = NSRect(origin: .zero, size: nextImage.size)
-        viewer.layoutSubtreeIfNeeded()
-
-        viewer.applyInteractiveNavigationOffset(-80)
-        viewer.finishInteractiveNavigation(.next)
-        try? await Task.sleep(for: .milliseconds(300))
-
-        XCTAssertEqual(requestedDirection, .next)
-        XCTAssertFalse(viewer.nextPreviewImageView.isHidden)
-        XCTAssertEqual(viewer.pendingInteractiveNavigationDestinationURL, nextURL)
-
-        viewer.apply(
-            resolvedImage: nextImage,
-            imageURL: nextURL,
-            previousPreviewURL: currentURL,
-            nextPreviewURL: nil,
-            zoomMode: .fit(.all),
-            rotationQuarterTurns: 0
-        )
-
-        XCTAssertTrue(viewer.nextPreviewImageView.isHidden)
-        XCTAssertNil(viewer.pendingInteractiveNavigationDestinationURL)
-        XCTAssertEqual(viewer.interactiveNavigationStripView.layer?.transform.m41 ?? 0, 0, accuracy: 0.001)
-    }
-
-    @MainActor
-    func testTrackpadHorizontalSwipePreservesTallPreviewAspectRatio() {
-        let viewer = ImageViewerNSView()
-        viewer.frame = NSRect(x: 0, y: 0, width: 500, height: 400)
-        let currentImage = NSImage(size: NSSize(width: 500, height: 200))
-        let tallPreviewImage = NSImage(size: NSSize(width: 120, height: 360))
-        viewer.nextPreviewImageView.image = tallPreviewImage
-        viewer.nextPreviewImageView.frame = NSRect(origin: .zero, size: tallPreviewImage.size)
-
-        viewer.apply(
-            resolvedImage: currentImage,
-            imageURL: URL(fileURLWithPath: "/tmp/wide-current.jpg"),
-            zoomMode: .custom(1.0),
-            rotationQuarterTurns: 0
-        )
-        viewer.layoutSubtreeIfNeeded()
-
-        viewer.applyInteractiveNavigationOffset(-80)
-
-        let previewFrame = viewer.nextPreviewImageView.frame
-        XCTAssertEqual(previewFrame.width / previewFrame.height, 120.0 / 360.0, accuracy: 0.001)
-        XCTAssertLessThan(previewFrame.width, previewFrame.height)
     }
 
     @MainActor

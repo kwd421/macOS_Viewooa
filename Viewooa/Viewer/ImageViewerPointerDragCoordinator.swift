@@ -20,11 +20,6 @@ final class ImageViewerPointerDragCoordinator {
     ) -> Bool {
         switch phase {
         case .began:
-            guard canPan else {
-                reset()
-                return false
-            }
-
             dragStartLocationInWindow = event.locationInWindow
             lastDragLocationInWindow = event.locationInWindow
             hasDraggedVisibleRect = false
@@ -34,8 +29,11 @@ final class ImageViewerPointerDragCoordinator {
                   let lastDragLocationInWindow else { return false }
 
             let currentLocation = event.locationInWindow
-            if !hasDraggedVisibleRect,
-               !ImageViewerNSView.isBeyondClickDragTolerance(from: dragStartLocationInWindow, to: currentLocation) {
+            guard canPan,
+                  ImageViewerNSView.isBeyondClickDragTolerance(
+                    from: dragStartLocationInWindow,
+                    to: currentLocation
+                  ) else {
                 return false
             }
 
@@ -44,7 +42,8 @@ final class ImageViewerPointerDragCoordinator {
             hasDraggedVisibleRect = true
             return true
         case .ended:
-            guard lastDragLocationInWindow != nil else { return false }
+            guard dragStartLocationInWindow != nil,
+                  lastDragLocationInWindow != nil else { return false }
 
             let didDrag = hasDraggedVisibleRect
             reset()
