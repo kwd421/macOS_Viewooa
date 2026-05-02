@@ -48,6 +48,7 @@ final class ViewerFeatureBoundaryTests: XCTestCase {
                 resolvedImages: nil,
                 imageURL: nil,
                 imageURLs: nil,
+                imageRevision: 0,
                 zoomMode: .fit(.all),
                 rotationQuarterTurns: 0,
                 pageLayout: .single,

@@ -6,6 +6,7 @@ struct ImageViewerContainerConfiguration {
     let resolvedImages: [NSImage]?
     let imageURL: URL?
     let imageURLs: [URL]?
+    let imageRevision: Int
     let zoomMode: ZoomMode
     let rotationQuarterTurns: Int
     let pageLayout: ViewerPageLayout
@@ -18,6 +19,7 @@ struct ImageViewerContainerConfiguration {
         resolvedImages: [NSImage]?,
         imageURL: URL?,
         imageURLs: [URL]?,
+        imageRevision: Int,
         zoomMode: ZoomMode,
         rotationQuarterTurns: Int,
         pageLayout: ViewerPageLayout,
@@ -29,6 +31,7 @@ struct ImageViewerContainerConfiguration {
         self.resolvedImages = resolvedImages
         self.imageURL = imageURL
         self.imageURLs = imageURLs
+        self.imageRevision = imageRevision
         self.zoomMode = zoomMode
         self.rotationQuarterTurns = rotationQuarterTurns
         self.pageLayout = pageLayout
@@ -67,6 +70,7 @@ struct ImageViewerContainerView: NSViewRepresentable {
             resolvedImages: configuration.resolvedImages,
             imageURL: configuration.imageURL,
             imageURLs: configuration.imageURLs,
+            imageRevision: configuration.imageRevision,
             zoomMode: configuration.zoomMode,
             rotationQuarterTurns: configuration.rotationQuarterTurns,
             pageLayout: configuration.pageLayout,

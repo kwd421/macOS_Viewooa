@@ -40,6 +40,31 @@ final class ViewerStateTests: XCTestCase {
     }
 
     @MainActor
+    func testImageViewerReloadsResolvedImageWhenRevisionChanges() {
+        let viewer = ImageViewerNSView()
+        let url = URL(fileURLWithPath: "/tmp/animated.gif")
+        let firstFrame = NSImage(size: NSSize(width: 80, height: 30))
+        let secondFrame = NSImage(size: NSSize(width: 90, height: 40))
+
+        viewer.apply(
+            resolvedImage: firstFrame,
+            imageURL: url,
+            imageRevision: 1,
+            zoomMode: .fit(.height),
+            rotationQuarterTurns: 0
+        )
+        viewer.apply(
+            resolvedImage: secondFrame,
+            imageURL: url,
+            imageRevision: 2,
+            zoomMode: .fit(.height),
+            rotationQuarterTurns: 0
+        )
+
+        XCTAssertTrue(viewer.displayedImage === secondFrame)
+    }
+
+    @MainActor
     func testRotationKeepsSourceImageAndUpdatesDisplayedSize() {
         let viewer = ImageViewerNSView()
         let resolvedImage = NSImage(size: NSSize(width: 80, height: 30))
@@ -482,11 +507,13 @@ final class ViewerStateTests: XCTestCase {
         XCTAssertTrue(state.hasAnimatedImageFrames)
         XCTAssertEqual(state.animatedImageFrameText, "1 / 2")
         XCTAssertTrue(state.isAnimatedImagePlaying)
+        XCTAssertEqual(state.imageRevision, 1)
 
         state.showNextAnimatedImageFrame()
 
         XCTAssertFalse(state.isAnimatedImagePlaying)
         XCTAssertEqual(state.animatedImageFrameText, "2 / 2")
+        XCTAssertEqual(state.imageRevision, 2)
     }
 
     @MainActor

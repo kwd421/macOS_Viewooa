@@ -8,6 +8,11 @@ struct AnimatedImageFrame {
 }
 
 enum AnimatedImageLoader {
+    private enum Limits {
+        static let maximumFrameCount = 600
+        static let maximumPixelCountPerFrame = 2_500_000
+    }
+
     static func isAnimatedGIF(_ url: URL) -> Bool {
         url.pathExtension.lowercased() == "gif"
     }
@@ -19,7 +24,9 @@ enum AnimatedImageLoader {
         }
 
         let frameCount = CGImageSourceGetCount(source)
-        guard frameCount > 1 else { return [] }
+        guard frameCount > 1,
+              frameCount <= Limits.maximumFrameCount,
+              isWithinPixelLimit(source: source) else { return [] }
 
         return (0..<frameCount).compactMap { index in
             guard let cgImage = CGImageSourceCreateImageAtIndex(source, index, nil) else {
@@ -46,5 +53,15 @@ enum AnimatedImageLoader {
         let unclampedDelay = gifProperties[kCGImagePropertyGIFUnclampedDelayTime] as? TimeInterval
         let delay = gifProperties[kCGImagePropertyGIFDelayTime] as? TimeInterval
         return max(unclampedDelay ?? delay ?? 0.1, 0.02)
+    }
+
+    private static func isWithinPixelLimit(source: CGImageSource) -> Bool {
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let width = properties[kCGImagePropertyPixelWidth] as? Int,
+              let height = properties[kCGImagePropertyPixelHeight] as? Int else {
+            return true
+        }
+
+        return width * height <= Limits.maximumPixelCountPerFrame
     }
 }

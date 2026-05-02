@@ -28,6 +28,7 @@ extension ViewerState {
         animatedImageFrameIndex = 0
         animatedImageFrameCount = frames.count
         currentResolvedImage = frames[0].image
+        imageRevision += 1
         startAnimatedImagePlayback()
     }
 
@@ -84,5 +85,6 @@ extension ViewerState {
         let index = (animatedImageFrameIndex + offset + count) % count
         animatedImageFrameIndex = index
         currentResolvedImage = animatedImageFrames[index].image
+        imageRevision += 1
     }
 }

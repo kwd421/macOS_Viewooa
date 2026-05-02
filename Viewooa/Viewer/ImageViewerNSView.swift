@@ -18,6 +18,7 @@ final class ImageViewerNSView: NSView {
     let postProcessingMenuPresenter = ImageViewerPostProcessingMenuPresenter()
     let verticalAutoScrollCoordinator = ImageViewerVerticalAutoScrollCoordinator()
     var postProcessingOptions: Set<ImagePostProcessingOption> = []
+    var lastAppliedImageRevision = 0
     lazy var imageStack = ImageViewerImageStack(
         containerView: documentContainerView,
         configureHandlers: { [weak self] view in
@@ -83,6 +84,7 @@ final class ImageViewerNSView: NSView {
         resolvedImages: [NSImage]? = nil,
         imageURL: URL?,
         imageURLs: [URL]? = nil,
+        imageRevision: Int = 0,
         zoomMode: ZoomMode,
         rotationQuarterTurns: Int,
         pageLayout: ViewerPageLayout = .single,
@@ -104,6 +106,7 @@ final class ImageViewerNSView: NSView {
         let didChangeImage = newState.imageURL != viewportState.imageURL
             || newState.imageURLs != viewportState.imageURLs
             || newState.pageLayout != viewportState.pageLayout
+            || imageRevision != lastAppliedImageRevision
         let didChangeRotation = newState.rotationQuarterTurns != viewportState.rotationQuarterTurns
         let shouldApplyZoom = shouldForceFit
             || newState.zoomMode != viewportState.zoomMode
@@ -137,6 +140,7 @@ final class ImageViewerNSView: NSView {
         }
 
         lastAppliedFitRequestID = fitRequestID
+        lastAppliedImageRevision = imageRevision
         setVerticalAutoScrollScreenSpeed(verticalAutoScrollScreenSpeed)
     }
 

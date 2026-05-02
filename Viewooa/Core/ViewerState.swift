@@ -31,6 +31,7 @@ final class ViewerState: ObservableObject {
     @Published var animatedImageFrameIndex = 0
     @Published var animatedImageFrameCount = 0
     @Published var isAnimatedImagePlaying = false
+    @Published var imageRevision = 0
 
     static let minimumSlideshowIntervalSeconds = 0.5
     static let maximumSlideshowIntervalSeconds = 60.0
