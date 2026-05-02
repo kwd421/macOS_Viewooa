@@ -212,39 +212,36 @@ struct PhotoViewerFeatureView<Store: PhotoViewerControlling>: View {
     @ViewBuilder
     private var animatedImageControlsOverlay: some View {
         if store.hasAnimatedImageFrames {
-            VStack {
-                Spacer()
+            HStack(spacing: 8) {
+                Text(store.animatedImageFrameText ?? "1 / 1")
+                    .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+                    .foregroundStyle(.white)
+                    .padding(.leading, 12)
+                    .frame(minWidth: 58, alignment: .leading)
 
-                HStack(spacing: 8) {
-                    Text(store.animatedImageFrameText ?? "1 / 1")
-                        .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
-                        .foregroundStyle(.white)
-                        .padding(.leading, 12)
-                        .frame(minWidth: 58, alignment: .leading)
+                ViewerControlIconButton(
+                    accessibilityLabel: "Previous GIF Frame",
+                    systemImage: "minus",
+                    action: store.showPreviousAnimatedImageFrame
+                )
 
-                    ViewerControlIconButton(
-                        accessibilityLabel: "Previous GIF Frame",
-                        systemImage: "minus",
-                        action: store.showPreviousAnimatedImageFrame
-                    )
+                ViewerControlIconButton(
+                    accessibilityLabel: store.isAnimatedImagePlaying ? "Pause GIF" : "Play GIF",
+                    systemImage: store.isAnimatedImagePlaying ? "pause.fill" : "play.fill",
+                    action: store.toggleAnimatedImagePlayback
+                )
 
-                    ViewerControlIconButton(
-                        accessibilityLabel: store.isAnimatedImagePlaying ? "Pause GIF" : "Play GIF",
-                        systemImage: store.isAnimatedImagePlaying ? "pause.fill" : "play.fill",
-                        action: store.toggleAnimatedImagePlayback
-                    )
-
-                    ViewerControlIconButton(
-                        accessibilityLabel: "Next GIF Frame",
-                        systemImage: "plus",
-                        action: store.showNextAnimatedImageFrame
-                    )
-                }
-                .frame(height: 46)
-                .animatedImageToolbarSurface()
-                .padding(.leading, 18)
-                .padding(.bottom, 22)
+                ViewerControlIconButton(
+                    accessibilityLabel: "Next GIF Frame",
+                    systemImage: "plus",
+                    action: store.showNextAnimatedImageFrame
+                )
             }
+            .frame(height: 46)
+            .animatedImageToolbarSurface()
+            .padding(.leading, 18)
+            .padding(.bottom, bottomControlsVisible ? 84 : 22)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             .transition(.opacity.combined(with: .move(edge: .bottom)))
         }
     }
