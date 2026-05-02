@@ -2,7 +2,7 @@
 
 [한국어 README](README.ko.md)
 
-Viewooa is a native macOS image viewer with a built-in visual file browser. It is designed for fast photo viewing, quiet controls, and an Apple-like browsing experience that keeps the image first.
+Viewooa is a native macOS photo viewer. It pairs with 자체파인더, a Finder-class visual file browser, so photo viewing and file browsing can evolve as separate apps while still feeling connected.
 
 ![Viewooa viewer](docs/assets/viewooa-viewer.png)
 
@@ -16,15 +16,15 @@ Viewooa is a native macOS image viewer with a built-in visual file browser. It i
 - Pan oversized images by dragging when the image is larger than the window.
 - Rotate images, show metadata, and toggle lightweight post-processing options.
 - Run a slideshow, including vertical scrolling playback for webtoon-style viewing.
-- Open the built-in browser from the viewer to pick another file or folder without leaving the app.
+- Open 자체파인더 from the viewer to pick another file or folder without leaving the app.
 
-## Built-In Browser
+## 자체파인더
 
-Viewooa includes a Finder-inspired browser for opening folders and images inside the app.
+자체파인더 is the project's Finder-inspired browser for opening folders and files with familiar macOS behavior.
 
-![Viewooa browser](docs/assets/viewooa-browser.png)
+![자체파인더 browser](docs/assets/viewooa-browser.png)
 
-The browser supports:
+자체파인더 supports:
 
 - Sidebar shortcuts for favorites and locations.
 - Icon and list browsing modes.
@@ -32,15 +32,15 @@ The browser supports:
 - Search with an expanding search field.
 - Thumbnail size controls.
 - Selection, Select All, Shift range selection, and blank-space drag selection.
-- Path breadcrumbs, editable paths, and Open / Cancel actions.
-- Opening folders inside Viewooa and opening files from the standalone browser app.
+- Finder-like path breadcrumbs with icons, including the selected file as the final segment.
+- Browsing folders in 자체파인더 and opening files from the standalone browser app.
 
 ## Viewer Controls
 
 The viewer uses floating glass-style controls so the photo stays central.
 
 - Top bar: info, page layout, fit mode, slideshow, and toolbar pinning.
-- Bottom bar: open browser, zoom out, actual size, zoom in, rotate, previous, next, and pinning.
+- Bottom bar: open 자체파인더, zoom out, actual size, zoom in, rotate, previous, next, and pinning.
 - Hidden toolbars can appear when the pointer moves near them.
 - Pinned toolbars stay visible and remember their last state.
 
@@ -70,4 +70,4 @@ Or run from Terminal:
 
 ## Notes
 
-Viewooa is still evolving. The current focus is a smooth macOS photo viewer, a pleasant built-in browser, and safe file browsing behavior without hidden destructive actions.
+Viewooa and 자체파인더 are still evolving. The current focus is a smooth macOS photo viewer, a Finder-class browser, and safe file browsing behavior without hidden destructive actions.
