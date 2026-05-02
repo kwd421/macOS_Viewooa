@@ -11,7 +11,7 @@ enum OpenBrowserDataSource {
         let entries: [OpenBrowserEntry] = urls.compactMap { url in
             let values = try? url.resourceValues(forKeys: [.isDirectoryKey, .localizedNameKey, .contentModificationDateKey, .fileSizeKey, .typeIdentifierKey])
             let isDirectory = values?.isDirectory == true
-            guard isDirectory || SupportedImageTypes.isBrowsableImage(url) else { return nil }
+            guard isDirectory || SupportedImageTypes.isOpenableFile(url) else { return nil }
             return OpenBrowserEntry(
                 url: url,
                 name: values?.localizedName ?? url.lastPathComponent,

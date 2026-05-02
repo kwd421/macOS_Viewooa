@@ -30,7 +30,7 @@ final class FolderImageIndexTests: XCTestCase {
         XCTAssertEqual(index, 1)
     }
 
-    func testOpenBrowserDirectoryListingExcludesPDFs() throws {
+    func testOpenBrowserDirectoryListingIncludesPDFs() throws {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("ViewooaDataSourceTests-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -42,6 +42,6 @@ final class FolderImageIndexTests: XCTestCase {
 
         let entries = try OpenBrowserDataSource.loadEntries(in: directory, sortOption: .name, ascending: true)
 
-        XCTAssertEqual(entries.map(\.name), ["nested", "image.jpg"])
+        XCTAssertEqual(entries.map(\.name), ["nested", "document.pdf", "image.jpg"])
     }
 }
