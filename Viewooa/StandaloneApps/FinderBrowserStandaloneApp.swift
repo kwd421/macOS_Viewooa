@@ -14,7 +14,8 @@ struct FinderBrowserStandaloneApp: App {
                 displayMode: $displayMode,
                 thumbnailSize: $thumbnailSize,
                 onOpen: handleOpen,
-                onDismiss: handleDismiss
+                onDismiss: handleDismiss,
+                prefersRecentDirectory: true
             )
             .ignoresSafeArea()
         }

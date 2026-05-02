@@ -42,7 +42,8 @@ struct OpenBrowserOverlay: View {
         displayMode: Binding<BrowserDisplayMode>,
         thumbnailSize: Binding<CGFloat>,
         onOpen: @escaping (URL) -> Void,
-        onDismiss: @escaping () -> Void
+        onDismiss: @escaping () -> Void,
+        prefersRecentDirectory: Bool = false
     ) {
         self.initialDirectory = initialDirectory
         self._displayMode = displayMode
@@ -51,7 +52,7 @@ struct OpenBrowserOverlay: View {
         self.onDismiss = onDismiss
         let preferences = OpenBrowserPreferences()
         self.preferences = preferences
-        let savedDirectory = preferences.recentDirectoryURL ?? initialDirectory
+        let savedDirectory = prefersRecentDirectory ? preferences.recentDirectoryURL ?? initialDirectory : initialDirectory
         self._currentDirectory = State(initialValue: OpenBrowserDataSource.validDirectory(savedDirectory) ?? initialDirectory)
         self._isSidebarVisible = State(initialValue: preferences.sidebarVisible)
         self._sidebarWidth = State(initialValue: preferences.initialSidebarWidth)
