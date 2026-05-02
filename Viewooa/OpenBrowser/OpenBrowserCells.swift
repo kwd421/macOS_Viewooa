@@ -3,12 +3,9 @@ import AppKit
 
 struct OpenBrowserThumbnailCell: View {
     let entry: OpenBrowserEntry
-    let index: Int
     let thumbnailSize: CGFloat
     let isSelected: Bool
     let isFavorite: Bool
-    let isRevealed: Bool
-    let reduceMotion: Bool
     let onClick: (OpenBrowserEntry) -> Void
     let onDoubleClick: (OpenBrowserEntry) -> Void
     let onShare: ([OpenBrowserEntry]) -> Void
@@ -72,22 +69,12 @@ struct OpenBrowserThumbnailCell: View {
                     .padding(6)
             }
         }
-        .opacity(isRevealed || reduceMotion ? 1 : 0)
-        .scaleEffect(isRevealed || reduceMotion ? 1 : 0.965)
-        .offset(y: isRevealed || reduceMotion ? 0 : 18)
-        .animation(revealAnimation, value: isRevealed)
     }
 
     private static let thumbnailStyle = VisualSelectableContentStyle(
         backgroundColor: VisualInteractionPalette.openBrowserThumbnailBackground,
         borderColor: VisualInteractionPalette.openBrowserThumbnailBorder
     )
-
-    private var revealAnimation: Animation? {
-        guard !reduceMotion else { return nil }
-        return .smooth(duration: 0.46, extraBounce: 0.08)
-            .delay(min(Double(index % 24) * 0.018, 0.26))
-    }
 
     @ViewBuilder
     private var thumbnailPreview: some View {
@@ -110,11 +97,8 @@ struct OpenBrowserThumbnailCell: View {
 
 struct OpenBrowserListRow: View {
     let entry: OpenBrowserEntry
-    let index: Int
     let isSelected: Bool
     let isFavorite: Bool
-    let isRevealed: Bool
-    let reduceMotion: Bool
     let onClick: (OpenBrowserEntry) -> Void
     let onDoubleClick: (OpenBrowserEntry) -> Void
     let onShare: ([OpenBrowserEntry]) -> Void
@@ -180,22 +164,12 @@ struct OpenBrowserListRow: View {
                 }
             }
         }
-        .opacity(isRevealed || reduceMotion ? 1 : 0)
-        .scaleEffect(isRevealed || reduceMotion ? 1 : 0.985)
-        .offset(y: isRevealed || reduceMotion ? 0 : 12)
-        .animation(revealAnimation, value: isRevealed)
     }
 
     private static let listStyle = VisualSelectableContentStyle(
         backgroundColor: VisualInteractionPalette.openBrowserListBackground,
         borderColor: VisualInteractionPalette.openBrowserListBorder
     )
-
-    private var revealAnimation: Animation? {
-        guard !reduceMotion else { return nil }
-        return .smooth(duration: 0.38, extraBounce: 0.04)
-            .delay(min(Double(index % 18) * 0.015, 0.2))
-    }
 
     @ViewBuilder
     private var listPreview: some View {

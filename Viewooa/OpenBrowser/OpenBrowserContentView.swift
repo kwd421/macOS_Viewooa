@@ -31,12 +31,11 @@ struct OpenBrowserContentView: View {
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, minHeight: 360)
         } else {
-            switch displayMode {
-            case .thumbnails:
-                thumbnailGrid
-            case .list:
-                listView
-            }
+            populatedContent
+                .opacity(isContentRevealed || reduceMotion ? 1 : 0)
+                .scaleEffect(isContentRevealed || reduceMotion ? 1 : 0.985)
+                .offset(y: isContentRevealed || reduceMotion ? 0 : 12)
+                .animation(revealAnimation, value: isContentRevealed)
         }
     }
 
@@ -65,22 +64,29 @@ struct OpenBrowserContentView: View {
         .foregroundStyle(.primary)
     }
 
+    @ViewBuilder
+    private var populatedContent: some View {
+        switch displayMode {
+        case .thumbnails:
+            thumbnailGrid
+        case .list:
+            listView
+        }
+    }
+
     private var thumbnailGrid: some View {
         LazyVGrid(
             columns: [GridItem(.adaptive(minimum: thumbnailSize, maximum: thumbnailSize), spacing: 18)],
             alignment: .center,
             spacing: 22
         ) {
-            ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+            ForEach(entries, id: \.id) { entry in
                 entryContainer(entry: entry) {
                     OpenBrowserThumbnailCell(
                         entry: entry,
-                        index: index,
                         thumbnailSize: thumbnailSize,
                         isSelected: selection.contains(entry),
                         isFavorite: favoriteFileIDs.contains(entry.id),
-                        isRevealed: isContentRevealed,
-                        reduceMotion: reduceMotion,
                         onClick: onClick,
                         onDoubleClick: onDoubleClick,
                         onShare: { requestedEntries in onShare(requestedEntries, entry) },
@@ -94,15 +100,12 @@ struct OpenBrowserContentView: View {
 
     private var listView: some View {
         LazyVStack(spacing: 6) {
-            ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+            ForEach(entries, id: \.id) { entry in
                 entryContainer(entry: entry) {
                     OpenBrowserListRow(
                         entry: entry,
-                        index: index,
                         isSelected: selection.contains(entry),
                         isFavorite: favoriteFileIDs.contains(entry.id),
-                        isRevealed: isContentRevealed,
-                        reduceMotion: reduceMotion,
                         onClick: onClick,
                         onDoubleClick: onDoubleClick,
                         onShare: { requestedEntries in onShare(requestedEntries, entry) },
@@ -130,5 +133,10 @@ struct OpenBrowserContentView: View {
         }
         .id(entry.id)
         .openBrowserVisibleEntryFrame(id: entry.id)
+    }
+
+    private var revealAnimation: Animation? {
+        guard !reduceMotion else { return nil }
+        return .smooth(duration: 0.34, extraBounce: 0.04)
     }
 }
