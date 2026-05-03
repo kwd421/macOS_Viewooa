@@ -50,16 +50,14 @@ struct OpenBrowserSidebar: View {
         ZStack(alignment: .trailing) {
             sidebarRow(item, allowsRemoval: true)
 
-            Image(systemName: "line.3.horizontal")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(.tertiary)
-                .frame(width: 24, height: 24)
+            Color.clear
+                .frame(width: 18, height: 24)
                 .contentShape(Rectangle())
                 .onDrag {
                     draggingItemID = item.id
                     return NSItemProvider(object: item.id as NSString)
                 }
-                .accessibilityLabel("Reorder \(item.title)")
+                .accessibilityHidden(true)
         }
     }
 
@@ -121,7 +119,6 @@ struct OpenBrowserSidebar: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, 8)
-            .padding(.trailing, allowsRemoval ? 18 : 0)
             .frame(height: 24)
             .foregroundStyle(isSelected ? Color.openBrowserSelection : .primary)
         }

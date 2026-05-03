@@ -108,17 +108,17 @@ enum VisualInteractionPalette {
 
     static let openBrowserSidebarRowBackground = VisualInteractionColorStyle(
         normal: .clear,
-        hover: Color.primary.opacity(0.06),
+        hover: Color(nsColor: .unemphasizedSelectedContentBackgroundColor).opacity(0.62),
         selected: Color.openBrowserSidebarSelectionBackground,
         selectedHover: Color.openBrowserSidebarSelectionBackground
     )
 
     static func thumbnailStepperIconColor(isVibrant: Bool) -> VisualInteractionColorStyle {
         VisualInteractionColorStyle(
-            normal: isVibrant ? Color.white.opacity(0.78) : .secondary,
-            hover: isVibrant ? Color.white.opacity(0.78) : .secondary,
-            selected: isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28),
-            selectedHover: isVibrant ? Color.white.opacity(0.24) : Color.secondary.opacity(0.28)
+            normal: isVibrant ? Color.primary.opacity(0.72) : .secondary,
+            hover: isVibrant ? Color.primary.opacity(0.82) : .secondary,
+            selected: isVibrant ? Color.primary.opacity(0.26) : Color.secondary.opacity(0.28),
+            selectedHover: isVibrant ? Color.primary.opacity(0.30) : Color.secondary.opacity(0.28)
         )
     }
 
@@ -174,12 +174,12 @@ enum VisualInteractionPalette {
     static let openBrowserStrongDivider = platformSeparator.opacity(0.65)
     static let openBrowserToolbarShadow = Color.black.opacity(0.06)
     static let openBrowserTitleShadow = platformContentBackground.opacity(0.75)
-    static let openBrowserVibrantControlFill = Color.white.opacity(0.10)
-    static let openBrowserVibrantDivider = Color.white.opacity(0.18)
-    static let openBrowserVibrantSearchFill = Color.white.opacity(0.08)
-    static let openBrowserVibrantIcon = Color.white.opacity(0.82)
-    static let openBrowserVibrantSecondaryIcon = Color.white.opacity(0.62)
-    static let openBrowserVibrantSearchIcon = Color.white.opacity(0.76)
+    static let openBrowserVibrantControlFill = Color(nsColor: .controlBackgroundColor).opacity(0.34)
+    static let openBrowserVibrantDivider = Color(nsColor: .separatorColor).opacity(0.34)
+    static let openBrowserVibrantSearchFill = Color(nsColor: .controlBackgroundColor).opacity(0.42)
+    static let openBrowserVibrantIcon = Color.primary.opacity(0.78)
+    static let openBrowserVibrantSecondaryIcon = Color.primary.opacity(0.62)
+    static let openBrowserVibrantSearchIcon = Color.primary.opacity(0.64)
 
     static let openBrowserPlainControlHover = VisualHoverColorStyle(
         normal: platformControlFill,

@@ -30,15 +30,17 @@ struct OpenBrowserThumbnailCell: View {
                     .font(.system(size: 11, weight: .semibold))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                     .foregroundStyle(isSelected ? Color.white : .primary)
                     .padding(.horizontal, isSelected ? 4 : 0)
+                    .padding(.vertical, isSelected ? 1 : 0)
                     .background {
                         if isSelected {
                             RoundedRectangle(cornerRadius: 4, style: .continuous)
                                 .fill(Color(nsColor: .selectedContentBackgroundColor))
                         }
                     }
-                    .frame(width: thumbnailSize, height: 28, alignment: .top)
+                    .frame(maxWidth: thumbnailSize, minHeight: 28, maxHeight: 28, alignment: .top)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 10)

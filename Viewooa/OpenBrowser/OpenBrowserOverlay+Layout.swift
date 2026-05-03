@@ -122,13 +122,13 @@ extension OpenBrowserOverlay {
 
     var topToolbarBackdrop: some View {
         Rectangle()
-            .fill(.ultraThinMaterial)
-            .overlay(Color.openBrowserWindowBackground.opacity(0.24))
+            .fill(Color.openBrowserWindowBackground.opacity(0.78))
             .mask {
                 LinearGradient(
                     stops: [
                         .init(color: .black, location: 0),
-                        .init(color: .black, location: 0.72),
+                        .init(color: .black.opacity(0.92), location: 0.46),
+                        .init(color: .black.opacity(0.36), location: 0.78),
                         .init(color: .black.opacity(0), location: 1)
                     ],
                     startPoint: .top,
