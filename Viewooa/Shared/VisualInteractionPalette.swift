@@ -38,23 +38,23 @@ enum VisualInteractionPalette {
 
     static let openBrowserThumbnailBackground = VisualInteractionColorStyle(
         normal: .clear,
-        hover: Color.primary.opacity(0.055),
-        selected: platformSelection.opacity(0.07),
-        selectedHover: platformSelection.opacity(0.12)
+        hover: Color.primary.opacity(0.045),
+        selected: Color(nsColor: .unemphasizedSelectedContentBackgroundColor).opacity(0.72),
+        selectedHover: Color(nsColor: .unemphasizedSelectedContentBackgroundColor).opacity(0.88)
     )
 
     static let openBrowserThumbnailBorder = VisualInteractionColorStyle(
         normal: .clear,
-        hover: Color.primary.opacity(0.10),
-        selected: platformSelection.opacity(0.46),
-        selectedHover: platformSelection.opacity(0.62)
+        hover: Color.primary.opacity(0.08),
+        selected: .clear,
+        selectedHover: .clear
     )
 
     static let openBrowserListBackground = VisualInteractionColorStyle(
         normal: .clear,
         hover: Color.primary.opacity(0.055),
-        selected: platformSelection.opacity(0.16),
-        selectedHover: platformSelection.opacity(0.22)
+        selected: Color(nsColor: .selectedContentBackgroundColor),
+        selectedHover: Color(nsColor: .selectedContentBackgroundColor)
     )
 
     static let openBrowserListBorder = VisualInteractionColorStyle(
@@ -109,8 +109,8 @@ enum VisualInteractionPalette {
     static let openBrowserSidebarRowBackground = VisualInteractionColorStyle(
         normal: .clear,
         hover: Color.primary.opacity(0.06),
-        selected: Color.white.opacity(0.09),
-        selectedHover: Color.white.opacity(0.13)
+        selected: Color.openBrowserSidebarSelectionBackground,
+        selectedHover: Color.openBrowserSidebarSelectionBackground
     )
 
     static func thumbnailStepperIconColor(isVibrant: Bool) -> VisualInteractionColorStyle {

@@ -30,7 +30,14 @@ struct OpenBrowserThumbnailCell: View {
                     .font(.system(size: 11, weight: .semibold))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(isSelected ? Color.white : .primary)
+                    .padding(.horizontal, isSelected ? 4 : 0)
+                    .background {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                .fill(Color(nsColor: .selectedContentBackgroundColor))
+                        }
+                    }
                     .frame(width: thumbnailSize, height: 28, alignment: .top)
             }
             .padding(.horizontal, 8)
@@ -123,9 +130,10 @@ struct OpenBrowserListRow: View {
                     Text(entry.name)
                         .font(.system(size: 13, weight: .regular))
                         .lineLimit(1)
+                        .foregroundStyle(isSelected ? Color.white : .primary)
                     Text(entry.isDirectory ? "Folder" : entry.url.pathExtension.uppercased())
                         .font(.system(size: 11, weight: .regular))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(isSelected ? Color.white.opacity(0.82) : .secondary)
                         .lineLimit(1)
                 }
 

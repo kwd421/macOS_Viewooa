@@ -32,6 +32,8 @@ struct OpenBrowserOverlay: View {
     @State var openBrowserScrollView: NSScrollView?
     @State var selectionDragStart: CGPoint?
     @State var selectionDragCurrent: CGPoint?
+    @State var selectionDragMode = OpenBrowserSelectionDragMode.replace
+    @State var selectionDragBaseEntryIDs: Set<String> = []
     @State var isPathEditing = false
     @State var editablePath = ""
     @FocusState var isPathEditorFocused: Bool

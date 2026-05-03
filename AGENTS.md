@@ -6,16 +6,20 @@ This file tells AI coding agents what to read first and where to look for specif
 
 Before changing code or product docs, read these files in order:
 
-1. `docs/product/DESIGN.md`
+1. `INBOX.md`
+   - Human scratchpad for rough notes, bug reports, ideas, and unresolved questions.
+   - Skim this for fresh user context before making product, roadmap, or code changes.
+   - Do not treat notes here as approved work until they are clarified or promoted into a source-of-truth doc.
+2. `docs/product/DESIGN.md`
    - Product constitution.
    - Use this for product principles, naming, non-negotiable decisions, and links to topic docs.
-2. `docs/product/IMPLEMENTATION_MAP.md`
+3. `docs/product/IMPLEMENTATION_MAP.md`
    - Architecture and ownership boundaries.
    - Use this to decide where code belongs and which module owns a behavior.
-3. `docs/product/ROADMAP.md`
+4. `docs/product/ROADMAP.md`
    - Current status.
    - Use this to distinguish Active, Done, Needs Verification, Deferred, and Cancelled/Replaced work.
-4. `docs/engineering/AI_AGENT_RULES.md`
+5. `docs/engineering/AI_AGENT_RULES.md`
    - Execution rules.
    - Use this for coding conduct, safety, verification, and preserving user changes.
 
@@ -32,6 +36,7 @@ Do not treat Cancelled or Replaced roadmap items as active work.
 
 | If the task is about... | Read this first | Then check |
 | --- | --- | --- |
+| Fresh user notes, rough ideas, unprocessed bug reports, or Obsidian scratchpad updates | `INBOX.md` | Ask before promoting into source-of-truth docs |
 | Product direction, principles, UX philosophy, or "what should this feel like?" | `docs/product/DESIGN.md` | `docs/product/ROADMAP.md` |
 | Where to implement a feature | `docs/product/IMPLEMENTATION_MAP.md` | Relevant Swift files under `Viewooa/` |
 | Whether a feature is active, deferred, done, or cancelled | `docs/product/ROADMAP.md` | `docs/product/DESIGN.md` if product intent is unclear |
@@ -55,6 +60,7 @@ Do not treat Cancelled or Replaced roadmap items as active work.
 - `DESIGN.md` wins for product intent.
 - `IMPLEMENTATION_MAP.md` wins for architecture boundaries.
 - `ROADMAP.md` wins for current status and priority.
+- `INBOX.md` is not a source of truth. It is a human scratchpad. Use it to discover fresh context, then clarify, summarize, or promote agreed items into the correct source-of-truth doc.
 - Topic docs (`UX_SPEC.md` and the UX docs it routes to, `FINDER_BEHAVIOR.md`, `METADATA_ARCHITECTURE.md`, `DISTRIBUTION_AND_PERMISSIONS.md`) win for detailed behavior in their area unless `DESIGN.md` explicitly says otherwise.
 - `KNOWN_ISSUES.md` wins for observed current bugs and regressions until the issue is fixed or moved into normal roadmap work.
 - `DECISIONS.md` is historical rationale, not a replacement for the current source-of-truth docs.

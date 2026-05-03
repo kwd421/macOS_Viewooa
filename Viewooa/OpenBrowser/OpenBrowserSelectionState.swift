@@ -26,6 +26,21 @@ struct OpenBrowserSelectionState {
         anchorEntryID = entryIDs.first
     }
 
+    mutating func select(entryIDs: [String], mode: OpenBrowserSelectionDragMode, baseSelection: Set<String>) {
+        switch mode {
+        case .replace:
+            select(entryIDs: entryIDs)
+        case .add:
+            selectedEntryIDs = baseSelection.union(entryIDs)
+            focusedEntryID = entryIDs.last ?? baseSelection.sorted().last
+            anchorEntryID = baseSelection.sorted().first ?? entryIDs.first
+        case .subtract:
+            selectedEntryIDs = baseSelection.subtracting(entryIDs)
+            focusedEntryID = selectedEntryIDs.sorted().last
+            anchorEntryID = selectedEntryIDs.sorted().first
+        }
+    }
+
     mutating func select(_ entry: OpenBrowserEntry, visibleEntries: [OpenBrowserEntry], modifiers: NSEvent.ModifierFlags) {
         let visibleIDs = visibleEntries.map(\.id)
 
@@ -70,4 +85,10 @@ struct OpenBrowserSelectionState {
     func contains(_ entry: OpenBrowserEntry) -> Bool {
         selectedEntryIDs.contains(entry.id)
     }
+}
+
+enum OpenBrowserSelectionDragMode {
+    case replace
+    case add
+    case subtract
 }

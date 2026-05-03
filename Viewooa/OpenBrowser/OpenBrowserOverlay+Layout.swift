@@ -27,6 +27,11 @@ extension OpenBrowserOverlay {
                 }
                 .padding(.bottom, footerHeight)
 
+                topToolbarBackdrop
+                    .frame(height: Self.contentTopInset)
+                    .frame(maxHeight: .infinity, alignment: .top)
+                    .zIndex(2)
+
                 OpenBrowserTitlebar(
                     availableWidth: proxy.size.width,
                     sidebarTotalWidth: sidebarTotalWidth,
@@ -70,31 +75,33 @@ extension OpenBrowserOverlay {
     func contentPane(availableWidth: CGFloat, sidebarTotalWidth: CGFloat) -> some View {
         GeometryReader { viewportProxy in
             ScrollViewReader { proxy in
-                ScrollView {
-                    ZStack(alignment: .topLeading) {
-                        Color.clear
-                            .contentShape(Rectangle())
-                            .onTapGesture(perform: clearSelection)
-                            .gesture(selectionDragGesture)
+                ZStack(alignment: .topLeading) {
+                    ScrollView {
+                        ZStack(alignment: .topLeading) {
+                            Color.clear
+                                .contentShape(Rectangle())
+                                .onTapGesture(perform: clearSelection)
 
-                        content
-                            .allowsHitTesting(selectionDragStart == nil)
-                            .background {
-                                OpenBrowserScrollViewResolver { scrollView in
-                                    openBrowserScrollView = scrollView
+                            content
+                                .allowsHitTesting(selectionDragStart == nil)
+                                .background {
+                                    OpenBrowserScrollViewResolver { scrollView in
+                                        openBrowserScrollView = scrollView
+                                    }
+                                    .frame(width: 0, height: 0)
                                 }
-                                .frame(width: 0, height: 0)
-                            }
-                            .padding(.horizontal, Self.contentHorizontalPadding(for: availableWidth - sidebarTotalWidth, isSidebarVisible: false))
-                            .padding(.top, Self.contentTopInset)
-                            .padding(.bottom, 24)
-
-                        selectionDragOverlay
+                                .padding(.horizontal, Self.contentHorizontalPadding(for: availableWidth - sidebarTotalWidth, isSidebarVisible: false))
+                                .padding(.top, Self.contentTopInset)
+                                .padding(.bottom, 24)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: viewportProxy.size.height, alignment: .topLeading)
                     }
-                    .frame(maxWidth: .infinity, minHeight: viewportProxy.size.height, alignment: .topLeading)
+                    .coordinateSpace(name: OpenBrowserScrollCoordinateSpace.name)
+                    .scrollIndicators(.hidden)
+                    .simultaneousGesture(selectionDragGesture)
+
+                    selectionDragOverlay
                 }
-                .coordinateSpace(name: OpenBrowserScrollCoordinateSpace.name)
-                .scrollIndicators(.hidden)
                 .onAppear {
                     scrollCoordinator.updateViewportSize(viewportProxy.size)
                 }
@@ -113,11 +120,29 @@ extension OpenBrowserOverlay {
         .background(Color.openBrowserContentBackground)
     }
 
+    var topToolbarBackdrop: some View {
+        Rectangle()
+            .fill(.ultraThinMaterial)
+            .overlay(Color.openBrowserWindowBackground.opacity(0.24))
+            .mask {
+                LinearGradient(
+                    stops: [
+                        .init(color: .black, location: 0),
+                        .init(color: .black, location: 0.72),
+                        .init(color: .black.opacity(0), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .allowsHitTesting(false)
+    }
+
     var selectionDragGesture: some Gesture {
         DragGesture(minimumDistance: 4, coordinateSpace: .named(OpenBrowserScrollCoordinateSpace.name))
             .onChanged { value in
                 if selectionDragStart == nil {
-                    beginSelectionDrag(at: value.startLocation)
+                    beginSelectionDrag(at: value.startLocation, modifiers: NSEvent.modifierFlags)
                 }
                 updateSelectionDrag(to: value.location)
             }
@@ -130,10 +155,10 @@ extension OpenBrowserOverlay {
     var selectionDragOverlay: some View {
         if let rect = currentSelectionDragRect {
             RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .fill(Color.accentColor.opacity(0.16))
+                .fill(Color.primary.opacity(0.10))
                 .overlay {
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .strokeBorder(Color.accentColor.opacity(0.55), lineWidth: 1)
+                        .strokeBorder(Color.primary.opacity(0.24), lineWidth: 1)
                 }
                 .frame(width: rect.width, height: rect.height)
                 .offset(x: rect.minX, y: rect.minY)

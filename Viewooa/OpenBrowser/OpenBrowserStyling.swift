@@ -8,9 +8,10 @@ enum OpenBrowserLayout {
 
 extension Color {
     static let openBrowserWindowBackground = Color(nsColor: .windowBackgroundColor)
-    static let openBrowserContentBackground = Color(nsColor: .underPageBackgroundColor)
-    static let openBrowserSidebarBackground = Color(nsColor: .controlBackgroundColor).opacity(0.96)
+    static let openBrowserContentBackground = Color(nsColor: .textBackgroundColor)
+    static let openBrowserSidebarBackground = Color(nsColor: .windowBackgroundColor)
     static let openBrowserSelection = Color(nsColor: .selectedContentBackgroundColor)
+    static let openBrowserSidebarSelectionBackground = Color(nsColor: .unemphasizedSelectedContentBackgroundColor)
     static let openBrowserSeparator = Color(nsColor: .separatorColor).opacity(0.45)
     static let openBrowserControlFill = Color(nsColor: .controlBackgroundColor).opacity(0.64)
 }

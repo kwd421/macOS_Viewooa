@@ -70,6 +70,28 @@ final class OpenBrowserScrollCoordinatorTests: XCTestCase {
         XCTAssertNil(selection.anchorEntryID)
     }
 
+    func testCommandDragAddKeepsBaseSelectionAndAddsDraggedEntries() {
+        var selection = OpenBrowserSelectionState()
+        selection.select(entryIDs: ["a", "b"])
+
+        selection.select(entryIDs: ["c", "d"], mode: .add, baseSelection: selection.selectedEntryIDs)
+
+        XCTAssertEqual(selection.selectedEntryIDs, ["a", "b", "c", "d"])
+        XCTAssertEqual(selection.focusedEntryID, "d")
+        XCTAssertEqual(selection.anchorEntryID, "a")
+    }
+
+    func testCommandDragSubtractRemovesDraggedEntriesFromBaseSelection() {
+        var selection = OpenBrowserSelectionState()
+        selection.select(entryIDs: ["a", "b", "c", "d"])
+
+        selection.select(entryIDs: ["b", "c"], mode: .subtract, baseSelection: selection.selectedEntryIDs)
+
+        XCTAssertEqual(selection.selectedEntryIDs, ["a", "d"])
+        XCTAssertEqual(selection.focusedEntryID, "d")
+        XCTAssertEqual(selection.anchorEntryID, "a")
+    }
+
     func testTrimSelectionKeepsDeterministicFocusAndAnchor() {
         let entries = [entry("a"), entry("b"), entry("c"), entry("d")]
         var selection = OpenBrowserSelectionState()

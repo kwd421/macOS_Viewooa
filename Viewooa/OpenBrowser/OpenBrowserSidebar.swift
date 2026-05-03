@@ -32,11 +32,7 @@ struct OpenBrowserSidebar: View {
             sectionTitle("FAVORITES")
 
             ForEach(favoriteItems) { item in
-                sidebarRow(item, allowsRemoval: true)
-                    .onDrag {
-                        draggingItemID = item.id
-                        return NSItemProvider(object: item.id as NSString)
-                    }
+                reorderableSidebarRow(item)
                     .onDrop(
                         of: [UTType.plainText],
                         delegate: OpenBrowserSidebarDropDelegate(
@@ -47,6 +43,23 @@ struct OpenBrowserSidebar: View {
                         )
                     )
             }
+        }
+    }
+
+    private func reorderableSidebarRow(_ item: OpenBrowserSidebarItem) -> some View {
+        ZStack(alignment: .trailing) {
+            sidebarRow(item, allowsRemoval: true)
+
+            Image(systemName: "line.3.horizontal")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.tertiary)
+                .frame(width: 24, height: 24)
+                .contentShape(Rectangle())
+                .onDrag {
+                    draggingItemID = item.id
+                    return NSItemProvider(object: item.id as NSString)
+                }
+                .accessibilityLabel("Reorder \(item.title)")
         }
     }
 
@@ -108,6 +121,7 @@ struct OpenBrowserSidebar: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, 8)
+            .padding(.trailing, allowsRemoval ? 18 : 0)
             .frame(height: 24)
             .foregroundStyle(isSelected ? Color.openBrowserSelection : .primary)
         }

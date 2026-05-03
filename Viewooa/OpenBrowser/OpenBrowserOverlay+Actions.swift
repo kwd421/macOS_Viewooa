@@ -148,25 +148,44 @@ extension OpenBrowserOverlay {
         selection.selectAll(visibleEntries)
     }
 
-    func beginSelectionDrag(at point: CGPoint) {
+    func beginSelectionDrag(at point: CGPoint, modifiers: NSEvent.ModifierFlags) {
         selectionDragStart = point
         selectionDragCurrent = point
-        selection.clear()
+        selectionDragBaseEntryIDs = selection.selectedEntryIDs
+
+        if modifiers.contains(.command) {
+            if let startingEntryID = entryID(at: point),
+               selection.selectedEntryIDs.contains(startingEntryID) {
+                selectionDragMode = .subtract
+            } else {
+                selectionDragMode = .add
+            }
+        } else {
+            selectionDragMode = .replace
+            selection.clear()
+            selectionDragBaseEntryIDs = []
+        }
     }
 
     func updateSelectionDrag(to point: CGPoint) {
         guard selectionDragStart != nil else {
-            beginSelectionDrag(at: point)
+            beginSelectionDrag(at: point, modifiers: NSEvent.modifierFlags)
             return
         }
 
         selectionDragCurrent = point
-        selection.select(entryIDs: entryIDs(in: currentSelectionDragRect))
+        selection.select(
+            entryIDs: entryIDs(in: currentSelectionDragRect),
+            mode: selectionDragMode,
+            baseSelection: selectionDragBaseEntryIDs
+        )
     }
 
     func endSelectionDrag() {
         selectionDragStart = nil
         selectionDragCurrent = nil
+        selectionDragMode = .replace
+        selectionDragBaseEntryIDs = []
     }
 
     private func entryIDs(in rect: CGRect?) -> [String] {
@@ -183,6 +202,21 @@ extension OpenBrowserOverlay {
                 return lhs.value.minX < rhs.value.minX
             }
             .map(\.key)
+    }
+
+    private func entryID(at point: CGPoint) -> String? {
+        let visibleIDs = Set(visibleEntries.map(\.id))
+        return scrollCoordinator.visibleEntryFrames
+            .filter { id, frame in
+                visibleIDs.contains(id) && frame.contains(point)
+            }
+            .sorted { lhs, rhs in
+                if abs(lhs.value.minY - rhs.value.minY) > 1 {
+                    return lhs.value.minY < rhs.value.minY
+                }
+                return lhs.value.minX < rhs.value.minX
+            }
+            .first?.key
     }
 
     func openFocusedOrFirstSelectedEntry() {
@@ -291,15 +325,7 @@ extension OpenBrowserOverlay {
     }
 
     func revealContent() {
-        guard !reduceMotion else {
-            isContentRevealed = true
-            return
-        }
-
-        isContentRevealed = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.035) {
-            isContentRevealed = true
-        }
+        isContentRevealed = true
     }
 
     func toggleFavorite(_ entry: OpenBrowserEntry) {

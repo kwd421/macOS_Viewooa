@@ -33,8 +33,6 @@ struct OpenBrowserContentView: View {
         } else {
             populatedContent
                 .opacity(isContentRevealed || reduceMotion ? 1 : 0)
-                .scaleEffect(isContentRevealed || reduceMotion ? 1 : 0.985)
-                .offset(y: isContentRevealed || reduceMotion ? 0 : 12)
                 .animation(revealAnimation, value: isContentRevealed)
         }
     }
@@ -137,6 +135,6 @@ struct OpenBrowserContentView: View {
 
     private var revealAnimation: Animation? {
         guard !reduceMotion else { return nil }
-        return .smooth(duration: 0.34, extraBounce: 0.04)
+        return .smooth(duration: 0.18, extraBounce: 0)
     }
 }
